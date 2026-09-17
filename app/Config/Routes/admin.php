@@ -110,9 +110,13 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('akademik/kelas/(:num)/delete', 'AkademikController::deleteKelas/$1');
 
     // Pembagian Mengajar (Jadwal KBM)
-    $routes->get('akademik/mengajar', 'AkademikController::mengajar');
-    $routes->post('akademik/mengajar/create', 'AkademikController::createMengajar');
-    $routes->get('akademik/mengajar/(:num)/delete', 'AkademikController::deleteMengajar/$1');
+    $routes->get('akademik/mengajar', 'JadwalKbmController::index');
+    $routes->post('akademik/mengajar/create', 'JadwalKbmController::store');
+    $routes->post('akademik/mengajar/store', 'JadwalKbmController::store');
+    $routes->post('akademik/mengajar/(:num)/update', 'JadwalKbmController::update/$1');
+    $routes->get('akademik/mengajar/(:num)/delete', 'JadwalKbmController::delete/$1');
+    $routes->get('akademik/mengajar/cetak-kelas/(:num)', 'JadwalKbmController::cetakKelas/$1');
+    $routes->get('akademik/mengajar/cetak-guru/(:num)', 'JadwalKbmController::cetakGuru/$1');
 
     // Instrumen routes
     $routes->get('instrumen', 'InstrumenController::index');
