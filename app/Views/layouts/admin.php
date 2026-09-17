@@ -74,7 +74,7 @@
             font-weight: 700 !important;
         }
 
-        /* Pastikan elemen tombol, badge, dan background berwarna selalu bertuliskan putih bersih */
+        /* Pastikan elemen tombol dan badge solid selalu bertuliskan putih bersih */
         .btn-primary,
         .btn-primary:hover,
         .btn-primary:focus,
@@ -109,14 +109,33 @@
         .badge-info,
         .badge-info *,
         .badge-dark,
-        .badge-dark *,
-        .bg-primary,
-        .bg-primary *,
-        .bg-gradient-primary,
-        .bg-gradient-primary *,
-        .text-white,
-        .text-white * {
+        .badge-dark * {
             color: #ffffff !important;
+        }
+
+        /* Menu Collapse Sidebar: Pastikan teks menu dropdown/collapse terlihat jelas dengan warna hitam */
+        .sidebar .collapse-inner {
+            background-color: #ffffff !important;
+        }
+
+        .sidebar .collapse-inner .collapse-header {
+            color: #4e5154 !important;
+            font-weight: 800 !important;
+        }
+
+        .sidebar .collapse-inner .collapse-item {
+            color: #000000 !important;
+            font-weight: 600 !important;
+        }
+
+        .sidebar .collapse-inner .collapse-item:hover {
+            background-color: #eaecf4 !important;
+            color: #000000 !important;
+        }
+
+        .sidebar .collapse-inner .collapse-item.active {
+            color: #4e73df !important;
+            font-weight: 700 !important;
         }
     </style>
 
