@@ -27,13 +27,7 @@ class LaporanController extends BaseController
         // 1. Tahun Ajar Filter
         $tahunAjars = $tahunAjarModel->orderBy('tahun_ajar', 'DESC')->findAll();
 
-        $activeTahunAjar = null;
-        foreach ($tahunAjars as $ta) {
-            if (!empty($ta['is_active'])) {
-                $activeTahunAjar = $ta;
-                break;
-            }
-        }
+        $activeTahunAjar = $tahunAjarModel->getActive();
         if (!$activeTahunAjar && !empty($tahunAjars)) {
             $activeTahunAjar = $tahunAjars[0];
         }
@@ -404,12 +398,21 @@ class LaporanController extends BaseController
         $guruModel = new GuruModel();
         $db = \Config\Database::connect();
         
+        // Get active tahun ajar
+        $activeTahun = $tahunAjarModel->getActive();
+
         // Get filter parameters
         $tahun_ajar_id = $this->request->getGet('tahun_ajar_id');
         $status = $this->request->getGet('status');
         
+        // Default to active academic year when opening page without filter
+        if ($tahun_ajar_id === null) {
+            $tahun_ajar_id = $activeTahun ? (string)$activeTahun['id'] : '';
+        }
+
         // Get tahun ajaran list for filter
-        $data['tahun_ajars'] = $tahunAjarModel->findAll();
+        $data['tahun_ajars'] = $tahunAjarModel->orderBy('tahun_ajar', 'DESC')->orderBy('semester', 'ASC')->findAll();
+        $data['activeTahun'] = $activeTahun;
         
         // Build query for supervision schedules
         $jadwalQuery = $jadwalModel
@@ -418,11 +421,11 @@ class LaporanController extends BaseController
             ->join('guru', 'guru.id = jadwal_supervisi.guru_id');
             
         // Apply filters
-        if ($tahun_ajar_id) {
+        if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
             $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
         }
         
-        if ($status) {
+        if (!empty($status) && $status !== 'all') {
             $jadwalQuery->where('jadwal_supervisi.status', $status);
         }
         
@@ -676,6 +679,11 @@ class LaporanController extends BaseController
             $tahun_ajar_id = $this->request->getGet('tahun_ajar_id');
             $status = $this->request->getGet('status');
             
+            if ($tahun_ajar_id === null) {
+                $activeTahun = $tahunAjarModel->getActive();
+                $tahun_ajar_id = $activeTahun ? (string)$activeTahun['id'] : '';
+            }
+
             // Build query for completed schedules
             $jadwalQuery = $jadwalModel
                 ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.mata_pelajaran, kelas.nama_kelas')
@@ -683,11 +691,11 @@ class LaporanController extends BaseController
                 ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
                 ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left');
                 
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
             }
             
-            if ($status) {
+            if (!empty($status) && $status !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.status', $status);
             }
             
@@ -750,19 +758,21 @@ class LaporanController extends BaseController
             
             // Filter info
             $filterText = 'Filter: ';
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $tahunAjar = $tahunAjarModel->find($tahun_ajar_id);
                 if ($tahunAjar) {
                     $filterText .= 'Tahun Ajaran ' . $tahunAjar['tahun_ajar'] . ' - ' . $tahunAjar['semester'];
                 }
+            } elseif ($tahun_ajar_id === 'all') {
+                $filterText .= 'Semua Tahun Ajaran';
             }
             
-            if ($status) {
-                $filterText .= ($tahun_ajar_id ? ', ' : '') . 'Status ' . $status;
+            if (!empty($status) && $status !== 'all') {
+                $filterText .= (!empty($tahun_ajar_id) ? ', ' : '') . 'Status ' . $status;
             }
             
-            if (!$tahun_ajar_id && !$status) {
-                $filterText .= 'Semua Data';
+            if ($filterText === 'Filter: ') {
+                $filterText = 'Filter: Semua Data';
             }
             
             $sheet->setCellValue('A3', $filterText);
@@ -852,6 +862,11 @@ class LaporanController extends BaseController
             $tahun_ajar_id = $this->request->getGet('tahun_ajar_id');
             $status = $this->request->getGet('status');
             
+            if ($tahun_ajar_id === null) {
+                $activeTahun = $tahunAjarModel->getActive();
+                $tahun_ajar_id = $activeTahun ? (string)$activeTahun['id'] : '';
+            }
+
             // Build query for completed schedules
             $jadwalQuery = $jadwalModel
                 ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.mata_pelajaran, kelas.nama_kelas')
@@ -859,11 +874,11 @@ class LaporanController extends BaseController
                 ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
                 ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left');
                 
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
             }
             
-            if ($status) {
+            if (!empty($status) && $status !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.status', $status);
             }
             
@@ -941,11 +956,13 @@ class LaporanController extends BaseController
             ];
             
             // Get tahun ajar filter info
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $tahunAjar = $tahunAjarModel->find($tahun_ajar_id);
                 if ($tahunAjar) {
                     $data['filter_tahun_ajar'] = $tahunAjar['tahun_ajar'] . ' - ' . $tahunAjar['semester'];
                 }
+            } elseif ($tahun_ajar_id === 'all') {
+                $data['filter_tahun_ajar'] = 'Semua Tahun Ajaran';
             }
             
             // Clear any previous output
@@ -1002,11 +1019,11 @@ class LaporanController extends BaseController
                 ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
                 ->whereIn('jadwal_supervisi.id', $selectedIds);
                 
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
             }
             
-            if ($status) {
+            if (!empty($status) && $status !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.status', $status);
             }
             

@@ -32,6 +32,11 @@ class BatchExcelController extends BaseController
             $tahun_ajar_id = $this->request->getGet('tahun_ajar_id') ?? $this->request->getPost('tahun_ajar_id');
             $status = $this->request->getGet('status') ?? $this->request->getPost('status');
             
+            if ($tahun_ajar_id === null) {
+                $activeTahun = $this->tahunAjarModel->getActive();
+                $tahun_ajar_id = $activeTahun ? (string)$activeTahun['id'] : '';
+            }
+
             // Build query for completed schedules
             $jadwalQuery = $this->jadwalModel
                 ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran, kelas.nama_kelas')
@@ -40,11 +45,11 @@ class BatchExcelController extends BaseController
                 ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
                 ->where('jadwal_supervisi.status', 'Selesai');
                 
-            if ($tahun_ajar_id) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
             }
             
-            if ($status) {
+            if (!empty($status) && $status !== 'all') {
                 $jadwalQuery->where('jadwal_supervisi.status', $status);
             }
             

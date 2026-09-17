@@ -15,20 +15,25 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="form-group">
-                            <label for="tahun_ajar_id">Tahun Ajaran</label>
+                            <label for="tahun_ajar_id" class="font-weight-bold">Tahun Ajaran</label>
                             <select name="tahun_ajar_id" id="tahun_ajar_id" class="form-control">
-                                <option value="">Semua Tahun Ajaran</option>
+                                <option value="all" <?= ($tahun_ajar_id === 'all') ? 'selected' : '' ?>>Semua Tahun Ajaran</option>
                                 <?php foreach ($tahun_ajars as $tahun): ?>
-                                    <option value="<?= $tahun['id'] ?>" <?= (isset($tahun_ajar_id) && $tahun_ajar_id == $tahun['id']) ? 'selected' : '' ?>>
-                                        <?= $tahun['tahun_ajar'] ?> - <?= $tahun['semester'] ?>
+                                    <option value="<?= $tahun['id'] ?>" <?= ((string)$tahun_ajar_id === (string)$tahun['id']) ? 'selected' : '' ?>>
+                                        <?= esc($tahun['tahun_ajar']) ?> - <?= esc($tahun['semester']) ?> <?= ($tahun['status_aktif'] === 'Aktif') ? '(Aktif)' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php if (!empty($activeTahun) && (string)$tahun_ajar_id === (string)$activeTahun['id']): ?>
+                                <small class="form-text text-success font-weight-bold mt-1">
+                                    <i class="fas fa-check-circle"></i> Menampilkan data Tahun Ajaran Aktif (<?= esc($activeTahun['tahun_ajar']) ?> - <?= esc($activeTahun['semester']) ?>)
+                                </small>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                            <label for="status">Status</label>
+                            <label for="status" class="font-weight-bold">Status</label>
                             <select name="status" id="status" class="form-control">
                                 <option value="">Semua Status</option>
                                 <option value="Terjadwal" <?= (isset($status) && $status == 'Terjadwal') ? 'selected' : '' ?>>Terjadwal</option>
@@ -39,24 +44,36 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary btn-block">Filter</button>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-filter mr-1"></i> Filter
+                            </button>
                         </div>
                     </div>
                 </div>
             </form>
             
+            <?php
+            $exportParams = [];
+            if (!empty($tahun_ajar_id)) {
+                $exportParams['tahun_ajar_id'] = $tahun_ajar_id;
+            }
+            if (!empty($status)) {
+                $exportParams['status'] = $status;
+            }
+            $exportQuery = !empty($exportParams) ? '?' . http_build_query($exportParams) : '';
+            ?>
             <!-- Export buttons -->
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <a href="<?= base_url('admin/laporan/hasil-supervisi/pdf') ?><?= (!empty($tahun_ajar_id) || !empty($status)) ? '?' . http_build_query(array_filter(['tahun_ajar_id' => $tahun_ajar_id, 'status' => $status])) : '' ?>" 
+                    <a href="<?= base_url('admin/laporan/hasil-supervisi/pdf') ?><?= $exportQuery ?>" 
                        class="btn btn-danger" target="_blank">
                         <i class="fas fa-file-pdf"></i> Export rekap nilai PDF
                     </a>
-                    <a href="<?= base_url('admin/laporan/hasil-supervisi/excel') ?><?= (!empty($tahun_ajar_id) || !empty($status)) ? '?' . http_build_query(array_filter(['tahun_ajar_id' => $tahun_ajar_id, 'status' => $status])) : '' ?>" 
+                    <a href="<?= base_url('admin/laporan/hasil-supervisi/excel') ?><?= $exportQuery ?>" 
                        class="btn btn-success">
                         <i class="fas fa-file-excel"></i> Export rekap penilaian Excel
                     </a>
-                    <a href="<?= base_url('admin/laporan/hasil-supervisi/batch-excel-all') ?><?= (!empty($tahun_ajar_id) || !empty($status)) ? '?' . http_build_query(array_filter(['tahun_ajar_id' => $tahun_ajar_id, 'status' => $status])) : '' ?>" 
+                    <a href="<?= base_url('admin/laporan/hasil-supervisi/batch-excel-all') ?><?= $exportQuery ?>" 
                        class="btn btn-info">
                         <i class="fas fa-file-excel"></i> Export Detail Nilai Semua Guru (Excel)
                     </a>
@@ -67,8 +84,11 @@
 
     <!-- Data Table -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold text-primary">Data Hasil Supervisi</h6>
+            <button type="button" id="batchExcelBtn" class="btn btn-sm btn-success shadow-sm" disabled>
+                <i class="fas fa-file-excel fa-sm text-white-50 mr-1"></i> Export Pilihan (Excel)
+            </button>
         </div>
         <div class="card-body">
             <form id="batchExcelForm" method="post" action="<?= base_url('admin/laporan/hasil-supervisi/batch-excel') ?>">
