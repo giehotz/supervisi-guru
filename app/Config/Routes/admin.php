@@ -91,12 +91,24 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
 
     // Akademik routes
     $routes->get('akademik/tahun-ajar', 'AkademikController::tahunAjar');
-    $routes->post('akademik/tahun-ajar/create', 'AkademikController::createTahunAjar');
-    $routes->post('akademik/tahun-ajar/(:num)/update', 'AkademikController::updateTahunAjar/$1');
+
+    // Mata Pelajaran
+    $routes->get('akademik/mapel', 'AkademikController::mapel');
+    $routes->post('akademik/mapel/create', 'AkademikController::createMapel');
+    $routes->post('akademik/mapel/(:num)/update', 'AkademikController::updateMapel/$1');
+    $routes->get('akademik/mapel/(:num)/delete', 'AkademikController::deleteMapel/$1');
+
+    // Kelas & Rombel
     $routes->get('akademik/kelas', 'AkademikController::kelas');
     $routes->post('akademik/kelas/create', 'AkademikController::createKelas');
     $routes->get('akademik/kelas/(:num)/edit', 'AkademikController::editKelas/$1');
     $routes->post('akademik/kelas/(:num)/update', 'AkademikController::updateKelas/$1');
+    $routes->get('akademik/kelas/(:num)/delete', 'AkademikController::deleteKelas/$1');
+
+    // Pembagian Mengajar (Jadwal KBM)
+    $routes->get('akademik/mengajar', 'AkademikController::mengajar');
+    $routes->post('akademik/mengajar/create', 'AkademikController::createMengajar');
+    $routes->get('akademik/mengajar/(:num)/delete', 'AkademikController::deleteMengajar/$1');
 
     // Instrumen routes
     $routes->get('instrumen', 'InstrumenController::index');

@@ -103,6 +103,7 @@
             <?php 
                 $currUri = uri_string();
                 $isPengguna = (strpos($currUri, 'admin/pengguna') === 0);
+                $isAkademik = (strpos($currUri, 'admin/akademik') === 0);
                 $isInstrumen = (strpos($currUri, 'admin/instrumen') === 0);
             ?>
 
@@ -139,12 +140,21 @@
                 </div>
             </li>
 
-            <!-- Nav Item - Kelas / Rombel (Direct Link) -->
-            <li class="nav-item <?= strpos($currUri, 'admin/akademik/kelas') === 0 ? 'active' : '' ?>">
-                <a class="nav-link" href="<?= base_url('/admin/akademik/kelas') ?>">
+            <!-- Nav Item - Data Akademik Collapse -->
+            <li class="nav-item <?= $isAkademik ? 'active' : '' ?>">
+                <a class="nav-link <?= $isAkademik ? '' : 'collapsed' ?>" href="#" data-toggle="collapse" data-target="#collapseAkademik"
+                    aria-expanded="<?= $isAkademik ? 'true' : 'false' ?>" aria-controls="collapseAkademik">
                     <i class="fas fa-fw fa-graduation-cap"></i>
-                    <span>Kelas & Rombel</span>
+                    <span>Data Akademik</span>
                 </a>
+                <div id="collapseAkademik" class="collapse <?= $isAkademik ? 'show' : '' ?>" aria-labelledby="headingAkademik" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Komponen Akademik:</h6>
+                        <a class="collapse-item <?= strpos($currUri, 'admin/akademik/mapel') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/mapel') ?>">Mata Pelajaran</a>
+                        <a class="collapse-item <?= strpos($currUri, 'admin/akademik/kelas') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/kelas') ?>">Kelas & Rombel</a>
+                        <a class="collapse-item <?= strpos($currUri, 'admin/akademik/mengajar') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/mengajar') ?>">Pembagian Mengajar</a>
+                    </div>
+                </div>
             </li>
 
             <!-- Nav Item - Instrumen Supervisi Collapse -->
