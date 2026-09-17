@@ -68,15 +68,20 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="kelas_id">Kelas</label>
+                                <label for="kelas_id" class="font-weight-bold">Kelas</label>
                                 <select class="form-control" id="kelas_id" name="kelas_id" required>
-                                    <option value="">Pilih Kelas</option>
+                                    <option value="">-- Pilih Kelas --</option>
                                     <?php foreach ($kelases as $kelas): ?>
                                         <option value="<?= $kelas['id'] ?>">
-                                            <?= $kelas['nama_kelas'] ?>
+                                            <?= esc($kelas['nama_kelas']) ?> <?= (!empty($kelas['tahun_ajar']) && !empty($kelas['semester'])) ? ' (' . esc($kelas['tahun_ajar']) . ' - ' . esc($kelas['semester']) . ')' : '' ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if (empty($kelases)): ?>
+                                    <small class="form-text text-danger font-weight-bold mt-1">
+                                        <i class="fas fa-exclamation-triangle"></i> Belum ada kelas aktif. Silakan tambahkan kelas di menu <a href="<?= base_url('/admin/akademik/kelas') ?>" target="_blank">Akademik &gt; Kelas &amp; Rombel</a>.
+                                    </small>
+                                <?php endif; ?>
                             </div>
                             
                             <div class="form-group">

@@ -43,12 +43,28 @@ class JadwalController extends BaseController
         // Get active tahun ajar
         $tahunAjarAktif = $this->tahunAjarModel->where('status_aktif', 'Aktif')->first();
         
-        // Get all active classes
+        // Get all active classes from master kelas (Akademik Kelas)
         $kelasModel = new \App\Models\KelasModel();
         $kelases = [];
         
         if ($tahunAjarAktif) {
-            $kelases = $kelasModel->where('tahun_ajar_id', $tahunAjarAktif['id'])->where('status', 'Aktif')->findAll();
+            $kelases = $kelasModel
+                ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+                ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
+                ->where('kelas.tahun_ajar_id', $tahunAjarAktif['id'])
+                ->where('kelas.status', 'Aktif')
+                ->orderBy('kelas.nama_kelas', 'ASC')
+                ->findAll();
+        }
+        
+        // Fallback jika belum ada kelas pada TA aktif, ambil semua kelas aktif dari master kelas
+        if (empty($kelases)) {
+            $kelases = $kelasModel
+                ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+                ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
+                ->where('kelas.status', 'Aktif')
+                ->orderBy('kelas.nama_kelas', 'ASC')
+                ->findAll();
         }
         
         // Get supervisors (users with role supervisor or kepala) including role info
@@ -133,19 +149,59 @@ class JadwalController extends BaseController
         // Get all tahun ajaran (needed for edit form)
         $tahunAjarans = $this->tahunAjarModel->findAll();
         
-        // Get all active classes
+        // Prioritaskan tahun ajaran dari jadwal yang sedang diedit
+        $targetTahunAjarId = !empty($data['jadwal']['tahun_ajar_id']) ? $data['jadwal']['tahun_ajar_id'] : ($tahunAjarAktif ? $tahunAjarAktif['id'] : null);
+
+        // Get classes from master kelas (Akademik Kelas)
         $kelasModel = new \App\Models\KelasModel();
         $kelases = [];
         
-        if ($tahunAjarAktif) {
-            $kelases = $kelasModel->where('tahun_ajar_id', $tahunAjarAktif['id'])->where('status', 'Aktif')->findAll();
+        if ($targetTahunAjarId) {
+            $kelases = $kelasModel
+                ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+                ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
+                ->where('kelas.tahun_ajar_id', $targetTahunAjarId)
+                ->where('kelas.status', 'Aktif')
+                ->orderBy('kelas.nama_kelas', 'ASC')
+                ->findAll();
+        }
+        
+        // Fallback jika tidak ada kelas untuk tahun ajaran tersebut, ambil semua kelas aktif
+        if (empty($kelases)) {
+            $kelases = $kelasModel
+                ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+                ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
+                ->where('kelas.status', 'Aktif')
+                ->orderBy('kelas.nama_kelas', 'ASC')
+                ->findAll();
+        }
+
+        // Pastikan kelas yang saat ini dipilih oleh jadwal tetap muncul jika belum ada di list
+        $currentKelasId = $data['jadwal']['kelas_id'] ?? null;
+        if ($currentKelasId) {
+            $exists = false;
+            foreach ($kelases as $k) {
+                if ((int)$k['id'] === (int)$currentKelasId) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $currentKelas = $kelasModel
+                    ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+                    ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
+                    ->find($currentKelasId);
+                if ($currentKelas) {
+                    array_unshift($kelases, $currentKelas);
+                }
+            }
         }
         
         // Get supervisors (users with role supervisor or kepala) including role info
         $supervisors = $this->userModel->select('id, username, role')->whereIn('role', ['supervisor', 'kepala'])->where('status', 'Aktif')->findAll();
         
         $data['tahun_ajar'] = $tahunAjarAktif;
-        $data['tahun_ajars'] = $tahunAjarans; // Perubahan ini untuk memenuhi kebutuhan view
+        $data['tahun_ajars'] = $tahunAjarans;
         $data['kelases'] = $kelases;
         $data['gurus'] = $this->guruModel->findAll();
         $data['supervisors'] = $supervisors;
