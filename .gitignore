@@ -55,7 +55,13 @@ public/uploads/foto_bukti/*
 #-----------------------------------------------------------
 # Composer & Node Dependencies
 #-----------------------------------------------------------
-vendor/
+/vendor/
+!public/assets/vendor/
+public/assets/vendor/fontawesome-free/svgs/
+public/assets/vendor/fontawesome-free/sprites/
+public/assets/vendor/fontawesome-free/less/
+public/assets/vendor/fontawesome-free/scss/
+public/assets/vendor/fontawesome-free/metadata/
 node_modules/
 npm-debug.log*
 yarn-debug.log*
