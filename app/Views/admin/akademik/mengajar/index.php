@@ -12,8 +12,8 @@
             <p class="text-muted small mb-0">Manajemen jadwal pelajaran mingguan, plotting guru mengajar, dan monitoring beban jam tatap muka (JTM).</p>
         </div>
         <div class="mt-3 mt-sm-0 d-flex flex-wrap">
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3" data-toggle="modal" data-target="#modalAddJadwal" onclick="resetFormAdd()">
-                <i class="fas fa-plus-circle mr-1"></i> Tambah Plotting Mengajar
+            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" style="color: #ffffff !important;" data-toggle="modal" data-target="#modalAddJadwal" onclick="resetFormAdd()">
+                <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Plotting Mengajar
             </button>
         </div>
     </div>
@@ -589,8 +589,8 @@
                 </div>
                 <div class="modal-footer bg-white border-top">
                     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-3 font-weight-bold">
-                        <i class="fas fa-save mr-1"></i> Simpan Plotting
+                    <button type="submit" class="btn btn-primary btn-sm px-3 font-weight-bold text-white" style="color: #ffffff !important;">
+                        <i class="fas fa-save mr-1 text-white"></i> Simpan Plotting
                     </button>
                 </div>
             </div>
@@ -731,6 +731,12 @@
         background-color: #fff;
         color: #4e73df !important;
         box-shadow: 0 2px 5px rgba(78, 115, 223, 0.2);
+    }
+    .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+        color: #ffffff !important;
+    }
+    .btn-primary i {
+        color: #ffffff !important;
     }
 </style>
 <?= $this->endSection(); ?>
