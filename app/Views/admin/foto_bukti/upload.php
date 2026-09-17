@@ -66,8 +66,8 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <button type="submit" class="btn btn-primary font-weight-bold shadow-sm" id="btnSubmitUpload">
-                                <i class="fas fa-cloud-upload-alt mr-1"></i> Unggah Foto Bukti
+                            <button type="submit" class="btn btn-primary font-weight-bold shadow-sm text-white" id="btnSubmitUpload">
+                                <i class="fas fa-cloud-upload-alt mr-1 text-white"></i> Unggah Foto Bukti
                             </button>
                             <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="text-muted small">
                                 Selesai & Kembali ke Detail <i class="fas fa-arrow-right ml-1"></i>

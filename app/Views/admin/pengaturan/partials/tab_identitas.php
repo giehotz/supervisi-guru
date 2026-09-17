@@ -224,8 +224,8 @@
                     </div>
 
                     <div class="text-right pt-2 border-top">
-                        <button type="submit" class="btn btn-primary btn-sm px-4 shadow-sm font-weight-bold">
-                            <i class="fas fa-save mr-1"></i> Simpan Identitas Madrasah
+                        <button type="submit" class="btn btn-primary btn-sm px-4 shadow-sm font-weight-bold text-white">
+                            <i class="fas fa-save mr-1 text-white"></i> Simpan Identitas Madrasah
                         </button>
                     </div>
                 </form>

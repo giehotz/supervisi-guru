@@ -134,8 +134,8 @@
 
                     <form action="<?= base_url('admin/backup/create') ?>" method="post" onsubmit="return confirm('Mulai proses pembuatan backup database sekarang?')">
                         <?= csrf_field() ?>
-                        <button type="submit" class="btn btn-primary btn-block shadow-sm py-2 font-weight-bold">
-                            <i class="fas fa-download mr-1"></i> Buat Cadangan Sekarang
+                        <button type="submit" class="btn btn-primary btn-block shadow-sm py-2 font-weight-bold text-white">
+                            <i class="fas fa-download mr-1 text-white"></i> Buat Cadangan Sekarang
                         </button>
                     </form>
                 </div>

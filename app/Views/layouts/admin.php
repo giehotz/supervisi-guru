@@ -71,8 +71,52 @@
         }
 
         .font-weight-bold {
-            color: #000000 !important;
+            font-weight: 700 !important;
+        }
 
+        /* Pastikan elemen tombol, badge, dan background berwarna selalu bertuliskan putih bersih */
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active,
+        .btn-primary *,
+        .btn-success,
+        .btn-success:hover,
+        .btn-success:focus,
+        .btn-success:active,
+        .btn-success *,
+        .btn-danger,
+        .btn-danger:hover,
+        .btn-danger:focus,
+        .btn-danger:active,
+        .btn-danger *,
+        .btn-info,
+        .btn-info:hover,
+        .btn-info:focus,
+        .btn-info:active,
+        .btn-info *,
+        .btn-dark,
+        .btn-dark:hover,
+        .btn-dark:focus,
+        .btn-dark:active,
+        .btn-dark *,
+        .badge-primary,
+        .badge-primary *,
+        .badge-success,
+        .badge-success *,
+        .badge-danger,
+        .badge-danger *,
+        .badge-info,
+        .badge-info *,
+        .badge-dark,
+        .badge-dark *,
+        .bg-primary,
+        .bg-primary *,
+        .bg-gradient-primary,
+        .bg-gradient-primary *,
+        .text-white,
+        .text-white * {
+            color: #ffffff !important;
         }
     </style>
 

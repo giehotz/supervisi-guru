@@ -78,8 +78,8 @@
                             <a href="<?= base_url('/admin/akademik/kelas') ?>" class="btn btn-secondary mr-2">
                                 <i class="fas fa-times mr-1"></i> Batal
                             </a>
-                            <button type="submit" class="btn btn-primary font-weight-bold">
-                                <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                            <button type="submit" class="btn btn-primary font-weight-bold text-white">
+                                <i class="fas fa-save mr-1 text-white"></i> Simpan Perubahan
                             </button>
                         </div>
                     </form>

@@ -285,8 +285,8 @@
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="fas fa-camera mr-1"></i> Foto Bukti Supervisi
             </h6>
-            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-primary btn-sm no-print font-weight-bold shadow-sm">
-                <i class="fas fa-upload mr-1"></i> Kelola / Upload Foto Bukti
+            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-primary btn-sm no-print font-weight-bold shadow-sm text-white">
+                <i class="fas fa-upload mr-1 text-white"></i> Kelola / Upload Foto Bukti
             </a>
         </div>
         <div class="card-body">
@@ -549,8 +549,8 @@
                 </div>
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm font-weight-bold" id="btnSaveQuickEdit">
-                        <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                    <button type="submit" class="btn btn-primary btn-sm font-weight-bold text-white" id="btnSaveQuickEdit">
+                        <i class="fas fa-save mr-1 text-white"></i> Simpan Perubahan
                     </button>
                 </div>
             </form>

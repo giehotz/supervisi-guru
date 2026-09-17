@@ -10,8 +10,8 @@
             <p class="text-muted small mb-0">Kelola kurikulum dan daftar mata pelajaran madrasah yang diajarkan.</p>
         </div>
         <div>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddMapel">
-                <i class="fas fa-plus-circle mr-1"></i> Tambah Mata Pelajaran
+            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddMapel">
+                <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Mata Pelajaran
             </button>
         </div>
     </div>
@@ -229,8 +229,8 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <i class="fas fa-times mr-1"></i> Batal
                     </button>
-                    <button type="submit" class="btn btn-primary font-weight-bold">
-                        <i class="fas fa-save mr-1"></i> Simpan Mata Pelajaran
+                    <button type="submit" class="btn btn-primary font-weight-bold text-white">
+                        <i class="fas fa-save mr-1 text-white"></i> Simpan Mata Pelajaran
                     </button>
                 </div>
             </form>
@@ -285,8 +285,8 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <i class="fas fa-times mr-1"></i> Batal
                     </button>
-                    <button type="submit" class="btn btn-primary font-weight-bold">
-                        <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                    <button type="submit" class="btn btn-primary font-weight-bold text-white">
+                        <i class="fas fa-save mr-1 text-white"></i> Perbarui Mata Pelajaran
                     </button>
                 </div>
             </form>

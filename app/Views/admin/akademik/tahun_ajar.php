@@ -10,8 +10,8 @@
             <p class="text-muted small mb-0">Kelola tahun ajaran, semester, dan penetapan tahun ajaran aktif untuk operasional madrasah.</p>
         </div>
         <div>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddTahun">
-                <i class="fas fa-plus-circle mr-1"></i> Tambah Tahun Ajaran
+            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddTahun">
+                <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Tahun Ajaran
             </button>
         </div>
     </div>
@@ -223,7 +223,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Simpan Perubahan</button>
+                                                        <button type="submit" class="btn btn-primary font-weight-bold text-white"><i class="fas fa-save mr-1 text-white"></i> Simpan Perubahan</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -279,7 +279,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-1"></i> Simpan Data</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold text-white"><i class="fas fa-check mr-1 text-white"></i> Simpan Data</button>
                 </div>
             </form>
         </div>
