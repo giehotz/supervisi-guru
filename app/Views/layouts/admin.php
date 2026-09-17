@@ -419,6 +419,9 @@
     <!-- Page level custom scripts -->
     <script src="<?= base_url('assets/js/demo/datatables-demo.js') ?>"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <?= $this->renderSection('scripts') ?>
 
 </body>

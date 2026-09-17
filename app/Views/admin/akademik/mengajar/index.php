@@ -814,21 +814,28 @@ function confirmDelete(id, tab) {
     let tahunId = '<?= esc($selectedTahunId) ?>';
     let kelasId = '<?= esc($selectedKelasId) ?>';
     let guruId = '<?= esc($selectedGuruId) ?>';
+    let targetUrl = '<?= base_url('admin/akademik/mengajar') ?>/' + id + '/delete?tab=' + tab + '&tahun_ajar_id=' + tahunId + '&kelas_id=' + kelasId + '&guru_id=' + guruId;
 
-    Swal.fire({
-        title: 'Konfirmasi Hapus',
-        text: 'Apakah Anda yakin ingin menghapus jadwal mengajar ini?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e74a3b',
-        cancelButtonColor: '#858796',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '<?= base_url('admin/akademik/mengajar') ?>/' + id + '/delete?tab=' + tab + '&tahun_ajar_id=' + tahunId + '&kelas_id=' + kelasId + '&guru_id=' + guruId;
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: 'Apakah Anda yakin ingin menghapus jadwal mengajar ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74a3b',
+            cancelButtonColor: '#858796',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = targetUrl;
+            }
+        });
+    } else {
+        if (confirm('Apakah Anda yakin ingin menghapus jadwal mengajar ini?')) {
+            window.location.href = targetUrl;
         }
-    });
+    }
 }
 </script>
 <?= $this->endSection(); ?>
