@@ -44,9 +44,9 @@
                         <i class="fas fa-calendar-alt mr-1 text-primary"></i> Tahun Ajaran & Semester:
                     </label>
                     <select class="form-control form-control-sm" name="tahun_ajar_id" onchange="this.form.submit()">
-                        <option value="">-- Semua Tahun Ajaran --</option>
+                        <option value="all" <?= $selectedTahunId === 'all' ? 'selected' : '' ?>>-- Semua Tahun Ajaran --</option>
                         <?php foreach ($tahun_ajars as $tahun): ?>
-                            <option value="<?= $tahun['id'] ?>" <?= $selectedTahunId == $tahun['id'] ? 'selected' : '' ?>>
+                            <option value="<?= $tahun['id'] ?>" <?= (string)$selectedTahunId === (string)$tahun['id'] ? 'selected' : '' ?>>
                                 <?= esc($tahun['tahun_ajar']) ?> - <?= esc($tahun['semester']) ?> <?= ($tahun['status_aktif'] ?? '') === 'Aktif' ? '(Aktif)' : '' ?>
                             </option>
                         <?php endforeach; ?>

@@ -76,17 +76,17 @@
                         <label class="text-xs font-weight-bold text-info text-uppercase mb-1">Filter Tahun Ajaran</label>
                         <div class="input-group input-group-sm">
                             <select class="form-control" name="tahun_ajar_id" onchange="this.form.submit()">
-                                <option value="">Semua Tahun Ajaran</option>
+                                <option value="all" <?= $selectedTahunId === 'all' ? 'selected' : '' ?>>Semua Tahun Ajaran</option>
                                 <?php foreach ($tahun_ajars as $tahun): ?>
-                                    <option value="<?= $tahun['id'] ?>" <?= $selectedTahunId == $tahun['id'] ? 'selected' : '' ?>>
-                                        <?= esc($tahun['tahun_ajar']) ?> (<?= esc($tahun['semester']) ?>)
+                                    <option value="<?= $tahun['id'] ?>" <?= (string)$selectedTahunId === (string)$tahun['id'] ? 'selected' : '' ?>>
+                                        <?= esc($tahun['tahun_ajar']) ?> (<?= esc($tahun['semester']) ?>) <?= ($tahun['status_aktif'] ?? '') === 'Aktif' ? '(Aktif)' : '' ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <?php if ($selectedTahunId): ?>
+                            <?php if (!empty($selectedTahunId) && (!isset($activeTahun['id']) || (string)$selectedTahunId !== (string)$activeTahun['id'])): ?>
                                 <div class="input-group-append">
-                                    <a href="<?= base_url('admin/akademik/kelas') ?>" class="btn btn-outline-secondary" title="Reset Filter">
-                                        <i class="fas fa-times"></i>
+                                    <a href="<?= base_url('admin/akademik/kelas') ?>" class="btn btn-outline-secondary" title="Kembalikan ke Default TA Aktif">
+                                        <i class="fas fa-undo"></i>
                                     </a>
                                 </div>
                             <?php endif; ?>

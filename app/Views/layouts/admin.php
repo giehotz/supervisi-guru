@@ -150,6 +150,7 @@
                 <div id="collapseAkademik" class="collapse <?= $isAkademik ? 'show' : '' ?>" aria-labelledby="headingAkademik" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Komponen Akademik:</h6>
+                        <a class="collapse-item <?= strpos($currUri, 'admin/akademik/tahun-ajar') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/tahun-ajar') ?>">Tahun Ajaran</a>
                         <a class="collapse-item <?= strpos($currUri, 'admin/akademik/mapel') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/mapel') ?>">Mata Pelajaran</a>
                         <a class="collapse-item <?= strpos($currUri, 'admin/akademik/kelas') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/kelas') ?>">Kelas & Rombel</a>
                         <a class="collapse-item <?= strpos($currUri, 'admin/akademik/mengajar') === 0 ? 'active font-weight-bold' : '' ?>" href="<?= base_url('/admin/akademik/mengajar') ?>">Pembagian Mengajar</a>

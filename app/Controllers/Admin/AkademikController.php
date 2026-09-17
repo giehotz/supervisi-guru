@@ -26,9 +26,164 @@ class AkademikController extends BaseController
         $this->mengajarModel = new GuruMengajarModel();
     }
 
+    // ==========================================
+    // 0. TAHUN AJARAN & SEMESTER
+    // ==========================================
+
     public function tahunAjar()
     {
-        return redirect()->to('/admin/pengaturan/tahun-ajar');
+        // Filter status: 'Aktif' (default), 'Semua', atau 'Nonaktif'
+        $filterStatus = $this->request->getGet('status') ?? 'Aktif';
+        if (!in_array($filterStatus, ['Aktif', 'Semua', 'Nonaktif'])) {
+            $filterStatus = 'Aktif';
+        }
+
+        $allTahunAjars = $this->tahunAjarModel->orderBy('tahun_ajar', 'DESC')->orderBy('semester', 'ASC')->findAll();
+        $activeTahun   = $this->tahunAjarModel->getActive();
+
+        if ($filterStatus === 'Semua') {
+            $tahunAjars = $allTahunAjars;
+        } else {
+            $tahunAjars = array_values(array_filter($allTahunAjars, fn($t) => $t['status_aktif'] === $filterStatus));
+        }
+
+        $data = [
+            'title'         => 'Manajemen Tahun Ajaran',
+            'tahun_ajars'   => $tahunAjars,
+            'activeTahun'   => $activeTahun,
+            'filterStatus'  => $filterStatus,
+            'totalSemua'    => count($allTahunAjars),
+            'totalAktif'    => count(array_filter($allTahunAjars, fn($t) => $t['status_aktif'] === 'Aktif')),
+            'totalNonaktif' => count(array_filter($allTahunAjars, fn($t) => $t['status_aktif'] === 'Nonaktif')),
+        ];
+
+        return view('admin/akademik/tahun_ajar', $data);
+    }
+
+    public function createTahunAjar()
+    {
+        $rules = [
+            'tahun_ajar'   => 'required|min_length[4]|max_length[20]',
+            'semester'     => 'required|in_list[Ganjil,Genap]',
+            'status_aktif' => 'required|in_list[Aktif,Nonaktif]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Validasi gagal: Harap periksa format tahun ajar dan pilihan semester/status.');
+        }
+
+        $statusAktif = $this->request->getPost('status_aktif');
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        if ($statusAktif === 'Aktif') {
+            $this->tahunAjarModel->set('status_aktif', 'Nonaktif')->where('status_aktif', 'Aktif')->update();
+        }
+
+        $this->tahunAjarModel->insert([
+            'tahun_ajar'   => trim($this->request->getPost('tahun_ajar')),
+            'semester'     => $this->request->getPost('semester'),
+            'status_aktif' => $statusAktif,
+        ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan tahun ajaran baru.');
+        }
+
+        return redirect()->to('/admin/akademik/tahun-ajar?status=' . $statusAktif)->with('success', 'Tahun ajaran berhasil ditambahkan.');
+    }
+
+    public function updateTahunAjar($id)
+    {
+        $tahun = $this->tahunAjarModel->find($id);
+        if (!$tahun) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Data tahun ajaran tidak ditemukan.');
+        }
+
+        $rules = [
+            'tahun_ajar'   => 'required|min_length[4]|max_length[20]',
+            'semester'     => 'required|in_list[Ganjil,Genap]',
+            'status_aktif' => 'required|in_list[Aktif,Nonaktif]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Validasi gagal: Periksa kembali data tahun ajaran.');
+        }
+
+        $statusAktif = $this->request->getPost('status_aktif');
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        if ($statusAktif === 'Aktif') {
+            $this->tahunAjarModel->set('status_aktif', 'Nonaktif')->where('status_aktif', 'Aktif')->update();
+        }
+
+        $this->tahunAjarModel->update($id, [
+            'tahun_ajar'   => trim($this->request->getPost('tahun_ajar')),
+            'semester'     => $this->request->getPost('semester'),
+            'status_aktif' => $statusAktif,
+        ]);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui tahun ajaran.');
+        }
+
+        return redirect()->to('/admin/akademik/tahun-ajar')->with('success', 'Tahun ajaran berhasil diperbarui.');
+    }
+
+    public function activateTahunAjar($id)
+    {
+        $tahun = $this->tahunAjarModel->find($id);
+        if (!$tahun) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Tahun ajaran tidak ditemukan.');
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $this->tahunAjarModel->set('status_aktif', 'Nonaktif')->where('status_aktif', 'Aktif')->update();
+        $this->tahunAjarModel->update($id, ['status_aktif' => 'Aktif']);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Gagal mengaktifkan tahun ajaran.');
+        }
+
+        return redirect()->to('/admin/akademik/tahun-ajar?status=Aktif')->with('success', 'Tahun ajaran "' . esc($tahun['tahun_ajar']) . ' (' . esc($tahun['semester']) . ')" berhasil diaktifkan.');
+    }
+
+    public function deleteTahunAjar($id)
+    {
+        $tahun = $this->tahunAjarModel->find($id);
+        if (!$tahun) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Tahun ajaran tidak ditemukan.');
+        }
+
+        if ($tahun['status_aktif'] === 'Aktif') {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Tidak dapat menghapus Tahun Ajaran yang sedang Aktif!');
+        }
+
+        // Cek relasi ke kelas atau guru_mengajar
+        $db = \Config\Database::connect();
+        $hasKelas = $db->table('kelas')->where('tahun_ajar_id', $id)->countAllResults();
+        if ($hasKelas > 0) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Tidak dapat menghapus tahun ajaran karena masih memiliki ' . $hasKelas . ' data kelas terkait.');
+        }
+
+        $hasMengajar = $db->table('guru_mengajar')->where('tahun_ajar_id', $id)->countAllResults();
+        if ($hasMengajar > 0) {
+            return redirect()->to('/admin/akademik/tahun-ajar')->with('error', 'Tidak dapat menghapus tahun ajaran karena masih terhubung ke data pembagian mengajar.');
+        }
+
+        $this->tahunAjarModel->delete($id);
+        return redirect()->to('/admin/akademik/tahun-ajar')->with('success', 'Tahun ajaran berhasil dihapus.');
     }
 
     // ==========================================
@@ -140,13 +295,19 @@ class AkademikController extends BaseController
     public function kelas()
     {
         $tahunAjarFilter = $this->request->getGet('tahun_ajar_id');
+        $activeTahun     = $this->tahunAjarModel->getActive();
+
+        // Jika user belum memilih filter (akses pertama kali), default ke tahun ajaran aktif
+        if ($tahunAjarFilter === null) {
+            $tahunAjarFilter = $activeTahun ? (string)$activeTahun['id'] : '';
+        }
 
         $query = $this->kelasModel
             ->select('kelas.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_wali')
             ->join('tahun_ajar', 'tahun_ajar.id = kelas.tahun_ajar_id', 'left')
             ->join('guru', 'guru.id = kelas.wali_kelas', 'left');
 
-        if (!empty($tahunAjarFilter)) {
+        if (!empty($tahunAjarFilter) && $tahunAjarFilter !== 'all') {
             $query->where('kelas.tahun_ajar_id', $tahunAjarFilter);
         }
 
@@ -163,6 +324,7 @@ class AkademikController extends BaseController
             'totalKelas'       => $totalKelas,
             'totalAktif'       => $totalAktif,
             'selectedTahunId'  => $tahunAjarFilter,
+            'activeTahun'      => $activeTahun,
         ];
 
         return view('admin/akademik/kelas', $data);
@@ -266,16 +428,15 @@ class AkademikController extends BaseController
     {
         $tahunAjarFilter = $this->request->getGet('tahun_ajar_id');
         $kelasFilter     = $this->request->getGet('kelas_id');
+        $activeTahun     = $this->tahunAjarModel->getActive();
 
-        // Default tahun ajar aktif jika belum dipilih
-        if (empty($tahunAjarFilter)) {
-            $aktifTahun = $this->tahunAjarModel->where('status_aktif', 'Aktif')->first();
-            if ($aktifTahun) {
-                $tahunAjarFilter = $aktifTahun['id'];
-            }
+        // Default tahun ajar aktif jika belum dipilih (akses pertama kali)
+        if ($tahunAjarFilter === null) {
+            $tahunAjarFilter = $activeTahun ? (string)$activeTahun['id'] : '';
         }
 
-        $jadwals = $this->mengajarModel->getJadwalWithDetails($tahunAjarFilter, $kelasFilter);
+        $filterIdForModel = ($tahunAjarFilter === 'all' || empty($tahunAjarFilter)) ? null : $tahunAjarFilter;
+        $jadwals = $this->mengajarModel->getJadwalWithDetails($filterIdForModel, $kelasFilter);
 
         $data = [
             'title'           => 'Pembagian Mengajar Guru (Jadwal KBM)',
@@ -286,6 +447,7 @@ class AkademikController extends BaseController
             'mapels'          => $this->mapelModel->where('status', 'Aktif')->orderBy('nama_mapel', 'ASC')->findAll(),
             'selectedTahunId' => $tahunAjarFilter,
             'selectedKelasId' => $kelasFilter,
+            'activeTahun'     => $activeTahun,
             'totalPlotting'   => count($jadwals),
         ];
 

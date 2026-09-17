@@ -89,8 +89,12 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('pengguna/import-guru/template', 'PenggunaController::downloadTemplate');
     $routes->post('pengguna/import-guru/process', 'PenggunaController::processImportGuru');
 
-    // Akademik routes
+    // Akademik routes - Tahun Ajaran
     $routes->get('akademik/tahun-ajar', 'AkademikController::tahunAjar');
+    $routes->post('akademik/tahun-ajar/create', 'AkademikController::createTahunAjar');
+    $routes->post('akademik/tahun-ajar/(:num)/update', 'AkademikController::updateTahunAjar/$1');
+    $routes->get('akademik/tahun-ajar/(:num)/activate', 'AkademikController::activateTahunAjar/$1');
+    $routes->get('akademik/tahun-ajar/(:num)/delete', 'AkademikController::deleteTahunAjar/$1');
 
     // Mata Pelajaran
     $routes->get('akademik/mapel', 'AkademikController::mapel');
