@@ -12,9 +12,74 @@
             <a href="<?= base_url('/admin/jadwal/create') ?>" class="btn btn-primary btn-sm shadow-sm mr-1">
                 <i class="fas fa-plus mr-1"></i> Tambah Jadwal
             </a>
-            <a href="<?= base_url('/admin/jadwal/cetak-pdf') ?>" class="btn btn-danger btn-sm shadow-sm" target="_blank">
+            <?php
+                $pdfUrl = base_url('/admin/jadwal/cetak-pdf');
+                if (!empty($selectedTahunId) && $selectedTahunId !== 'all') {
+                    $pdfUrl .= '?tahun_ajar_id=' . $selectedTahunId;
+                } elseif ($selectedTahunId === 'all') {
+                    $pdfUrl .= '?tahun_ajar_id=all';
+                }
+            ?>
+            <a href="<?= $pdfUrl ?>" class="btn btn-danger btn-sm shadow-sm" target="_blank">
                 <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
             </a>
+        </div>
+    </div>
+
+    <!-- Filter Tahun Pelajaran Card -->
+    <div class="card shadow-sm mb-4 border-left-primary">
+        <div class="card-body py-3">
+            <form method="get" action="<?= base_url('/admin/jadwal') ?>" class="form-inline d-flex flex-wrap align-items-center justify-content-between">
+                <div class="d-flex align-items-center mb-2 mb-md-0 flex-wrap">
+                    <label class="mr-3 font-weight-bold text-gray-700 mb-0">
+                        <i class="fas fa-calendar-alt text-primary mr-1"></i> Periode Tahun Pelajaran:
+                    </label>
+                    <div class="input-group input-group-sm mr-2" style="min-width: 270px;">
+                        <select name="tahun_ajar_id" id="filterTahunAjar" class="form-control font-weight-bold" onchange="this.form.submit()">
+                            <option value="all" <?= ($selectedTahunId === 'all') ? 'selected' : '' ?>>Semua Tahun Pelajaran</option>
+                            <?php foreach ($tahun_ajars as $tahun): ?>
+                                <option value="<?= $tahun['id'] ?>" <?= ((string)$selectedTahunId === (string)$tahun['id']) ? 'selected' : '' ?>>
+                                    <?= esc($tahun['tahun_ajar']) ?> - Semester <?= esc($tahun['semester']) ?> <?= (($tahun['status_aktif'] ?? '') === 'Aktif') ? '(Aktif)' : '' ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?php if (!empty($selectedTahunId) && (!isset($activeTahun['id']) || (string)$selectedTahunId !== (string)$activeTahun['id'])): ?>
+                            <div class="input-group-append">
+                                <a href="<?= base_url('/admin/jadwal') ?>" class="btn btn-outline-secondary" title="Kembalikan ke Tahun Pelajaran Aktif">
+                                    <i class="fas fa-undo mr-1"></i> Default Aktif
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center flex-wrap">
+                    <?php if (!empty($activeTahun) && (string)$selectedTahunId === (string)$activeTahun['id']): ?>
+                        <span class="badge badge-success px-3 py-2 font-weight-normal shadow-sm">
+                            <i class="fas fa-check-circle mr-1"></i> Menampilkan Data TP Aktif: <strong><?= esc($activeTahun['tahun_ajar']) ?> (<?= esc($activeTahun['semester']) ?>)</strong>
+                        </span>
+                    <?php elseif ($selectedTahunId === 'all'): ?>
+                        <span class="badge badge-warning px-3 py-2 font-weight-normal shadow-sm">
+                            <i class="fas fa-layer-group mr-1"></i> Menampilkan <strong>Semua Tahun Pelajaran</strong>
+                        </span>
+                    <?php else: ?>
+                        <?php 
+                            $currTa = null;
+                            foreach ($tahun_ajars as $ta) {
+                                if ((string)$ta['id'] === (string)$selectedTahunId) {
+                                    $currTa = $ta;
+                                    break;
+                                }
+                            }
+                        ?>
+                        <span class="badge badge-info px-3 py-2 font-weight-normal shadow-sm">
+                            <i class="fas fa-history mr-1"></i> Arsip TP: <strong><?= esc($currTa['tahun_ajar'] ?? '-') ?> (<?= esc($currTa['semester'] ?? '-') ?>)</strong>
+                        </span>
+                    <?php endif; ?>
+                    <span class="badge badge-light border ml-2 px-3 py-2 text-dark font-weight-normal">
+                        Total: <strong><?= count($jadwals) ?> Jadwal</strong>
+                    </span>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -27,13 +27,33 @@ class JadwalController extends BaseController
 
     public function index()
     {
-        $data['jadwals'] = $this->jadwalSupervisiModel
+        $activeTahun = $this->tahunAjarModel->getActive();
+        $tahunAjarFilter = $this->request->getGet('tahun_ajar_id');
+
+        // Jika user belum memilih filter (akses default), gunakan tahun ajaran aktif agar data di luar tahun aktif tersembunyi
+        if ($tahunAjarFilter === null) {
+            $tahunAjarFilter = $activeTahun ? (string)$activeTahun['id'] : '';
+        }
+
+        $query = $this->jadwalSupervisiModel
             ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, kelas.nama_kelas, users.username as nama_supervisor')
             ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id')
             ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
             ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
-            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
-            ->findAll();
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left');
+
+        if (!empty($tahunAjarFilter) && $tahunAjarFilter !== 'all') {
+            $query->where('jadwal_supervisi.tahun_ajar_id', $tahunAjarFilter);
+        }
+
+        $jadwals = $query->orderBy('jadwal_supervisi.tanggal_supervisi', 'ASC')->findAll();
+
+        $data = [
+            'jadwals'         => $jadwals,
+            'tahun_ajars'     => $this->tahunAjarModel->orderBy('tahun_ajar', 'DESC')->orderBy('semester', 'ASC')->findAll(),
+            'selectedTahunId' => $tahunAjarFilter,
+            'activeTahun'     => $activeTahun,
+        ];
             
         return view('admin/jadwal/index', $data);
     }
@@ -322,6 +342,14 @@ class JadwalController extends BaseController
             $tahun_ajar_id = $this->request->getGet('tahun_ajar_id');
             $status = $this->request->getGet('status');
 
+            // Default ke tahun ajaran aktif jika parameter tidak diberikan
+            if ($tahun_ajar_id === null) {
+                $activeTahun = $this->tahunAjarModel->getActive();
+                if ($activeTahun) {
+                    $tahun_ajar_id = (string)$activeTahun['id'];
+                }
+            }
+
             $query = $this->jadwalSupervisiModel
                 ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, kelas.nama_kelas, users.username as nama_supervisor, users.nip as nip_supervisor')
                 ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id')
@@ -329,7 +357,7 @@ class JadwalController extends BaseController
                 ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
                 ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left');
 
-            if (!empty($tahun_ajar_id)) {
+            if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
                 $query->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
             }
             if (!empty($status)) {
