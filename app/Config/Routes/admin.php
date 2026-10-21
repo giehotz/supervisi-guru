@@ -171,6 +171,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('laporan/hasil-supervisi/cetak-kurmer/(:num)', 'LaporanController::cetakKurmer/$1');
     $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)', 'LaporanController::cetakTelaah/$1');
     $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)/(:num)', 'LaporanController::cetakTelaah/$1/$2');
+    $routes->get('laporan/hasil-supervisi/cetak-coaching/(:num)', 'LaporanController::cetakCoaching/$1');
     $routes->get('laporan/hasil-supervisi/pdf', 'LaporanController::exportPdf');
     $routes->get('laporan/hasil-supervisi/excel', 'LaporanController::exportExcel');
     $routes->post('laporan/hasil-supervisi/batch-excel', 'LaporanController::batchExcel');

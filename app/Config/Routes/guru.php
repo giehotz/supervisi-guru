@@ -24,6 +24,7 @@ $routes->group('guru', ['filter' => 'auth', 'args' => ['guru']], function ($rout
     $routes->get('hasil/cetak-kurmer/(:num)', 'Guru\PdfController::cetakKurmer/$1');
     $routes->get('hasil/cetak-telaah/(:num)', 'Guru\PdfController::cetakTelaah/$1');
     $routes->get('hasil/cetak-telaah/(:num)/(:num)', 'Guru\PdfController::cetakTelaah/$1/$2');
+    $routes->get('hasil/cetak-coaching/(:num)', 'Guru\PdfController::cetakCoaching/$1');
 
 
     // Dokumen Ajar routes

@@ -95,6 +95,9 @@
             <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-telaah/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-primary btn-sm shadow-sm font-weight-bold" title="Cetak Telaah ATP / Modul Ajar">
                 <i class="fas fa-file-alt mr-1"></i> Cetak Telaah
             </a>
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-coaching/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-teal btn-sm text-white shadow-sm font-weight-bold" title="Cetak Berita Acara Coaching TIRTA">
+                <i class="fas fa-comments mr-1"></i> Berita Acara Coaching
+            </a>
             <?php endif; ?>
             <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-danger btn-sm">
                 <i class="fas fa-file-pdf"></i> Cetak PDF

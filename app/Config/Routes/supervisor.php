@@ -42,6 +42,7 @@ $routes->group('supervisor', ['filter' => 'role:supervisor'], function ($routes)
     $routes->get('hasil/cetak-kurmer/(:num)', 'Supervisor\PdfController::cetakKurmer/$1');
     $routes->get('hasil/cetak-telaah/(:num)', 'Supervisor\PdfController::cetakTelaah/$1');
     $routes->get('hasil/cetak-telaah/(:num)/(:num)', 'Supervisor\PdfController::cetakTelaah/$1/$2');
+    $routes->get('hasil/cetak-coaching/(:num)', 'Supervisor\PdfController::cetakCoaching/$1');
 
 
     // Dokumen Ajar routes

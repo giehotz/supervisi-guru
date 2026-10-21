@@ -309,4 +309,57 @@ class PdfController extends BaseController
         $dompdf->stream($filename, ['Attachment' => false]);
         exit();
     }
+
+    public function cetakCoaching($jadwalId)
+    {
+        $supervisorId = session()->get('id');
+
+        $schedule = $this->jadwalModel
+            ->select('jadwal_supervisi.*, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran as guru_mata_pelajaran, kelas.nama_kelas, kelas.fase as kelas_fase, users.username as nama_supervisor, users.nip as nip_supervisor, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
+            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id', 'left')
+            ->where('jadwal_supervisi.id', $jadwalId)
+            ->where('jadwal_supervisi.supervisor_id', $supervisorId)
+            ->first();
+
+        if (!$schedule) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal supervisi tidak ditemukan atau akses ditolak');
+        }
+
+        $coachingModel = new \App\Models\CoachingTirtaModel();
+        $praModel      = new \App\Models\PraObservasiModel();
+        $tlModel       = new \App\Models\TindakLanjutSupervisiModel();
+
+        $coachingList = $coachingModel->where('jadwal_id', $jadwalId)->orderBy('id', 'ASC')->findAll();
+        $praObservasi = $praModel->getByJadwal($jadwalId);
+        $tindakLanjut = $tlModel->getByJadwal($jadwalId);
+
+        $data = [
+            'schedule'     => $schedule,
+            'coachingList' => $coachingList,
+            'praObservasi' => $praObservasi,
+            'tindakLanjut' => $tindakLanjut,
+        ];
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        $html = view('pdf/lembar_coaching_tirta', $data);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = "Berita_Acara_Coaching_TIRTA_" . str_replace(' ', '_', $schedule['nama_guru']) . ".pdf";
+        $dompdf->stream($filename, ['Attachment' => false]);
+        exit();
+    }
 }

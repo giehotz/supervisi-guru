@@ -34,6 +34,10 @@
                     <i class="fas fa-file-alt"></i>
                     <span>Cetak Telaah</span>
                 </a>
+                <a href="<?= base_url('guru/hasil/cetak-coaching/' . $schedule['id']) ?>" target="_blank" class="btn btn-outline-teal d-inline-flex align-items-center gap-2 shadow-sm" title="Cetak Berita Acara Coaching TIRTA">
+                    <i class="fas fa-comments"></i>
+                    <span>Berita Acara Coaching</span>
+                </a>
             <?php endif; ?>
             <a href="<?= base_url('guru/hasil/cetak/' . $schedule['id']) ?>" target="_blank" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
                 <i class="fas fa-file-pdf"></i>

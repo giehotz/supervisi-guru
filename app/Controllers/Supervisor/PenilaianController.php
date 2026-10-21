@@ -45,6 +45,13 @@ class PenilaianController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal tidak ditemukan atau tidak dapat dinilai');
         }
 
+        // State Guard: Kurikulum Merdeka mewajibkan penyepakatan Form A (Pra-Observasi) terlebih dahulu
+        $isKurmer = !empty($schedule['indikator_pmm_id']);
+        if ($isKurmer && !$this->jadwalModel->canAccessObservasi($schedule['status'], true)) {
+            return redirect()->to(base_url('supervisor/pra-observasi/' . $jadwalId))
+                ->with('error', 'Observasi kelas belum dapat dinilai. Formulir A (Pra-Observasi) dan kesepakatan coaching harus disetujui terlebih dahulu.');
+        }
+
 
         // Get all assessment types with mapped columns to ensure we get latest skor_maksimal
         $jenisPenilaian = $this->jenisModel->findAllWithMappedColumns();

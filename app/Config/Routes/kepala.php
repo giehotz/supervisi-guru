@@ -33,6 +33,7 @@ $routes->group('kepala', ['filter' => 'auth', 'namespace' => 'App\Controllers\Ke
     $routes->get('hasil/cetak-kurmer/(:num)', 'HasilController::cetakKurmer/$1');
     $routes->get('hasil/cetak-telaah/(:num)', 'HasilController::cetakTelaah/$1');
     $routes->get('hasil/cetak-telaah/(:num)/(:num)', 'HasilController::cetakTelaah/$1/$2');
+    $routes->get('hasil/cetak-coaching/(:num)', 'HasilController::cetakCoaching/$1');
 
     // Foto Bukti routes
     $routes->get('foto-bukti/upload/(:num)', 'FotoBuktiController::uploadForm/$1');

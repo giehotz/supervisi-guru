@@ -37,6 +37,13 @@ class TindakLanjutController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal supervisi tidak ditemukan atau Anda tidak memiliki akses.');
         }
 
+        // State Guard: Supervisor hanya dapat mereview Form C & D setelah observasi kelas selesai dinilai
+        $isKurmer = !empty($jadwal['indikator_pmm_id']);
+        if ($isKurmer && !$this->jadwalModel->canAccessPascaObservasi($jadwal['status'], true)) {
+            return redirect()->to(base_url('supervisor/jadwal'))
+                ->with('error', 'Formulir Tindak Lanjut & Refleksi belum dapat direview. Observasi kelas harus diselesaikan dan dinilai terlebih dahulu.');
+        }
+
         $hasil = $this->hasilModel->where('jadwal_supervisi_id', $jadwalId)->first();
         $tindakLanjut = $this->tlModel->getByJadwal($jadwalId);
 

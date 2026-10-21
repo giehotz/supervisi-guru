@@ -35,6 +35,14 @@
                 <i class="fas fa-file-alt mr-1"></i>
                 <span>Cetak Telaah</span>
             </a>
+            <a href="<?= base_url('supervisor/hasil/cetak-coaching/' . ($schedule['id'] ?? '')) ?>"
+                class="btn btn-teal btn-sm text-white d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Cetak Berita Acara Percakapan Coaching Alur TIRTA">
+                <i class="fas fa-comments mr-1"></i>
+                <span>Berita Acara Coaching</span>
+            </a>
             <?php endif; ?>
 
             <a href="<?= base_url('supervisor/hasil/cetak/' . ($schedule['id'] ?? '')) ?>"

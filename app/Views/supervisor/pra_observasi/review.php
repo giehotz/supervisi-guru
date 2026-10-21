@@ -9,9 +9,16 @@
             <h1 class="h3 mb-0 text-gray-800">Review Formulir A & Coaching Pra-Observasi</h1>
             <p class="text-muted small mb-0">Pendampingan dialogis berbasis Alur TIRTA (Tujuan, Identifikasi, Rencana Aksi, Tanggung Jawab)</p>
         </div>
-        <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-sm shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
-        </a>
+        <div class="d-flex gap-2">
+            <?php if (!empty($coachingLog)): ?>
+                <a href="<?= base_url('supervisor/hasil/cetak-coaching/' . $jadwal['id']) ?>" target="_blank" class="btn btn-info btn-sm shadow-sm" title="Cetak Berita Acara Coaching TIRTA">
+                    <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> Berita Acara Coaching (TIRTA)
+                </a>
+            <?php endif; ?>
+            <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-sm shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
+            </a>
+        </div>
     </div>
 
     <?php if (session()->getFlashdata('success')) : ?>

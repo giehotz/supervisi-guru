@@ -14,6 +14,9 @@
             <a href="<?= base_url('kepala/hasil/cetak-telaah/' . $schedule['id']) ?>" class="btn btn-info btn-sm shadow-sm" target="_blank" title="Cetak Format Telaah ATP / Modul Ajar">
                 <i class="fas fa-file-alt mr-1"></i> Cetak Telaah
             </a>
+            <a href="<?= base_url('kepala/hasil/cetak-coaching/' . $schedule['id']) ?>" class="btn btn-teal btn-sm text-white shadow-sm" target="_blank" title="Cetak Berita Acara Coaching TIRTA">
+                <i class="fas fa-comments mr-1"></i> Berita Acara Coaching
+            </a>
             <?php endif; ?>
             <a href="<?= base_url('kepala/hasil/pdf/' . $schedule['id']) ?>" class="btn btn-danger btn-sm" target="_blank">
                 <i class="fas fa-file-pdf"></i> PDF
