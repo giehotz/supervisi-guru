@@ -8,8 +8,18 @@ class AspekPenilaianModel extends Model
 {
     protected $table = 'aspek_penilaian';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['jenis_penilaian_id', 'nama_aspek', 'urutan', 'created_at'];
+    protected $allowedFields = [
+        'jenis_penilaian_id',
+        'nama_aspek',
+        'fokus_perilaku',
+        'perilaku_dianjurkan',
+        'perilaku_dihindari',
+        'tipe_skala',
+        'urutan',
+        'created_at'
+    ];
     protected $useTimestamps = false;
+
     
     // Ensure we're getting the proper data with joins
     public function getAspekWithJenis()

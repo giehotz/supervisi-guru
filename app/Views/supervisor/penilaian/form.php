@@ -122,19 +122,37 @@
                              role="tabpanel"
                              aria-labelledby="step-<?= isset($jenis['id']) ? $jenis['id'] : '' ?>-tab">
                                      
-                                    <h5 class="mb-4"><?= isset($jenis['nama']) ? $jenis['nama'] : '' ?></h5>
+                                    <?php 
+                                        $isPmm = (($jenis['kategori_supervisi'] ?? '') === 'observasi_kelas_pmm');
+                                    ?>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="m-0 font-weight-bold text-gray-800">
+                                            <?= esc($jenis['nama'] ?? '') ?>
+                                            <?php if ($isPmm): ?>
+                                                <span class="badge badge-primary ml-2 text-uppercase font-weight-normal small">
+                                                    <?= str_replace('_', ' ', $jenis['dimensi_pmm'] ?? '') ?> (Ruang GTK / PMM)
+                                                </span>
+                                            <?php endif; ?>
+                                        </h5>
+                                    </div>
                                     
                                     <div class="alert alert-info">
                                         <strong>Fitur Edit Massal (Bulk Edit)</strong>
                                         <div class="form-row align-items-center mt-2">
-                                            <div class="col-md-4">
+                                            <div class="col-md-5">
                                                 <label for="bulk-skor-<?= isset($jenis['id']) ? $jenis['id'] : '' ?>">Set Semua Skor ke:</label>
                                                 <select class="form-control bulk-skor-select" id="bulk-skor-<?= isset($jenis['id']) ? $jenis['id'] : '' ?>" data-tab-id="<?= isset($jenis['id']) ? $jenis['id'] : '' ?>">
                                                     <option value="">-- Pilih Skor --</option>
-                                                    <option value="1">1 - Kurang</option>
-                                                    <option value="2">2 - Cukup</option>
-                                                    <option value="3">3 - Baik</option>
-                                                    <option value="4">4 - Sangat Baik</option>
+                                                    <?php if ($isPmm): ?>
+                                                        <option value="1">1 - Belum Dilakukan</option>
+                                                        <option value="2">2 - Dilakukan tapi Belum Efektif</option>
+                                                        <option value="3">3 - Dilakukan dan Efektif</option>
+                                                    <?php else: ?>
+                                                        <option value="1">1 - Kurang</option>
+                                                        <option value="2">2 - Cukup</option>
+                                                        <option value="3">3 - Baik</option>
+                                                        <option value="4">4 - Sangat Baik</option>
+                                                    <?php endif; ?>
                                                 </select>
                                             </div>
                                             <div class="col-md-4">
@@ -154,11 +172,11 @@
                                         <div class="table-responsive">
                                             <table class="table table-bordered" style="table-layout: auto; width: 100%;">
                                                 <thead>
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Aspek Penilaian</th>
-                                                        <th>Skor (1-4)</th>
-                                                        <th>Catatan</th>
+                                                    <tr class="bg-light">
+                                                        <th style="width: 5%;">No</th>
+                                                        <th style="width: <?= $isPmm ? '50%' : '45%' ?>;"><?= $isPmm ? 'Fokus Perilaku & Panduan Observasi' : 'Aspek Penilaian' ?></th>
+                                                        <th style="width: <?= $isPmm ? '20%' : '20%' ?>;"><?= $isPmm ? 'Keterlaksanaan Perilaku' : 'Skor (1-4)' ?></th>
+                                                        <th style="width: <?= $isPmm ? '25%' : '30%' ?>;"><?= $isPmm ? 'Catatan Fakta Objektif' : 'Catatan' ?></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -167,21 +185,45 @@
                                                         <?php foreach ($aspekByJenis[$jenis['id']] as $aspek): ?>
                                                             <?php 
                                                                 $existingDetail = isset($existingDetails[$jenis['id']][$aspek['id']]) ? $existingDetails[$jenis['id']][$aspek['id']] : null;
+                                                                $tipeSkala = $aspek['tipe_skala'] ?? ($isPmm ? 'perilaku_pmm_1_3' : 'skor_1_4');
                                                             ?>
                                                             <tr>
                                                                 <td><?= $no++ ?></td>
-                                                                <td style="white-space: normal; word-wrap: break-word;"><?= isset($aspek['nama_aspek']) ? $aspek['nama_aspek'] : '' ?></td>
-                                                                <td>
-                                                                    <select name="skor_<?= isset($aspek['id']) ? $aspek['id'] : '' ?>" class="form-control skala-dropdown" data-aspek="<?= isset($aspek['id']) ? $aspek['id'] : '' ?>" required>
-                                                                        <option value="">-- Pilih --</option>
-                                                                        <option value="1" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 1 ? 'selected' : '' ?>>1 - Kurang</option>
-                                                                        <option value="2" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 2 ? 'selected' : '' ?>>2 - Cukup</option>
-                                                                        <option value="3" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 3 ? 'selected' : '' ?>>3 - Baik</option>
-                                                                        <option value="4" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 4 ? 'selected' : '' ?>>4 - Sangat Baik</option>
-                                                                    </select>
+                                                                <td style="white-space: normal; word-wrap: break-word;">
+                                                                    <strong><?= esc($aspek['fokus_perilaku'] ?? $aspek['nama_aspek']) ?></strong>
+                                                                    <?php if (!empty($aspek['perilaku_dianjurkan']) || !empty($aspek['perilaku_dihindari'])): ?>
+                                                                        <div class="row mt-2 small">
+                                                                            <div class="col-md-6 text-success">
+                                                                                <strong class="d-block mb-1"><i class="fas fa-check-circle mr-1"></i> Dianjurkan:</strong>
+                                                                                <div class="bg-light p-2 rounded"><?= nl2br(esc($aspek['perilaku_dianjurkan'] ?? '-')) ?></div>
+                                                                            </div>
+                                                                            <div class="col-md-6 text-danger mt-1 mt-md-0">
+                                                                                <strong class="d-block mb-1"><i class="fas fa-times-circle mr-1"></i> Dihindari:</strong>
+                                                                                <div class="bg-light p-2 rounded"><?= nl2br(esc($aspek['perilaku_dihindari'] ?? '-')) ?></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    <?php endif; ?>
                                                                 </td>
                                                                 <td>
-                                                                    <textarea name="catatan_<?= isset($aspek['id']) ? $aspek['id'] : '' ?>" class="form-control catatan-field" data-aspek="<?= isset($aspek['id']) ? $aspek['id'] : '' ?>" rows="1" placeholder="Catatan akan terisi otomatis"><?= $existingDetail && isset($existingDetail['catatan']) ? $existingDetail['catatan'] : '' ?></textarea>
+                                                                    <?php if ($tipeSkala === 'perilaku_pmm_1_3'): ?>
+                                                                        <select name="skor_<?= $aspek['id'] ?>" class="form-control skala-dropdown" data-aspek="<?= $aspek['id'] ?>" required>
+                                                                            <option value="">-- Pilih --</option>
+                                                                            <option value="1" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 1 ? 'selected' : '' ?>>1 - Belum Dilakukan</option>
+                                                                            <option value="2" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 2 ? 'selected' : '' ?>>2 - Dilakukan tapi Belum Efektif</option>
+                                                                            <option value="3" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 3 ? 'selected' : '' ?>>3 - Dilakukan dan Efektif</option>
+                                                                        </select>
+                                                                    <?php else: ?>
+                                                                        <select name="skor_<?= $aspek['id'] ?>" class="form-control skala-dropdown" data-aspek="<?= $aspek['id'] ?>" required>
+                                                                            <option value="">-- Pilih --</option>
+                                                                            <option value="1" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 1 ? 'selected' : '' ?>>1 - Kurang</option>
+                                                                            <option value="2" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 2 ? 'selected' : '' ?>>2 - Cukup</option>
+                                                                            <option value="3" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 3 ? 'selected' : '' ?>>3 - Baik</option>
+                                                                            <option value="4" <?= $existingDetail && isset($existingDetail['skor']) && $existingDetail['skor'] == 4 ? 'selected' : '' ?>>4 - Sangat Baik</option>
+                                                                        </select>
+                                                                    <?php endif; ?>
+                                                                </td>
+                                                                <td>
+                                                                    <textarea name="catatan_<?= $aspek['id'] ?>" class="form-control catatan-field" data-aspek="<?= $aspek['id'] ?>" rows="2" placeholder="<?= $isPmm ? 'Catatan fakta objektif di kelas...' : 'Catatan perbaikan...' ?>"><?= $existingDetail && isset($existingDetail['catatan']) ? esc($existingDetail['catatan']) : '' ?></textarea>
                                                                 </td>
                                                             </tr>
                                                         <?php endforeach; ?>
@@ -189,6 +231,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
+
                                         
                                         <div class="form-group">
                                             <label for="rekomendasi-<?= isset($jenis['id']) ? $jenis['id'] : '' ?>"><strong>Rekomendasi Perbaikan</strong></label>

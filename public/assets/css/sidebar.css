@@ -1,0 +1,37 @@
+/* Sidebar polish - muat setelah tabler.min.css */
+
+/*1. Tabler memaksa overflow-y:scroll (selalu ada 15px ruang kosong di kanan) */
+@media (min-width: 992px) {
+    .navbar-vertical.navbar-expand-lg {
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+    }
+
+    /*2. Area logo tetap terlihat saat menu panjang di-scroll */
+    .navbar-vertical.navbar-expand-lg .navbar-brand {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: var(--tblr-navbar-bg);
+        box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+    }
+}
+
+/*3. Logo menempel di kiri, bersebelahan dengan tombol hamburger (di bawah 992px) */
+@media (max-width: 991.98px) {
+    .navbar-vertical .navbar-brand {
+        margin-right: auto;
+        padding-left: 0.25rem;
+    }
+}
+
+/*4. Sorotan hover, menu aktif, dan bagian yang terbuka */
+.navbar-vertical .navbar-nav > .nav-item > .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-vertical .navbar-nav > .nav-item.active > .nav-link,
+.navbar-vertical .navbar-nav > .nav-item > .nav-link.show {
+    background-color: rgba(255, 255, 255, 0.12);
+}

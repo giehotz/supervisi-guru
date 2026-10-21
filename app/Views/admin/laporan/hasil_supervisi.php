@@ -85,16 +85,16 @@
             <div class="row mt-3">
                 <div class="col-md-12">
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/pdf') ?><?= $exportQuery ?>" 
-                       class="btn btn-danger" target="_blank">
-                        <i class="fas fa-file-pdf"></i> Export rekap nilai PDF
+                       class="btn btn-danger btn-pill" target="_blank"> 
+                        <i class="fas fa-file-pdf mr-2"></i> Export rekap nilai PDF
                     </a>
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/excel') ?><?= $exportQuery ?>" 
-                       class="btn btn-success">
-                        <i class="fas fa-file-excel"></i> Export rekap penilaian Excel
+                       class="btn btn-success btn-pill">
+                        <i class="fas fa-file-excel mr-2"></i> Export rekap penilaian Excel
                     </a>
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/batch-excel-all') ?><?= $exportQuery ?>" 
-                       class="btn btn-info">
-                        <i class="fas fa-file-excel"></i> Export Detail Nilai Semua Guru (Excel)
+                       class="btn btn-teal btn-pill">
+                        <i class="fas fa-file-excel mr-2"></i> Export Detail Nilai Semua Guru (Excel)
                     </a>
                 </div>
             </div>
@@ -182,15 +182,15 @@
                                             <?php if ($jadwal['status'] == 'Selesai'): ?>
                                                 <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" 
                                                    class="btn btn-sm btn-primary" title="Lihat Detail">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i class="fas fa-eye mr-1"></i>
                                                 </a>
                                                 <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" 
                                                    class="btn btn-sm btn-warning font-weight-bold" title="Edit Hasil Penilaian">
-                                                    <i class="fas fa-edit"></i> Edit
+                                                    <i class="fas fa-edit mr-1"></i> Edit
                                                 </a>
                                             <?php else: ?>
                                                 <button class="btn btn-sm btn-secondary" disabled>
-                                                    <i class="fas fa-eye"></i> Detail
+                                                    <i class="fas fa-eye mr-1"></i> Detail
                                                 </button>
                                             <?php endif; ?>
                                         </td>

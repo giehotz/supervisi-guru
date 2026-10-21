@@ -18,17 +18,34 @@
                 'return false;' mencegah skrip lain di halaman ini (yang mungkin rusak)
                 untuk menghentikan perilaku default.
             -->
+            <?php if (!empty($schedule['indikator_pmm_id'])): ?>
+            <a href="<?= base_url('supervisor/hasil/cetak-kurmer/' . ($schedule['id'] ?? '')) ?>"
+                class="btn btn-success btn-sm d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Cetak Paket Formulir A-D Kurikulum Merdeka (Perdirjen GTK 7607)">
+                <i class="fas fa-file-signature mr-1"></i>
+                <span>Cetak Formulir A-D (PMM)</span>
+            </a>
+            <a href="<?= base_url('supervisor/hasil/cetak-telaah/' . ($schedule['id'] ?? '')) ?>"
+                class="btn btn-info btn-sm d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Cetak Format Telaah ATP / Modul Ajar">
+                <i class="fas fa-file-alt mr-1"></i>
+                <span>Cetak Telaah</span>
+            </a>
+            <?php endif; ?>
+
             <a href="<?= base_url('supervisor/hasil/cetak/' . ($schedule['id'] ?? '')) ?>"
                 class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Cetak hasil supervisi dalam format PDF"
                 onclick="window.open(this.href, '_blank'); return false;">
-                <i class="fas fa-print"></i>
+                <i class="fas fa-print mr-1"></i>
                 <span>Cetak PDF</span>
             </a>
-            <!-- === AKHIR PERBAIKAN === -->
-
         </div>
     </div>
 

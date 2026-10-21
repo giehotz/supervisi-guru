@@ -37,12 +37,15 @@ class DashboardController extends BaseController
         
         $guruId = $guru['id'];
 
-        // Get upcoming supervisions
+        // Get upcoming supervisions with kelas and supervisor details
         $upcomingSchedules = $this->jadwalModel
-            ->where('guru_id', $guruId)
-            ->where('tanggal_supervisi >=', date('Y-m-d'))
-            ->where('status', 'Terjadwal')
-            ->orderBy('tanggal_supervisi', 'ASC')
+            ->select('jadwal_supervisi.*, kelas.nama_kelas, users.username as supervisor_name')
+            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->where('jadwal_supervisi.guru_id', $guruId)
+            ->where('jadwal_supervisi.tanggal_supervisi >=', date('Y-m-d'))
+            ->where('jadwal_supervisi.status', 'Terjadwal')
+            ->orderBy('jadwal_supervisi.tanggal_supervisi', 'ASC')
             ->findAll(5); // Limit to 5 upcoming schedules
 
         // Get completed supervisions by joining with hasil_supervisi table
@@ -116,10 +119,13 @@ class DashboardController extends BaseController
     {
         // Get recent jadwal with status 'Selesai'
         $recentJadwal = $this->jadwalModel
-            ->where('guru_id', $guruId)
-            ->where('status', 'Selesai')
-            ->orderBy('tanggal_supervisi', 'DESC')
-            ->limit(3) // Get 3 most recent
+            ->select('jadwal_supervisi.*, kelas.nama_kelas, users.username as supervisor_name')
+            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->where('jadwal_supervisi.guru_id', $guruId)
+            ->where('jadwal_supervisi.status', 'Selesai')
+            ->orderBy('jadwal_supervisi.tanggal_supervisi', 'DESC')
+            ->limit(5) // Get 5 most recent
             ->findAll();
 
         $hasilList = [];

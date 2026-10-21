@@ -1,113 +1,140 @@
 <?= $this->extend('layouts/guru') ?>
 
 <?= $this->section('content') ?>
-<div class="container-fluid">
+<div class="container-fluid py-2 guru-hasil-page">
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h1 class="h3 mb-1 text-gray-800">Hasil Supervisi Guru</h1>
-            <p class="mb-0 text-muted small">Rekapitulasi riwayat penilaian dan hasil pelaksanaan supervisi akademik Anda.</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 text-muted small">
+                    <li class="breadcrumb-item"><a href="<?= base_url('guru') ?>" class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Hasil Supervisi</li>
+                </ol>
+            </nav>
+            <div class="d-flex align-items-center gap-2">
+                <span class="avatar bg-primary-lt text-primary rounded-2 p-2">
+                    <i class="fas fa-award fs-2"></i>
+                </span>
+                <div>
+                    <h1 class="h2 fw-bold text-dark mb-0 tracking-tight">Rekapitulasi Hasil Supervisi Akademik</h1>
+                    <p class="text-muted small mb-0">Riwayat capaian penilaian, predikat mutu pembelajaran, dan berkas evaluasi resmi.</p>
+                </div>
+            </div>
         </div>
+
         <div>
             <?php if (!empty($activeTahunAjar)): ?>
-                <span class="badge badge-light border px-3 py-2 text-gray-700 shadow-sm">
-                    <i class="fas fa-calendar-check text-primary mr-1"></i> TA Aktif: <strong><?= esc($activeTahunAjar['tahun_ajar']) ?> (<?= esc($activeTahunAjar['semester']) ?>)</strong>
+                <span class="badge bg-white text-dark border px-3 py-2 shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="fas fa-calendar-check text-primary"></i>
+                    <span>Tahun Ajaran Aktif: <strong class="text-primary"><?= esc($activeTahunAjar['tahun_ajar']) ?> (<?= esc($activeTahunAjar['semester']) ?>)</strong></span>
                 </span>
             <?php endif; ?>
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <!-- Total Supervisi -->
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Supervisi
+    <?php
+        $rataRata = $stats['rata_rata_nilai'] ?? 0;
+        $predikat = $stats['predikat_umum'] ?? '-';
+        $dinilai = $stats['supervisi_dinilai'] ?? 0;
+        $totalSupervisi = $stats['total_supervisi'] ?? 0;
+
+        if ($rataRata >= 86) {
+            $predColor = 'success';
+            $predBadgeClass = 'bg-success text-white';
+            $scoreTextClass = 'text-success';
+            $predDesc = 'Sangat Memuaskan &bull; Memenuhi seluruh standar mutu';
+        } elseif ($rataRata >= 70) {
+            $predColor = 'primary';
+            $predBadgeClass = 'bg-primary text-white';
+            $scoreTextClass = 'text-primary';
+            $predDesc = 'Baik &bull; Telah memenuhi standar kompetensi observasi';
+        } elseif ($rataRata >= 55) {
+            $predColor = 'warning';
+            $predBadgeClass = 'bg-warning text-dark';
+            $scoreTextClass = 'text-warning';
+            $predDesc = 'Cukup &bull; Perlu peningkatan pada beberapa aspek fokus';
+        } else {
+            $predColor = 'danger';
+            $predBadgeClass = $dinilai > 0 ? 'bg-danger text-white' : 'bg-secondary text-white';
+            $scoreTextClass = $dinilai > 0 ? 'text-danger' : 'text-muted';
+            $predDesc = $dinilai > 0 ? 'Kurang &bull; Membutuhkan bimbingan intensif' : 'Belum ada penilaian yang diverifikasi';
+        }
+    ?>
+
+    <!-- Bolder & Asymmetric Performance Showcase (7 : 5 Grid) -->
+    <div class="row g-3 mb-4">
+        <!-- Hero Card: Nilai Rata-rata & Kualifikasi Utama -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100 bg-white overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="row align-items-center g-3">
+                        <div class="col-sm-5 text-center text-sm-start border-sm-end pe-sm-4">
+                            <span class="meta-label d-block mb-1 text-muted">
+                                Rata-rata Capaian Mutu
+                            </span>
+                            <div class="d-flex align-items-baseline justify-content-center justify-content-sm-start gap-1 my-1">
+                                <span class="score-display-value <?= $scoreTextClass ?>">
+                                    <?= $dinilai > 0 ? number_format($rataRata, 2) : '0.00' ?>
+                                </span>
+                                <span class="text-muted fs-4 fw-bold">%</span>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= $stats['total_supervisi'] ?? 0 ?> <small class="text-muted font-weight-normal">Selesai</small>
-                            </div>
+                            <span class="badge <?= $predBadgeClass ?> px-3 py-1 fs-6 fw-semibold rounded-pill">
+                                <?= esc($predikat) ?>
+                            </span>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                        <div class="col-sm-7 ps-sm-3">
+                            <h3 class="h6 fw-bold text-dark mb-1">Status Kualifikasi Akademik</h3>
+                            <p class="text-muted small mb-3">
+                                <?= $predDesc ?>
+                            </p>
+                            <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+                                <span class="text-muted small">Supervisi Terverifikasi:</span>
+                                <span class="badge bg-azure-lt px-2 py-1 tabular-nums fw-bold">
+                                    <?= $dinilai ?> dari <?= $totalSupervisi ?> Observasi
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Rata-rata Nilai -->
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Rata-rata Nilai
+        <!-- Secondary Metrics: Total Selesai & Periode -->
+        <div class="col-lg-5">
+            <div class="row g-3 h-100">
+                <div class="col-sm-6 col-lg-12">
+                    <div class="card shadow-sm border-0 bg-white h-100">
+                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="meta-label d-block text-muted mb-1">Total Pelaksanaan</span>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="h2 fw-bold text-dark mb-0 tabular-nums">
+                                        <?= $totalSupervisi ?>
+                                    </span>
+                                    <span class="text-muted small">Supervisi Selesai</span>
+                                </div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= ($stats['supervisi_dinilai'] ?? 0) > 0 ? number_format($stats['rata_rata_nilai'], 2) : '-' ?>
-                                <small class="text-muted font-weight-normal">/ 100</small>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kualifikasi Predikat -->
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Kualifikasi Rata-rata
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php 
-                                    $predikat = $stats['predikat_umum'] ?? '-';
-                                    $predBadge = 'secondary';
-                                    if ($predikat === 'Baik Sekali') $predBadge = 'success';
-                                    elseif ($predikat === 'Baik') $predBadge = 'info';
-                                    elseif ($predikat === 'Cukup') $predBadge = 'warning';
-                                    elseif ($predikat === 'Kurang') $predBadge = 'danger';
-                                ?>
-                                <span class="badge badge-<?= $predBadge ?> px-2 py-1"><?= esc($predikat) ?></span>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-award fa-2x text-gray-300"></i>
+                            <span class="avatar bg-blue-lt text-blue rounded-3 p-2" style="width: 44px; height: 44px;">
+                                <i class="fas fa-clipboard-check fs-2"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Tahun Ajar / Periode -->
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Tahun Ajaran
+                <div class="col-sm-6 col-lg-12">
+                    <div class="card shadow-sm border-0 bg-white h-100">
+                        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="meta-label d-block text-muted mb-1">Periode Evaluasi</span>
+                                <div class="fw-bold text-dark mb-0">
+                                    <?= !empty($activeTahunAjar) ? esc($activeTahunAjar['tahun_ajar']) : 'Semua Periode' ?>
+                                </div>
+                                <small class="text-muted"><?= !empty($activeTahunAjar) ? esc($activeTahunAjar['semester']) : 'Arsip Riwayat' ?></small>
                             </div>
-                            <div class="h6 mb-0 font-weight-bold text-gray-800">
-                                <?= !empty($activeTahunAjar) ? esc($activeTahunAjar['tahun_ajar']) : '-' ?>
-                            </div>
-                            <small class="text-muted"><?= !empty($activeTahunAjar) ? esc($activeTahunAjar['semester']) : '' ?></small>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                            <span class="avatar bg-teal-lt text-teal rounded-3 p-2" style="width: 44px; height: 44px;">
+                                <i class="fas fa-calendar-alt fs-2"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -115,97 +142,125 @@
         </div>
     </div>
 
-    <!-- Data Table Card -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-list-alt mr-1"></i> Riwayat Hasil Supervisi
-            </h6>
+    <!-- Data Table Card: Riwayat Hasil Supervisi -->
+    <div class="card shadow-sm border-0 mb-4 bg-white">
+        <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="h5 fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                    <i class="fas fa-list-alt text-primary"></i>
+                    Daftar Riwayat Penilaian Supervisi
+                </h2>
+                <p class="text-muted small mb-0">Lembar hasil supervisi yang telah selesai dinilai dan divalidasi oleh supervisor.</p>
+            </div>
+            <span class="badge bg-secondary-lt px-3 py-1 rounded-pill tabular-nums">
+                <?= count($hasil) ?> Catatan
+            </span>
         </div>
-        <div class="card-body">
+
+        <div class="card-body p-0">
             <?php if (empty($hasil)): ?>
-                <div class="text-center py-5">
-                    <i class="fas fa-clipboard-list fa-4x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-700 font-weight-bold">Belum Ada Hasil Supervisi</h5>
-                    <p class="text-muted mb-0">Hasil supervisi yang telah selesai dinilai oleh supervisor akan muncul secara otomatis di sini.</p>
+                <div class="p-5 text-center text-muted">
+                    <div class="avatar bg-light text-muted rounded-circle mb-3 mx-auto" style="width: 64px; height: 64px;">
+                        <i class="fas fa-clipboard-list fs-1 text-muted"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">Belum Ada Hasil Supervisi Tersedia</h5>
+                    <p class="text-muted small mb-0 measure-prose mx-auto">
+                        Hasil evaluasi supervisi yang telah diverifikasi dan diselesaikan oleh supervisor akademik akan secara otomatis ditampilkan pada tabel ini.
+                    </p>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle" id="dataTable" width="100%" cellspacing="0">
-                        <thead class="thead-light">
+                    <table class="table table-hover table-vcenter table-hasil mb-0">
+                        <thead>
                             <tr>
-                                <th class="text-center" width="5%">No</th>
-                                <th>Tanggal & Jam</th>
-                                <th>Mata Pelajaran & Kelas</th>
-                                <th>Supervisor</th>
-                                <th>Tahun Ajaran</th>
-                                <th class="text-center">Nilai Akhir</th>
-                                <th class="text-center">Kualifikasi</th>
-                                <th class="text-center" width="16%">Aksi</th>
+                                <th class="text-center ps-3" style="width: 50px;">No</th>
+                                <th style="width: 22%;">Jadwal Pelaksanaan</th>
+                                <th style="width: 26%;">Mata Pelajaran & Kelas</th>
+                                <th style="width: 20%;">Supervisor</th>
+                                <th class="text-center" style="width: 14%;">Nilai Akhir</th>
+                                <th class="text-center" style="width: 12%;">Kualifikasi</th>
+                                <th class="text-end pe-3" style="width: 110px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php $no = 1; foreach ($hasil as $item): ?>
+                                <?php
+                                    $score = $item['nilai_akhir'];
+                                    $ketercapaian = $item['ketercapaian'] ?? '-';
+                                    if ($score >= 86) {
+                                        $badgeBg = 'bg-success text-white';
+                                        $scorePill = 'bg-success-lt text-success';
+                                    } elseif ($score >= 70) {
+                                        $badgeBg = 'bg-primary text-white';
+                                        $scorePill = 'bg-primary-lt text-primary';
+                                    } elseif ($score >= 55) {
+                                        $badgeBg = 'bg-warning text-dark';
+                                        $scorePill = 'bg-warning-lt text-warning';
+                                    } else {
+                                        $badgeBg = !is_null($score) ? 'bg-danger text-white' : 'bg-secondary text-white';
+                                        $scorePill = !is_null($score) ? 'bg-danger-lt text-danger' : 'bg-secondary-lt text-muted';
+                                    }
+                                ?>
                                 <tr>
-                                    <td class="text-center align-middle font-weight-bold"><?= $no++ ?></td>
-                                    <td class="align-middle">
-                                        <div class="font-weight-bold text-gray-800">
+                                    <td class="text-center ps-3 text-muted fw-bold tabular-nums">
+                                        <?= $no++ ?>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-dark d-block tabular-nums">
                                             <?= format_hari_indonesia($item['tanggal_supervisi']) ?>, <?= date('d M Y', strtotime($item['tanggal_supervisi'])) ?>
-                                        </div>
-                                        <small class="text-muted">
-                                            <i class="far fa-clock mr-1"></i> Jam Ke-<?= esc($item['jam_ke'] ?? '-') ?>
+                                        </span>
+                                        <small class="text-muted d-inline-flex align-items-center gap-1">
+                                            <i class="far fa-clock"></i> Jam Ke-<?= esc($item['jam_ke'] ?? '-') ?> &bull; <?= esc($item['tahun_ajaran'] ?? '-') ?> (<?= esc($item['semester'] ?? '-') ?>)
                                         </small>
                                     </td>
-                                    <td class="align-middle">
-                                        <div class="font-weight-bold text-primary">
+                                    <td>
+                                        <span class="fw-semibold text-dark d-block">
                                             <?= esc($item['mata_pelajaran'] ?? '-') ?>
-                                        </div>
-                                        <span class="badge badge-light border text-gray-700 mt-1">
-                                            <i class="fas fa-chalkboard mr-1"></i> <?= esc($item['nama_kelas'] ?? ($item['kelas'] ?? '-')) ?>
+                                        </span>
+                                        <span class="badge bg-azure-lt px-2 py-0 mt-1 small">
+                                            <i class="fas fa-chalkboard me-1"></i> Kelas <?= esc($item['nama_kelas'] ?? ($item['kelas'] ?? '-')) ?>
                                         </span>
                                     </td>
-                                    <td class="align-middle">
-                                        <div class="text-gray-800">
-                                            <i class="fas fa-user-tie text-muted mr-1"></i> <?= esc($item['supervisor_name'] ?? '-') ?>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="avatar bg-light text-muted rounded-circle" style="width: 28px; height: 28px;">
+                                                <i class="fas fa-user-tie"></i>
+                                            </span>
+                                            <span class="text-dark small fw-medium">
+                                                <?= esc($item['supervisor_name'] ?? '-') ?>
+                                            </span>
                                         </div>
                                     </td>
-                                    <td class="align-middle">
-                                        <div class="small font-weight-bold text-gray-800">
-                                            <?= esc($item['tahun_ajaran'] ?? '-') ?>
-                                        </div>
-                                        <small class="text-muted"><?= esc($item['semester'] ?? '-') ?></small>
-                                    </td>
-                                    <td class="text-center align-middle">
-                                        <?php if (!is_null($item['nilai_akhir'])): ?>
-                                            <span class="badge badge-primary px-2 py-1" style="font-size: 0.95rem;">
-                                                <?= number_format($item['nilai_akhir'], 2) ?>
+                                    <td class="text-center">
+                                        <?php if (!is_null($score)): ?>
+                                            <span class="badge <?= $scorePill ?> px-3 py-1 rounded-pill tabular-nums fw-bold fs-6">
+                                                <?= number_format($score, 2) ?>%
                                             </span>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary px-2 py-1">Belum Dinilai</span>
+                                            <span class="badge bg-secondary-lt text-muted px-2 py-1 rounded-pill small">Belum Dinilai</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center align-middle">
+                                    <td class="text-center">
                                         <?php if (!is_null($item['ketercapaian'])): ?>
-                                            <?php 
-                                                $kBadge = 'secondary';
-                                                if ($item['ketercapaian'] === 'Baik Sekali') $kBadge = 'success';
-                                                elseif ($item['ketercapaian'] === 'Baik') $kBadge = 'info';
-                                                elseif ($item['ketercapaian'] === 'Cukup') $kBadge = 'warning';
-                                                elseif ($item['ketercapaian'] === 'Kurang') $kBadge = 'danger';
-                                            ?>
-                                            <span class="badge badge-<?= $kBadge ?> px-2 py-1">
-                                                <?= esc($item['ketercapaian']) ?>
+                                            <span class="badge <?= $badgeBg ?> px-3 py-1 rounded-pill small fw-semibold">
+                                                <?= esc($ketercapaian) ?>
                                             </span>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary px-2 py-1">-</span>
+                                            <span class="text-muted small">-</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center align-middle">
-                                        <div class="btn-group" role="group">
-                                            <a href="<?= base_url('guru/hasil/' . $item['id']) ?>" class="btn btn-primary btn-sm shadow-sm" title="Lihat Rincian Penilaian">
-                                                <i class="fas fa-eye mr-1"></i> Detail
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="<?= base_url('guru/hasil/' . $item['id']) ?>" 
+                                               class="btn btn-primary d-inline-flex align-items-center gap-1 shadow-sm" 
+                                               title="Buka Lembar Rincian Nilai">
+                                                <i class="fas fa-eye"></i>
+                                                <span class="d-none d-sm-inline">Detail</span>
                                             </a>
-                                            <a href="<?= base_url('guru/hasil/cetak/' . $item['id']) ?>" target="_blank" class="btn btn-outline-danger btn-sm shadow-sm" title="Cetak Format PDF">
+                                            <a href="<?= base_url('guru/hasil/cetak/' . $item['id']) ?>" 
+                                               target="_blank" 
+                                               class="btn btn-outline-danger shadow-sm" 
+                                               title="Cetak Berkas PDF Resmi">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
                                         </div>
@@ -219,5 +274,92 @@
         </div>
     </div>
 
+    <!-- Rubrik Standar Predikat Mutu Akademik -->
+    <div class="card shadow-sm border-0 mb-4 bg-white">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-info-circle text-primary"></i>
+                <span class="meta-label text-dark mb-0">Standar Kualifikasi Nilai Supervisi Akademik</span>
+            </div>
+            <div class="row g-2 small">
+                <div class="col-md-3 col-sm-6">
+                    <div class="p-2 rounded bg-light border d-flex align-items-center justify-content-between">
+                        <span class="badge bg-success text-white px-2 py-1 rounded-pill tabular-nums">86.00 – 100%</span>
+                        <span class="fw-semibold text-dark">Baik Sekali (A)</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="p-2 rounded bg-light border d-flex align-items-center justify-content-between">
+                        <span class="badge bg-primary text-white px-2 py-1 rounded-pill tabular-nums">70.00 – 85.99%</span>
+                        <span class="fw-semibold text-dark">Baik (B)</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="p-2 rounded bg-light border d-flex align-items-center justify-content-between">
+                        <span class="badge bg-warning text-dark px-2 py-1 rounded-pill tabular-nums">55.00 – 69.99%</span>
+                        <span class="fw-semibold text-dark">Cukup (C)</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="p-2 rounded bg-light border d-flex align-items-center justify-content-between">
+                        <span class="badge bg-danger text-white px-2 py-1 rounded-pill tabular-nums">&lt; 55.00%</span>
+                        <span class="fw-semibold text-dark">Kurang (D)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<style>
+/* Impeccable Refined Styles for Hasil Supervisi */
+.guru-hasil-page {
+    font-family: var(--tblr-font-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+    color: #1e293b;
+}
+.guru-hasil-page .tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+.guru-hasil-page .tracking-tight {
+    letter-spacing: -0.025em;
+}
+.guru-hasil-page .meta-label {
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.guru-hasil-page .score-display-value {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+.guru-hasil-page .measure-prose {
+    max-width: 65ch;
+    line-height: 1.6;
+}
+.guru-hasil-page .table-hasil thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #475569;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+.guru-hasil-page .table-hasil td {
+    padding: 0.875rem 0.75rem;
+    vertical-align: middle;
+}
+@media (min-width: 576px) {
+    .border-sm-end {
+        border-right: 1px solid #e2e8f0 !important;
+    }
+}
+</style>
 <?= $this->endSection() ?>

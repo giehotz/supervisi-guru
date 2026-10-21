@@ -44,4 +44,31 @@ class DokumenAjarController extends BaseController
 
         return view('supervisor/dokumen_ajar/index', $data);
     }
+
+    public function verify($id)
+    {
+        $supervisorId = session()->get('id');
+        $dokumen = $this->dokumenModel->find($id);
+        if (!$dokumen) {
+            return redirect()->back()->with('error', 'Dokumen tidak ditemukan.');
+        }
+
+        // Pastikan jadwal milik supervisor yang sedang login
+        $jadwal = $this->jadwalModel
+            ->where('id', $dokumen['jadwal_id'])
+            ->where('supervisor_id', $supervisorId)
+            ->first();
+
+        if (!$jadwal) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        $this->dokumenModel->update($id, [
+            'status'   => $this->request->getPost('status'),
+            'feedback' => $this->request->getPost('feedback')
+        ]);
+
+        return redirect()->back()->with('success', 'Status dokumen ajar berhasil diperbarui.');
+    }
 }
+

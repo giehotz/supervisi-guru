@@ -104,8 +104,70 @@ class DashboardController extends BaseController
         // Get assessment types
         $data['jenis_penilaian'] = $this->jenisModel->findAll();
 
+        // Siklus Supervisi Kurikulum Merdeka
+        $data['kurmer_stages'] = [
+            'terjadwal'     => $this->jadwalModel->whereIn('status', ['Terjadwal', 'dijadwalkan'])->countAllResults(),
+            'pra_observasi' => $this->jadwalModel->where('status', 'pra_observasi')->countAllResults(),
+            'observasi'     => $this->jadwalModel->where('status', 'observasi')->countAllResults(),
+            'tindak_lanjut' => $this->jadwalModel->whereIn('status', ['pasca_observasi', 'tindak_lanjut'])->countAllResults(),
+            'selesai'       => $this->jadwalModel->whereIn('status', ['Selesai', 'selesai'])->countAllResults(),
+        ];
+
+        // Rekapitulasi Kebutuhan Dukungan Komunitas Belajar (Kombel) dari Formulir C
+        $tlModel = new \App\Models\TindakLanjutSupervisiModel();
+        $dukunganRows = $tlModel
+            ->select('kebutuhan_dukungan, COUNT(*) as total')
+            ->where('kebutuhan_dukungan IS NOT NULL')
+            ->where('kebutuhan_dukungan !=', '')
+            ->groupBy('kebutuhan_dukungan')
+            ->orderBy('total', 'DESC')
+            ->findAll();
+
+        $data['rekap_dukungan_kombel'] = $dukunganRows;
+
+        // Agregasi Capaian 8 Indikator Praktik Pembelajaran (PMM / Rapor Mutu)
+        $db = \Config\Database::connect();
+        $indikatorPmmRows = $this->jenisModel
+            ->where('kategori_supervisi', 'observasi_kelas_pmm')
+            ->orderBy('id', 'ASC')
+            ->findAll();
+
+        $chartLabels = [];
+        $chartScores = [];
+
+        foreach ($indikatorPmmRows as $ind) {
+            $chartLabels[] = ucwords(strtolower($ind['nama']));
+
+            $avgResult = $db->table('hasil_supervisi')
+                ->where('jenis_penilaian_id', $ind['id'])
+                ->where('nilai_akhir IS NOT NULL')
+                ->selectAvg('nilai_akhir', 'avg_score')
+                ->get()
+                ->getRow();
+
+            $scoreVal = 0;
+            if ($avgResult && $avgResult->avg_score !== null) {
+                $scoreVal = round((float)$avgResult->avg_score, 1);
+            } else {
+                $detailAvg = $db->table('detail_hasil_penilaian')
+                    ->join('aspek_penilaian', 'aspek_penilaian.id = detail_hasil_penilaian.aspek_penilaian_id')
+                    ->where('aspek_penilaian.jenis_penilaian_id', $ind['id'])
+                    ->selectAvg('detail_hasil_penilaian.skor', 'avg_skor')
+                    ->get()
+                    ->getRow();
+                if ($detailAvg && $detailAvg->avg_skor !== null) {
+                    $scoreVal = round(((float)$detailAvg->avg_skor / 3) * 100, 1);
+                }
+            }
+            $chartScores[] = $scoreVal;
+        }
+
+        $data['pmm_radar_labels'] = $chartLabels;
+        $data['pmm_radar_scores'] = $chartScores;
+
         return view('kepala/dashboard', $data);
     }
+
 
     public function performance()
     {

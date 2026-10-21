@@ -31,6 +31,7 @@ class ProfileController extends BaseController
         $guru = $this->guruModel->where('user_id', $userId)->first();
         
         $data = [
+            'title' => 'Edit Profil - Sistem Supervisi',
             'user' => $user,
             'guru' => $guru
         ];
@@ -42,11 +43,49 @@ class ProfileController extends BaseController
     {
         $userId = session()->get('id');
         
+        $user = $this->userModel->find($userId);
+        if (!$user) {
+            return redirect()->back()->with('error', 'User tidak ditemukan');
+        }
+        
         // Validate input
         $rules = [
-            'email' => 'required|valid_email',
-            'nama' => 'required',
-            'telepon' => 'permit_empty|regex_match[/^(\+62|62|0)[0-9]{8,15}$/]',
+            'email' => [
+                'label' => 'Alamat Email',
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => 'Alamat email wajib diisi.',
+                    'valid_email' => 'Format alamat email tidak valid.',
+                ],
+            ],
+            'nama' => [
+                'label' => 'Nama Lengkap',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Nama lengkap wajib diisi.',
+                ],
+            ],
+            'telepon' => [
+                'label' => 'Nomor Telepon',
+                'rules' => 'permit_empty|regex_match[/^(\+62|62|0)[0-9]{8,15}$/]',
+                'errors' => [
+                    'regex_match' => 'Format nomor telepon tidak valid. Contoh: 081234567890.',
+                ],
+            ],
+            'password' => [
+                'label' => 'Kata Sandi Baru',
+                'rules' => 'permit_empty|min_length[8]',
+                'errors' => [
+                    'min_length' => 'Kata sandi baru minimal 8 karakter.',
+                ],
+            ],
+            'password_confirm' => [
+                'label' => 'Ulangi Kata Sandi Baru',
+                'rules' => 'permit_empty|matches[password]',
+                'errors' => [
+                    'matches' => 'Konfirmasi kata sandi tidak cocok.',
+                ],
+            ],
         ];
         
         // Check if a file is uploaded
@@ -139,10 +178,12 @@ class ProfileController extends BaseController
         // Update session data if name or email changed
         session()->set([
             'username' => $email,
-            'email' => $email
+            'email' => $email,
+            'nama_lengkap' => $nama,
+            'foto_profil' => $fotoProfil,
         ]);
         
-        return redirect()->to('/guru')->with('success', 'Profil berhasil diperbarui');
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
     
     public function updatePhoto()

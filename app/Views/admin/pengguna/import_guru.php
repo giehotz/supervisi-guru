@@ -1,153 +1,139 @@
 <?= $this->extend('layouts/admin'); ?>
 
 <?= $this->section('content'); ?>
-<div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Import Data Guru</h1>
-        <a href="<?= base_url('/admin/pengguna/guru') ?>" class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left"></i> Kembali ke Daftar Guru
-        </a>
-    </div>
-
-    <!-- Flash Messages -->
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('error') ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<!-- Page header -->
+<div class="page-header d-print-none mb-3">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <div class="page-pretitle text-secondary">Manajemen Pengguna</div>
+            <h2 class="page-title text-dark fw-bold">Import Data Guru Masal</h2>
         </div>
-    <?php endif; ?>
-    
-    <?php if (session()->getFlashdata('errors')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <ul>
-                <?php foreach (session()->getFlashdata('errors') as $error): ?>
-                    <li><?= $error ?></li>
-                <?php endforeach; ?>
-            </ul>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    <?php endif; ?>
-
-    <!-- Import Form -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Upload File Excel</h6>
-        </div>
-        <div class="card-body">
-            <form action="<?= base_url('/admin/pengguna/import-guru/process') ?>" method="post" enctype="multipart/form-data">
-                <?= csrf_field(); ?>
-                
-                <div class="form-group">
-                    <label for="excel_file">Pilih File Excel</label>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="excel_file" name="excel_file" accept=".xls,.xlsx" required>
-                        <label class="custom-file-label" for="excel_file">Pilih file...</label>
-                    </div>
-                    <small class="form-text text-muted">Format yang didukung: .xls, .xlsx (Maksimal 10MB)</small>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-upload"></i> Import Data
-                </button>
-                <a href="<?= base_url('/admin/pengguna/import-guru/template') ?>" class="btn btn-info">
-                    <i class="fas fa-download"></i> Unduh Template
-                </a>
-            </form>
-        </div>
-    </div>
-
-    <!-- Template Information -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Template Excel</h6>
-        </div>
-        <div class="card-body">
-            <h5>Format Kolom yang Diperlukan:</h5>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Kolom</th>
-                            <th>Label</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>A</td>
-                            <td>USERNAME</td>
-                            <td>Harus unik, tidak boleh ada spasi</td>
-                        </tr>
-                        <tr>
-                            <td>B</td>
-                            <td>PASSWORD</td>
-                            <td>Minimal 6 karakter</td>
-                        </tr>
-                        <tr>
-                            <td>C</td>
-                            <td>EMAIL</td>
-                            <td>Format email valid</td>
-                        </tr>
-                        <tr>
-                            <td>D</td>
-                            <td>ROLE</td>
-                            <td>Pilih: guru/supervisor/kepala/admin</td>
-                        </tr>
-                        <tr>
-                            <td>E</td>
-                            <td>NAMA_LENGKAP</td>
-                            <td>Nama lengkap guru</td>
-                        </tr>
-                        <tr>
-                            <td>F</td>
-                            <td>NIP</td>
-                            <td>18 digit (jika PNS/PPPK)</td>
-                        </tr>
-                        <tr>
-                            <td>G</td>
-                            <td>PANGKAT_GOLONGAN</td>
-                            <td>Contoh: Penata Muda/III d</td>
-                        </tr>
-                        <tr>
-                            <td>H</td>
-                            <td>MATA_PELAJARAN</td>
-                            <td>Mapel yang diampu</td>
-                        </tr>
-                        <tr>
-                            <td>I</td>
-                            <td>STATUS_KEPEGAWAIAN</td>
-                            <td>Pilih: PNS/PPPK/Honorer</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <h5>Contoh Validasi:</h5>
-            <ul>
-                <li>Username harus unik dan tidak ada spasi</li>
-                <li>Password minimal 6 karakter</li>
-                <li>Email harus dalam format yang valid</li>
-                <li>NIP harus 18 digit untuk PNS/PPPK</li>
-                <li>Status kepegawaian harus dipilih dari: PNS/PPPK/Honorer</li>
-            </ul>
+        <div class="col-auto ms-auto d-print-none">
+            <a href="<?= base_url('/admin/pengguna/guru') ?>" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Guru
+            </a>
         </div>
     </div>
 </div>
 
-<?= $this->endSection(); ?>
+<!-- Flash Messages -->
+<?php if (session()->getFlashdata('error')): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="d-flex">
+            <div><i class="fas fa-exclamation-circle fs-2 me-2"></i></div>
+            <div><?= session()->getFlashdata('error') ?></div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
 
-<?= $this->section('scripts') ?>
-<script>
-// Update file input label with selected file name
-document.querySelector('.custom-file-input').addEventListener('change', function(e) {
-    var fileName = document.getElementById("excel_file").files[0].name;
-    var nextSibling = e.target.nextElementSibling;
-    nextSibling.innerText = fileName;
-});
-</script>
+<?php if (session()->getFlashdata('errors')): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="d-flex">
+            <div><i class="fas fa-exclamation-triangle fs-2 me-2"></i></div>
+            <div>
+                <ul class="mb-0 ps-3">
+                    <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                        <li><?= esc($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
+<div class="row row-cards mb-4">
+    <!-- Upload Card -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h3 class="card-title fw-bold">
+                    <i class="fas fa-upload text-primary me-2"></i> Unggah Berkas Spreadsheet
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="<?= base_url('/admin/pengguna/import-guru/process') ?>" method="post" enctype="multipart/form-data">
+                    <?= csrf_field(); ?>
+                    
+                    <div class="mb-4">
+                        <label class="form-label required" for="excel_file">Pilih Dokumen Excel (.xlsx / .xls)</label>
+                        <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xls,.xlsx" required>
+                        <small class="form-hint">Maksimal ukuran file 10MB.</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-import me-1"></i> Proses Import Data
+                        </button>
+                        <a href="<?= base_url('/admin/pengguna/import-guru/template') ?>" class="btn btn-outline-success">
+                            <i class="fas fa-download me-1"></i> Unduh Format Template
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Petunjuk Format -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <h3 class="card-title fw-bold">
+                    <i class="fas fa-info-circle text-info me-2"></i> Panduan Penyusunan Kolom
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Kolom</th>
+                                <th>Nama Atribut</th>
+                                <th>Ketentuan Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>A</code></td>
+                                <td class="fw-bold">USERNAME</td>
+                                <td class="small text-secondary">Unik, tanpa spasi</td>
+                            </tr>
+                            <tr>
+                                <td><code>B</code></td>
+                                <td class="fw-bold">PASSWORD</td>
+                                <td class="small text-secondary">Minimal 6 karakter</td>
+                            </tr>
+                            <tr>
+                                <td><code>C</code></td>
+                                <td class="fw-bold">EMAIL</td>
+                                <td class="small text-secondary">Format email valid</td>
+                            </tr>
+                            <tr>
+                                <td><code>D</code></td>
+                                <td class="fw-bold">ROLE</td>
+                                <td class="small text-secondary">guru / supervisor / kepala / admin</td>
+                            </tr>
+                            <tr>
+                                <td><code>E</code></td>
+                                <td class="fw-bold">NAMA GURU</td>
+                                <td class="small text-secondary">Nama lengkap beserta gelar</td>
+                            </tr>
+                            <tr>
+                                <td><code>F</code></td>
+                                <td class="fw-bold">NIP</td>
+                                <td class="small text-secondary">18 digit / '-' jika honorer</td>
+                            </tr>
+                            <tr>
+                                <td><code>G</code></td>
+                                <td class="fw-bold">MATA PELAJARAN</td>
+                                <td class="small text-secondary">Mata pelajaran utama</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection(); ?>

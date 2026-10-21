@@ -13,17 +13,21 @@ class JadwalSupervisiModel extends Model
         'guru_id',
         'supervisor_id',
         'mata_pelajaran',
+        'indikator_pmm_id',
         'kelas',
         'kelas_id',
         'jam_ke',
         'hari',
         'tanggal_supervisi',
+        'tanggal_pra_observasi',
+        'tanggal_pasca_observasi',
         'waktu_dari',
         'waktu_sampai',
         'materi_supervisi',
         'status'
     ];
     protected $useTimestamps = false;
+
     protected $createdField  = 'created_at';
     protected $updatedField  = null;
 }

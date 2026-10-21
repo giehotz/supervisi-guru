@@ -90,7 +90,79 @@
         </div>
     </div>
 
+    <!-- SIKLUS SUPERVISI KURIKULUM MERDEKA & KEBUTUHAN KOMBEL -->
+    <div class="card shadow mb-4 border-top-primary">
+        <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-sync-alt mr-1"></i> Progres Siklus Supervisi Kurikulum Merdeka (Ruang GTK / PMM)
+            </h6>
+            <span class="badge badge-light border text-muted">Perdirjen GTK No. 7607/2023</span>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-3 mb-md-0 border-right">
+                    <span class="text-muted small text-uppercase font-weight-bold d-block">1. Pra-Observasi (Form A)</span>
+                    <span class="h4 font-weight-bold text-warning d-block mt-2"><?= $kurmer_stages['pra_observasi'] ?? 0 ?></span>
+                    <small class="text-muted">Target Perilaku Disepakati</small>
+                </div>
+                <div class="col-md-3 col-6 mb-3 mb-md-0 border-right">
+                    <span class="text-muted small text-uppercase font-weight-bold d-block">2. Observasi Kelas (Form B)</span>
+                    <span class="h4 font-weight-bold text-primary d-block mt-2"><?= $kurmer_stages['observasi'] ?? 0 ?></span>
+                    <small class="text-muted">Rubrik Perilaku 1-3 PMM</small>
+                </div>
+                <div class="col-md-3 col-6 mb-3 mb-md-0 border-right">
+                    <span class="text-muted small text-uppercase font-weight-bold d-block">3. Tindak Lanjut (Form C & D)</span>
+                    <span class="h4 font-weight-bold text-info d-block mt-2"><?= $kurmer_stages['tindak_lanjut'] ?? 0 ?></span>
+                    <small class="text-muted">Belajar Mandiri di Kombel/PMM</small>
+                </div>
+                <div class="col-md-3 col-6">
+                    <span class="text-muted small text-uppercase font-weight-bold d-block">4. Selesai Paripurna</span>
+                    <span class="h4 font-weight-bold text-success d-block mt-2"><?= $kurmer_stages['selesai'] ?? 0 ?></span>
+                    <small class="text-muted">Refleksi Siklus Tuntas</small>
+                </div>
+            </div>
+
+            <?php if (!empty($rekap_dukungan_kombel)): ?>
+                <hr class="my-4">
+                <h6 class="font-weight-bold text-dark mb-2">
+                    <i class="fas fa-hands-helping text-primary mr-1"></i> Rekapitulasi Kebutuhan Dukungan Guru (Bahan Program Kombel & RKAS):
+                </h6>
+                <div class="row">
+                    <?php foreach ($rekap_dukungan_kombel as $dukungan): ?>
+                        <div class="col-md-4 mb-2">
+                            <div class="p-2 border rounded bg-light d-flex justify-content-between align-items-center">
+                                <span class="small font-weight-bold text-dark text-capitalize">
+                                    <?= str_replace('_', ' ', $dukungan['kebutuhan_dukungan']) ?>
+                                </span>
+                                <span class="badge badge-primary badge-pill font-weight-bold"><?= $dukungan['total'] ?> Guru</span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Radar Chart 8 Indikator PMM -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-chart-pie mr-1"></i> Rapor Capaian 8 Indikator Praktik Pembelajaran (PMM / Kurikulum Merdeka)
+            </h6>
+            <span class="badge badge-info">Skala 0 - 100%</span>
+        </div>
+        <div class="card-body">
+            <div style="position: relative; height: 360px; width: 100%;">
+                <canvas id="chart8IndikatorPMM"></canvas>
+            </div>
+            <div class="mt-3 text-center small text-muted">
+                Grafik jaring laba-laba menggambarkan rata-rata capaian mutu 8 indikator kinerja pembelajaran guru satuan pendidikan.
+            </div>
+        </div>
+    </div>
+
     <div class="row">
+
         <!-- Today's Supervisions -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow mb-4">
@@ -217,4 +289,41 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('assets/vendor/chart.js/Chart.min.js') ?>"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctxRadar = document.getElementById('chart8IndikatorPMM');
+    if (ctxRadar) {
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: <?= json_encode($pmm_radar_labels ?? []) ?>,
+                datasets: [{
+                    label: 'Rata-Rata Capaian (%)',
+                    backgroundColor: 'rgba(32, 107, 196, 0.25)',
+                    borderColor: '#206bc4',
+                    pointBackgroundColor: '#206bc4',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#206bc4',
+                    data: <?= json_encode($pmm_radar_scores ?? []) ?>
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 100,
+                        stepSize: 20
+                    }
+                },
+                maintainAspectRatio: false
+            }
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

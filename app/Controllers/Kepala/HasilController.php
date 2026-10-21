@@ -428,4 +428,153 @@ class HasilController extends BaseController
         // Output the generated PDF to Browser
         $dompdf->stream('Hasil_Supervisi_' . str_replace(' ', '_', $schedule['nama_guru']) . '.pdf', ['Attachment' => 0]);
     }
+
+    public function cetakKurmer($jadwalId)
+    {
+        $schedule = $this->jadwalModel
+            ->select('jadwal_supervisi.*, guru.nama as nama_guru, guru.nip as nip_guru, users.username as nama_supervisor, users.nip as nip_supervisor')
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->where('jadwal_supervisi.id', $jadwalId)
+            ->first();
+
+        if (!$schedule) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal supervisi tidak ditemukan');
+        }
+
+        $praModel   = new \App\Models\PraObservasiModel();
+        $tlModel    = new \App\Models\TindakLanjutSupervisiModel();
+        $jenisModel = new \App\Models\JenisPenilaianModel();
+        $aspekModel = new \App\Models\AspekPenilaianModel();
+
+        $praObservasi = $praModel->getByJadwal($jadwalId);
+        $tindakLanjut = $tlModel->getByJadwal($jadwalId);
+
+        $fokusList = [];
+        $indikatorNama = 'Praktik Kinerja Pembelajaran (PMM)';
+        if (!empty($schedule['indikator_pmm_id'])) {
+            $ind = $jenisModel->find($schedule['indikator_pmm_id']);
+            if ($ind) {
+                $indikatorNama = $ind['nama'];
+            }
+        }
+
+        if ($praObservasi && !empty($praObservasi['fokus_perilaku_dipilih'])) {
+            $fokusIds = json_decode($praObservasi['fokus_perilaku_dipilih'], true) ?: [];
+            if (!empty($fokusIds)) {
+                $fokusList = $aspekModel->whereIn('id', $fokusIds)->findAll();
+            }
+        }
+
+        $hasil = $this->hasilModel->where('jadwal_supervisi_id', $jadwalId)->first();
+        $detailsByAspek = [];
+        if ($hasil) {
+            $details = $this->detailModel->where('hasil_supervisi_id', $hasil['id'])->findAll();
+            foreach ($details as $d) {
+                $detailsByAspek[$d['aspek_penilaian_id']] = $d;
+            }
+        }
+
+        $data = [
+            'schedule'       => $schedule,
+            'praObservasi'   => $praObservasi,
+            'tindakLanjut'   => $tindakLanjut,
+            'fokusList'      => $fokusList,
+            'indikatorNama'  => $indikatorNama,
+            'hasilUtama'     => $hasil,
+            'detailsByAspek' => $detailsByAspek,
+        ];
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        $html = view('pdf/formulir_abcd_pmm', $data);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $dompdf->stream("Formulir_ABCD_PMM_" . str_replace(' ', '_', $schedule['nama_guru']) . ".pdf", ['Attachment' => false]);
+        exit();
+    }
+
+    public function cetakTelaah($jadwalId, $jenisId = null)
+    {
+        $schedule = $this->jadwalModel
+            ->select('jadwal_supervisi.*, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran as guru_mata_pelajaran, kelas.nama_kelas, kelas.fase as kelas_fase, users.username as nama_supervisor, users.nip as nip_supervisor, tahun_ajar.tahun_ajar, tahun_ajar.semester')
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
+            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id', 'left')
+            ->where('jadwal_supervisi.id', $jadwalId)
+            ->first();
+
+        if (!$schedule) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal supervisi tidak ditemukan');
+        }
+
+        $jenisModel = new \App\Models\JenisPenilaianModel();
+        $aspekModel = new \App\Models\AspekPenilaianModel();
+
+        if (!$jenisId) {
+            $hasilTelaah = $this->hasilModel
+                ->where('jadwal_supervisi_id', $jadwalId)
+                ->whereIn('jenis_penilaian_id', [13, 14])
+                ->first();
+            $jenisId = $hasilTelaah ? $hasilTelaah['jenis_penilaian_id'] : 14;
+        }
+
+        $jenisPenilaian = $jenisModel->find($jenisId);
+        if (!$jenisPenilaian) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Instrumen telaah tidak ditemukan');
+        }
+
+        $aspekList = $aspekModel->where('jenis_penilaian_id', $jenisId)->orderBy('urutan', 'ASC')->findAll();
+
+        $hasil = $this->hasilModel
+            ->where('jadwal_supervisi_id', $jadwalId)
+            ->where('jenis_penilaian_id', $jenisId)
+            ->first();
+
+        $detailResults = [];
+        if ($hasil) {
+            $details = $this->detailModel->where('hasil_supervisi_id', $hasil['id'])->findAll();
+            foreach ($details as $d) {
+                $detailResults[$d['aspek_penilaian_id']] = $d;
+            }
+        }
+
+        $data = [
+            'schedule'       => $schedule,
+            'jenisPenilaian' => $jenisPenilaian,
+            'aspekList'      => $aspekList,
+            'hasil'          => $hasil,
+            'detailResults'  => $detailResults
+        ];
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        $html = view('pdf/telaah_modul_ajar', $data);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = "Telaah_" . str_replace(' ', '_', $jenisPenilaian['nama']) . "_" . str_replace(' ', '_', $schedule['nama_guru']) . ".pdf";
+        $dompdf->stream($filename, ['Attachment' => false]);
+        exit();
+    }
 }

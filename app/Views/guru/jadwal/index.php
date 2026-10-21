@@ -46,28 +46,40 @@
                                     <td><?= $item['tahun_ajar'] ?? '' ?> - <?= $item['semester'] ?? '' ?></td>
                                     <td><?= $item['supervisor_name'] ?? '' ?></td>
                                     <td>
-                                        <?php if ($item['status'] == 'Terjadwal'): ?>
-                                            <span class="badge badge-info"><?= $item['status'] ?></span>
-                                        <?php elseif ($item['status'] == 'Selesai'): ?>
-                                            <span class="badge badge-success"><?= $item['status'] ?></span>
+                                        <?php if ($item['status'] == 'Terjadwal' || $item['status'] == 'dijadwalkan'): ?>
+                                            <span class="badge badge-info">Terjadwal</span>
+                                        <?php elseif ($item['status'] == 'pra_observasi'): ?>
+                                            <span class="badge badge-warning">Pra-Observasi (Form A)</span>
+                                        <?php elseif ($item['status'] == 'observasi'): ?>
+                                            <span class="badge badge-primary">Observasi Kelas</span>
+                                        <?php elseif ($item['status'] == 'pasca_observasi' || $item['status'] == 'tindak_lanjut'): ?>
+                                            <span class="badge badge-info">Tindak Lanjut</span>
+                                        <?php elseif ($item['status'] == 'Selesai' || $item['status'] == 'selesai'): ?>
+                                            <span class="badge badge-success">Selesai</span>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary"><?= $item['status'] ?></span>
+                                            <span class="badge badge-secondary"><?= esc($item['status']) ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php if ($item['status'] == 'Terjadwal'): ?>
-                                            <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-folder-open"></i> Dokumen
+                                        <div class="btn-group" role="group">
+                                            <a href="<?= base_url('guru/pra-observasi/' . $item['id']) ?>" class="btn btn-outline-primary" title="Formulir A: Diskusi Persiapan">
+                                                <i class="fas fa-clipboard-check mr-1"></i> Form A
                                             </a>
-                                            <a href="#" class="btn btn-info btn-sm">
-                                                <i class="fas fa-info-circle"></i> Detail
+                                            <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-outline-warning" title="Perangkat Ajar">
+                                                <i class="fas fa-folder-open mr-1"></i> Modul
                                             </a>
-                                        <?php else: ?>
-                                            <a href="<?= base_url('guru/hasil/' . $item['id']) ?>" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye"></i> Lihat Hasil
+                                            <a href="<?= base_url('guru/tindak-lanjut/' . $item['id']) ?>" class="btn btn-outline-info" title="Formulir C & D: Tindak Lanjut">
+                                                <i class="fas fa-tasks mr-1"></i> RTL
                                             </a>
-                                        <?php endif; ?>
+                                            <?php if (in_array(strtolower($item['status']), ['observasi', 'pasca_observasi', 'tindak_lanjut', 'selesai'])): ?>
+                                                <a href="<?= base_url('guru/hasil/' . $item['id']) ?>" class="btn btn-primary" title="Lihat Hasil Observasi">
+                                                    <i class="fas fa-eye mr-1"></i> Hasil
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
+
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

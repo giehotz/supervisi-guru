@@ -1,0 +1,80 @@
+/* Compatibility Shim: SB Admin 2 / Bootstrap 4 to Tabler Bootstrap 5 */
+
+/* 1. SB Admin Card Borders */
+.border-left-primary { border-left: 0.25rem solid #206bc4 !important; }
+.border-left-success { border-left: 0.25rem solid #2fb344 !important; }
+.border-left-info    { border-left: 0.25rem solid #4299e1 !important; }
+.border-left-warning { border-left: 0.25rem solid #f59f00 !important; }
+.border-left-danger  { border-left: 0.25rem solid #d63939 !important; }
+
+/* 2. SB Admin Legacy Text Utilities */
+.text-gray-900 { color: #1e293b !important; }
+.text-gray-800 { color: #334155 !important; }
+.text-gray-700 { color: #475569 !important; }
+.text-gray-600 { color: #64748b !important; }
+.text-gray-500 { color: #94a3b8 !important; }
+.text-gray-400 { color: #cbd5e1 !important; }
+.text-gray-300 { color: #e2e8f0 !important; }
+
+/* 3. Spacing Shims (BS4 to BS5 equivalents) */
+.font-weight-bold { font-weight: 700 !important; }
+.font-weight-normal { font-weight: 400 !important; }
+.mr-1 { margin-right: 0.25rem !important; }
+.mr-2 { margin-right: 0.5rem !important; }
+.mr-3 { margin-right: 1rem !important; }
+.ml-1 { margin-left: 0.25rem !important; }
+.ml-2 { margin-left: 0.5rem !important; }
+.ml-3 { margin-left: 1rem !important; }
+.ml-auto { margin-left: auto !important; }
+.pr-1 { padding-right: 0.25rem !important; }
+.pr-2 { padding-right: 0.5rem !important; }
+.pl-1 { padding-left: 0.25rem !important; }
+.pl-2 { padding-left: 0.5rem !important; }
+
+/* 4. Badges & Tables Alignment */
+.badge { font-weight: 500; }
+.badge-primary { background-color: #206bc4; color: #fff; }
+.badge-success { background-color: #2fb344; color: #fff; }
+.badge-danger  { background-color: #d63939; color: #fff; }
+.badge-warning { background-color: #f59f00; color: #fff; }
+.badge-info    { background-color: #4299e1; color: #fff; }
+.badge-secondary { background-color: #64748b; color: #fff; }
+
+/* 5. Custom Button text contrast */
+.btn-primary, .btn-success, .btn-danger, .btn-info, .btn-dark, .btn-warning {
+    color: #fff !important;
+}
+
+/* 6. List Group Active State
+   Tabler overrides .list-group-item.active to a near-white background (rgba(text-secondary,.04)),
+   but SB Admin 2 / BS4 markup pairs .active with .text-white -> white text on near-white bg = invisible.
+   Restore the BS4 solid-primary active state. */
+.list-group-item.active {
+    background-color: var(--tblr-primary);
+    color: #fff;
+}
+
+/* 7. Sidebar Collapse / Sembunyikan Sidebar Navigasi */
+#sidebarToggle {
+    cursor: pointer;
+}
+#sidebarToggle:focus {
+    box-shadow: none;
+}
+@media (min-width: 992px) {
+    .navbar-vertical.navbar-expand-lg {
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .navbar-expand-lg.navbar-vertical ~ .navbar,
+    .navbar-expand-lg.navbar-vertical ~ .page-wrapper {
+        transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .sidebar-collapsed .navbar-vertical.navbar-expand-lg {
+        transform: translateX(-100%) !important;
+    }
+    .sidebar-collapsed .navbar-expand-lg.navbar-vertical ~ .navbar,
+    .sidebar-collapsed .navbar-expand-lg.navbar-vertical ~ .page-wrapper {
+        margin-left: 0 !important;
+    }
+}
+

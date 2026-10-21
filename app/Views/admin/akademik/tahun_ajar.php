@@ -10,10 +10,10 @@
             <p class="text-muted small mb-0">Kelola tahun ajaran, semester, dan penetapan tahun ajaran aktif untuk operasional madrasah.</p>
         </div>
         <div>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddTahun">
-                <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Tahun Ajaran
-            </button>
-        </div>
+    <button type="button" class="btn btn-blue btn-pill btn-primary shadow-sm" data-toggle="modal" data-target="#modalAddTahun">
+        <i class="fas fa-plus-circle mr-1"></i> Tambah Tahun Ajaran
+    </button>
+</div>
     </div>
 
     <!-- Flash Messages -->

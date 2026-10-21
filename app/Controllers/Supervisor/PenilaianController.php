@@ -32,18 +32,19 @@ class PenilaianController extends BaseController
     {
         $supervisorId = session()->get('id');
 
-        // Get schedule details - allow both 'Terjadwal' and 'Selesai' statuses for editing
+        // Get schedule details - izinkan seluruh tahapan siklus supervisi aktif dan selesai
         $schedule = $this->jadwalModel
             ->select('jadwal_supervisi.*, guru.nama as nama_guru, guru.mata_pelajaran as guru_mata_pelajaran')
             ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
             ->where('jadwal_supervisi.id', $jadwalId)
             ->where('jadwal_supervisi.supervisor_id', $supervisorId)
-            ->whereIn('jadwal_supervisi.status', ['Terjadwal', 'Selesai']) // Allow both statuses
+            ->whereIn('jadwal_supervisi.status', ['Terjadwal', 'dijadwalkan', 'pra_observasi', 'observasi', 'pasca_observasi', 'tindak_lanjut', 'Selesai', 'selesai'])
             ->first();
 
         if (!$schedule) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Jadwal tidak ditemukan atau tidak dapat dinilai');
         }
+
 
         // Get all assessment types with mapped columns to ensure we get latest skor_maksimal
         $jenisPenilaian = $this->jenisModel->findAllWithMappedColumns();
@@ -110,11 +111,11 @@ class PenilaianController extends BaseController
 
             $supervisorId = session()->get('id');
 
-            // Validasi jadwal - allow both 'Terjadwal' and 'Selesai' statuses for editing
+            // Validasi jadwal - izinkan seluruh tahapan siklus supervisi aktif dan selesai
             $schedule = $this->jadwalModel
                 ->where('id', $jadwalId)
                 ->where('supervisor_id', $supervisorId)
-                ->whereIn('status', ['Terjadwal', 'Selesai']) // Changed from where('status', 'Terjadwal') to match form() method
+                ->whereIn('status', ['Terjadwal', 'dijadwalkan', 'pra_observasi', 'observasi', 'pasca_observasi', 'tindak_lanjut', 'Selesai', 'selesai'])
                 ->first();
 
             if (!$schedule) {
@@ -124,6 +125,7 @@ class PenilaianController extends BaseController
                     'token' => csrf_hash()
                 ]);
             }
+
 
             // Cek apakah hasil untuk jenis penilaian ini sudah ada
             $existingHasil = $this->hasilModel
@@ -239,21 +241,29 @@ class PenilaianController extends BaseController
         
         foreach ($hasilPenilaian as $hasil) {
             $details = $this->detailModel
-                ->select('detail_hasil_penilaian.*, aspek_penilaian.nama_aspek')
+                ->select('detail_hasil_penilaian.*, aspek_penilaian.nama_aspek, aspek_penilaian.tipe_skala')
                 ->join('aspek_penilaian', 'aspek_penilaian.id = detail_hasil_penilaian.aspek_penilaian_id')
                 ->where('detail_hasil_penilaian.hasil_supervisi_id', $hasil['id'])
                 ->findAll();
             
             $detailResults[$hasil['jenis_penilaian_id']] = $details;
             
-            // Calculate nilai_akhir and ketercapaian for this jenis penilaian
+            // Calculate nilai_akhir and ketercapaian for this jenis penilaian dinamis
             $totalSkor = 0;
+            $maxScore = 0;
             foreach ($details as $detail) {
-                $totalSkor += $detail['skor'];
+                $totalSkor += (float) $detail['skor'];
+                if (($detail['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') {
+                    $maxScore += 3;
+                } elseif (($detail['tipe_skala'] ?? '') === 'skor_1_4') {
+                    $maxScore += 4;
+                } elseif (($hasil['skor_maksimal'] ?? 0) == 3) {
+                    $maxScore += 3;
+                } else {
+                    $maxScore += 4;
+                }
             }
             
-            // Calculate percentage (using fixed value of 48 for consistency)
-            $maxScore = 48; // Gunakan nilai tetap 48 untuk konsistensi
             $nilaiAkhir = $maxScore > 0 ? ($totalSkor / $maxScore) * 100 : 0;
             
             // Determine ketercapaian based on nilai_akhir
@@ -295,13 +305,13 @@ class PenilaianController extends BaseController
     {
         $supervisorId = session()->get('id');
         
-        // Validasi jadwal - mengizinkan status 'Terjadwal' dan 'Selesai' (untuk kasus edit)
+        // Validasi jadwal - izinkan seluruh tahapan siklus supervisi aktif dan selesai
         $schedule = $this->jadwalModel
             ->where('id', $jadwalId)
             ->where('supervisor_id', $supervisorId)
-            ->whereIn('status', ['Terjadwal', 'Selesai']) // Memperbaiki validasi untuk mengizinkan edit
+            ->whereIn('status', ['Terjadwal', 'dijadwalkan', 'pra_observasi', 'observasi', 'pasca_observasi', 'tindak_lanjut', 'Selesai', 'selesai'])
             ->first();
-            
+
         if (!$schedule) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -309,11 +319,12 @@ class PenilaianController extends BaseController
                 'token' => csrf_hash()
             ]);
         }
+
         
         try {
             // Hitung total skor dan nilai akhir untuk seluruh supervisi
             $hasilData = $this->hasilModel
-                ->select('hasil_supervisi.*, jenis_penilaian.skor_maksimal')
+                ->select('hasil_supervisi.*, jenis_penilaian.skor_maksimal, jenis_penilaian.kategori_supervisi')
                 ->join('jenis_penilaian', 'jenis_penilaian.id = hasil_supervisi.jenis_penilaian_id')
                 ->where('jadwal_supervisi_id', $jadwalId)
                 ->findAll();
@@ -323,23 +334,31 @@ class PenilaianController extends BaseController
             
             foreach ($hasilData as $hasil) {
                 $details = $this->detailModel
+                    ->select('detail_hasil_penilaian.*, aspek_penilaian.tipe_skala')
+                    ->join('aspek_penilaian', 'aspek_penilaian.id = detail_hasil_penilaian.aspek_penilaian_id', 'left')
                     ->where('hasil_supervisi_id', $hasil['id'])
                     ->findAll();
                     
                 $skorJenis = 0;
+                $skorMaksimal = 0;
                 foreach ($details as $detail) {
-                    $skorJenis += $detail['skor'];
+                    $skorJenis += (float) $detail['skor'];
+                    if (($detail['tipe_skala'] ?? '') === 'perilaku_pmm_1_3' || ($hasil['kategori_supervisi'] ?? '') === 'observasi_kelas_pmm') {
+                        $skorMaksimal += 3;
+                    } elseif (($detail['tipe_skala'] ?? '') === 'skor_1_4') {
+                        $skorMaksimal += 4;
+                    } elseif (($hasil['skor_maksimal'] ?? 0) == 3) {
+                        $skorMaksimal += 3;
+                    } else {
+                        $skorMaksimal += 4;
+                    }
                 }
-                
-                // Hitung skor maksimal berdasarkan jumlah aspek * 4 (skor maksimal per aspek)
-                $skorMaksimal = count($details) * 4;
                 
                 $totalSkor += $skorJenis;
                 $totalMaksimal += $skorMaksimal;
             }
             
             // Hitung nilai akhir berdasarkan rumus proporsional
-            // Rumus: (total_skor / total_maksimal) * 100
             $nilaiAkhir = $totalMaksimal > 0 ? ($totalSkor / $totalMaksimal) * 100 : 0;
             
             // Tentukan ketercapaian berdasarkan nilai akhir
@@ -354,16 +373,28 @@ class PenilaianController extends BaseController
                 $ketercapaian = 'Kurang';
             }
             
-            // Update status jadwal menjadi 'Selesai'
-            $this->jadwalModel->update($jadwalId, [
-                'status' => 'Selesai',
+            // Cek apakah jadwal ini Kurikulum Merdeka (memiliki indikator PMM)
+            $isKurmer = !empty($schedule['indikator_pmm_id']);
+            $statusBaru = $isKurmer ? 'pasca_observasi' : 'Selesai';
+            
+            $updateData = [
+                'status' => $statusBaru,
                 'nilai_akhir' => $nilaiAkhir,
                 'ketercapaian' => $ketercapaian
-            ]);
+            ];
+            if ($isKurmer) {
+                $updateData['tanggal_pasca_observasi'] = date('Y-m-d H:i:s');
+            }
+            
+            $this->jadwalModel->update($jadwalId, $updateData);
+            
+            $pesanSukses = $isKurmer
+                ? 'Observasi kelas berhasil diselesaikan. Jadwal kini memasuki tahap tindak lanjut (Formulir C & D).'
+                : 'Supervisi berhasil diselesaikan';
             
             return $this->response->setJSON([
                 'status' => 'success',
-                'message' => 'Supervisi berhasil diselesaikan',
+                'message' => $pesanSukses,
                 'redirect' => base_url('supervisor/jadwal'),
                 'token' => csrf_hash()
             ]);

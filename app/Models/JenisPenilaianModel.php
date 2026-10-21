@@ -8,8 +8,17 @@ class JenisPenilaianModel extends Model
 {
     protected $table = 'jenis_penilaian';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['nama', 'skor_maksimal', 'kategori_skor', 'created_at'];
+    protected $allowedFields = [
+        'nama',
+        'skor_maksimal',
+        'kategori_skor',
+        'kategori_supervisi',
+        'dimensi_pmm',
+        'deskripsi',
+        'created_at'
+    ];
     protected $useTimestamps = false;
+
     
     // Method to get data with mapped column names for our application
     public function findAllWithMappedColumns()

@@ -32,12 +32,30 @@ $routes->group('supervisor', ['filter' => 'role:supervisor'], function ($routes)
     $routes->get('jadwal', 'Supervisor\JadwalController::index');
     $routes->get('jadwal/(:num)', 'Supervisor\JadwalController::detail/$1');
 
+    // Guru Binaan routes
+    $routes->get('guru-binaan', 'Supervisor\GuruBinaan::index');
+
     // Hasil routes
     $routes->get('hasil', 'Supervisor\HasilController::index');
     $routes->get('hasil/detail/(:num)', 'Supervisor\HasilController::detail/$1');
     $routes->get('hasil/cetak/(:num)', 'Supervisor\PdfController::cetak/$1');
+    $routes->get('hasil/cetak-kurmer/(:num)', 'Supervisor\PdfController::cetakKurmer/$1');
+    $routes->get('hasil/cetak-telaah/(:num)', 'Supervisor\PdfController::cetakTelaah/$1');
+    $routes->get('hasil/cetak-telaah/(:num)/(:num)', 'Supervisor\PdfController::cetakTelaah/$1/$2');
+
 
     // Dokumen Ajar routes
     $routes->get('dokumen-ajar/view/(:num)', 'Supervisor\DokumenAjarController::index/$1');
     $routes->post('dokumen-ajar/verify/(:num)', 'Supervisor\DokumenAjarController::verify/$1');
+
+    // Formulir A (Pra-Observasi) routes
+    $routes->get('pra-observasi/(:num)', 'Supervisor\PraObservasiController::review/$1');
+    $routes->post('pra-observasi/agree/(:num)', 'Supervisor\PraObservasiController::agree/$1');
+
+    // Formulir C & D (Tindak Lanjut & Refleksi) routes
+    $routes->get('tindak-lanjut/(:num)', 'Supervisor\TindakLanjutController::review/$1');
+    $routes->post('tindak-lanjut/feedback-c/(:num)', 'Supervisor\TindakLanjutController::feedbackC/$1');
+    $routes->post('tindak-lanjut/evaluate-d/(:num)', 'Supervisor\TindakLanjutController::evaluateD/$1');
 });
+
+

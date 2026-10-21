@@ -194,7 +194,11 @@ class PenilaianController extends BaseController
             }
 
             // Update skor & nilai_akhir di tabel hasil_supervisi jika ada skor
-            $skorMaksimal = $jumlahAspek * 4;
+            $skorMaksimal = 0;
+            foreach ($detailsToInsert as $dti) {
+                $aspek = $this->aspekModel->find($dti['aspek_penilaian_id']);
+                $skorMaksimal += (($aspek['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') ? 3 : 4;
+            }
             $persen = ($skorMaksimal > 0) ? round(($totalSkor / $skorMaksimal) * 100, 2) : 0;
 
             if ($persen >= 86) {
@@ -385,21 +389,17 @@ class PenilaianController extends BaseController
             $grandTotalMaks = 0;
 
             foreach ($hasilData as $hasil) {
-                $detailHasil = $db->table('detail_hasil_penilaian')
+                $details = $db->table('detail_hasil_penilaian')
+                    ->select('detail_hasil_penilaian.skor, aspek_penilaian.tipe_skala')
+                    ->join('aspek_penilaian', 'aspek_penilaian.id = detail_hasil_penilaian.aspek_penilaian_id', 'left')
                     ->where('hasil_supervisi_id', $hasil['id'])
-                    ->selectSum('skor')
                     ->get()
-                    ->getRow();
+                    ->getResultArray();
 
-                $detailCount = $db->table('detail_hasil_penilaian')
-                    ->where('hasil_supervisi_id', $hasil['id'])
-                    ->countAllResults();
-
-                $skor = (float)($detailHasil->skor ?? 0);
-                $max = $detailCount * 4;
-
-                $grandTotalSkor += $skor;
-                $grandTotalMaks += $max;
+                foreach ($details as $d) {
+                    $grandTotalSkor += (float) ($d['skor'] ?? 0);
+                    $grandTotalMaks += (($d['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') ? 3 : 4;
+                }
             }
 
             $nilaiAkhir = ($grandTotalMaks > 0) ? round(($grandTotalSkor / $grandTotalMaks) * 100, 2) : 0;

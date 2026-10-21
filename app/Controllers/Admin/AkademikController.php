@@ -199,6 +199,9 @@ class AkademikController extends BaseController
         $totalKeagamaan = count(array_filter($mapels, fn($m) => $m['kelompok'] === 'Keagamaan'));
         $totalUmum = count(array_filter($mapels, fn($m) => $m['kelompok'] === 'Umum'));
 
+        $standarMapel = MapelController::MAPEL;
+        $existingNames = array_map(fn($m) => strtolower(trim($m['nama_mapel'])), $mapels);
+
         $data = [
             'title'          => 'Master Mata Pelajaran',
             'mapels'         => $mapels,
@@ -206,9 +209,51 @@ class AkademikController extends BaseController
             'totalAktif'     => $totalAktif,
             'totalKeagamaan' => $totalKeagamaan,
             'totalUmum'      => $totalUmum,
+            'standarMapel'   => $standarMapel,
+            'existingNames'  => $existingNames,
         ];
 
         return view('admin/akademik/mapel/index', $data);
+    }
+
+    public function syncMapel()
+    {
+        $selectedIds = $this->request->getPost('selected_mapel');
+        if (empty($selectedIds) || !is_array($selectedIds)) {
+            return redirect()->to('/admin/akademik/mapel')->with('error', 'Pilih minimal satu mata pelajaran untuk disinkronkan.');
+        }
+
+        $standarMapel = MapelController::MAPEL;
+        $mapelById = [];
+        foreach ($standarMapel as $sm) {
+            $mapelById[$sm['id']] = $sm;
+        }
+
+        $existing = $this->mapelModel->findAll();
+        $existingNames = array_map(fn($m) => strtolower(trim($m['nama_mapel'])), $existing);
+
+        $insertedCount = 0;
+        foreach ($selectedIds as $id) {
+            if (isset($mapelById[$id])) {
+                $target = $mapelById[$id];
+                if (!in_array(strtolower(trim($target['nama_mapel'])), $existingNames)) {
+                    $this->mapelModel->insert([
+                        'kode_mapel' => $target['kode_mapel'] ?? strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $target['nama_mapel']), 0, 5)),
+                        'nama_mapel' => $target['nama_mapel'],
+                        'kelompok'   => $target['db_kelompok'] ?? 'Umum',
+                        'status'     => 'Aktif',
+                    ]);
+                    $insertedCount++;
+                    $existingNames[] = strtolower(trim($target['nama_mapel']));
+                }
+            }
+        }
+
+        if ($insertedCount > 0) {
+            return redirect()->to('/admin/akademik/mapel')->with('success', "Berhasil menyinkronkan {$insertedCount} mata pelajaran Kurikulum Merdeka.");
+        }
+
+        return redirect()->to('/admin/akademik/mapel')->with('info', 'Semua mata pelajaran yang dipilih sudah ada di dalam database.');
     }
 
     public function createMapel()

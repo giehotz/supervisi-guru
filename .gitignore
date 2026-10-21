@@ -158,3 +158,4 @@ phpunit*.xml
 !phpunit.xml.dist
 .phpunit.result.cache
 /results/
+/docs

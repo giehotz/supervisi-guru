@@ -99,6 +99,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     // Mata Pelajaran
     $routes->get('akademik/mapel', 'AkademikController::mapel');
     $routes->post('akademik/mapel/create', 'AkademikController::createMapel');
+    $routes->post('akademik/mapel/sync', 'AkademikController::syncMapel');
     $routes->post('akademik/mapel/(:num)/update', 'AkademikController::updateMapel/$1');
     $routes->get('akademik/mapel/(:num)/delete', 'AkademikController::deleteMapel/$1');
 
@@ -167,6 +168,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('laporan/hasil-supervisi/detail/(:num)', 'LaporanController::detail/$1');
     $routes->get('laporan/hasil-supervisi/edit/(:num)', 'PenilaianController::form/$1');
     $routes->get('laporan/hasil-supervisi/cetak-detail/(:num)', 'LaporanController::cetakDetail/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-kurmer/(:num)', 'LaporanController::cetakKurmer/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)', 'LaporanController::cetakTelaah/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)/(:num)', 'LaporanController::cetakTelaah/$1/$2');
     $routes->get('laporan/hasil-supervisi/pdf', 'LaporanController::exportPdf');
     $routes->get('laporan/hasil-supervisi/excel', 'LaporanController::exportExcel');
     $routes->post('laporan/hasil-supervisi/batch-excel', 'LaporanController::batchExcel');

@@ -12,7 +12,19 @@ class DokumenAjarModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['jadwal_id', 'nama_dokumen', 'link_drive', 'keterangan', 'status', 'feedback'];
+    protected $allowedFields    = [
+        'jadwal_id',
+        'nama_dokumen',
+        'kategori_dokumen',
+        'fase',
+        'tujuan_pembelajaran',
+        'strategi_diferensiasi',
+        'link_drive',
+        'link_eksternal',
+        'keterangan',
+        'status',
+        'feedback'
+    ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -22,9 +34,9 @@ class DokumenAjarModel extends Model
     protected $validationRules      = [
         'jadwal_id'    => 'required|integer',
         'nama_dokumen' => 'required|string|max_length[255]',
-        'link_drive'   => 'required|valid_url',
     ];
     protected $validationMessages   = [];
+
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 }

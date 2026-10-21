@@ -9,9 +9,12 @@
             <h1 class="h3 mb-1 text-gray-800 font-weight-bold">Master Mata Pelajaran</h1>
             <p class="text-muted small mb-0">Kelola kurikulum dan daftar mata pelajaran madrasah yang diajarkan.</p>
         </div>
-        <div>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddMapel">
-                <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Mata Pelajaran
+        <div class="d-flex align-items-center">
+            <button type="button" class="btn btn-outline-success btn-sm shadow-sm font-weight-bold px-3 mr-2 me-2" data-toggle="modal" data-target="#modalSyncMapel" data-bs-toggle="modal" data-bs-target="#modalSyncMapel">
+                <i class="fas fa-sync-alt mr-1 me-1"></i> Sinkron Kurikulum Merdeka
+            </button>
+            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddMapel" data-bs-toggle="modal" data-bs-target="#modalAddMapel">
+                <i class="fas fa-plus-circle mr-1 me-1 text-white"></i> Tambah Mata Pelajaran
             </button>
         </div>
     </div>
@@ -20,7 +23,16 @@
     <?php if (session()->getFlashdata('success')) : ?>
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
             <i class="fas fa-check-circle mr-1"></i> <?= session()->getFlashdata('success'); ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close btn-close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('info')) : ?>
+        <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-info-circle mr-1"></i> <?= session()->getFlashdata('info'); ?>
+            <button type="button" class="close btn-close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -29,7 +41,7 @@
     <?php if (session()->getFlashdata('error')) : ?>
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
             <i class="fas fa-exclamation-circle mr-1"></i> <?= session()->getFlashdata('error'); ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="close btn-close" data-dismiss="alert" data-bs-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -293,6 +305,88 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Sinkron Mapel Kurikulum Merdeka -->
+<div class="modal fade" id="modalSyncMapel" tabindex="-1" role="dialog" aria-labelledby="modalSyncMapelTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <form action="<?= base_url('admin/akademik/mapel/sync') ?>" method="post" class="modal-content border-0 shadow">
+            <?= csrf_field() ?>
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title font-weight-bold" id="modalSyncMapelTitle">
+                    <i class="fas fa-sync-alt mr-2 me-2"></i> Sinkronisasi Mata Pelajaran Kurikulum Merdeka (MI)
+                </h5>
+                <button type="button" class="close btn-close text-white" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
+                <div class="alert alert-light border d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="font-weight-bold text-dark">Daftar Standar Mapel MI (Kurikulum Merdeka)</span>
+                        <div class="small text-muted">Centang mata pelajaran yang ingin diimpor ke sistem.</div>
+                    </div>
+                    <div class="form-check m-0">
+                        <input type="checkbox" class="form-check-input" id="selectAllSync" checked style="cursor: pointer;">
+                        <label class="form-check-label font-weight-bold text-primary small" for="selectAllSync" style="cursor: pointer;">Pilih Semua</label>
+                    </div>
+                </div>
+
+                <?php
+                $groupedStandar = [];
+                foreach ($standarMapel ?? [] as $sm) {
+                    $groupedStandar[$sm['kelompok']][] = $sm;
+                }
+                ?>
+
+                <?php foreach ($groupedStandar as $kelompokName => $items) : ?>
+                    <div class="card mb-3 border">
+                        <div class="card-header bg-light py-2 px-3 font-weight-bold small text-uppercase text-secondary">
+                            <?= esc($kelompokName) ?>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="row">
+                                <?php foreach ($items as $item) : ?>
+                                    <?php $isExists = in_array(strtolower(trim($item['nama_mapel'])), $existingNames ?? []); ?>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="border rounded p-2 d-flex align-items-center justify-content-between <?= $isExists ? 'bg-light text-muted' : 'bg-white' ?>" style="cursor: <?= $isExists ? 'not-allowed' : 'pointer' ?>;">
+                                            <div class="form-check mb-0">
+                                                <input type="checkbox" 
+                                                       class="form-check-input sync-mapel-checkbox" 
+                                                       name="selected_mapel[]" 
+                                                       id="mapel_<?= $item['id'] ?>" 
+                                                       value="<?= $item['id'] ?>"
+                                                       <?= $isExists ? 'disabled' : 'checked' ?>
+                                                       style="cursor: <?= $isExists ? 'not-allowed' : 'pointer' ?>;">
+                                                <label class="form-check-label font-weight-bold text-dark small" for="mapel_<?= $item['id'] ?>" style="cursor: <?= $isExists ? 'not-allowed' : 'pointer' ?>;">
+                                                    <?= esc($item['nama_mapel']) ?>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <?php if ($isExists) : ?>
+                                                    <span class="badge badge-secondary bg-secondary text-white small">Sudah Ada</span>
+                                                <?php else : ?>
+                                                    <span class="badge badge-info bg-info text-white small"><?= esc($item['kode_mapel']) ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">
+                    <i class="fas fa-times mr-1 me-1"></i> Batal
+                </button>
+                <button type="submit" class="btn btn-success font-weight-bold text-white px-4 shadow-sm" id="btnSubmitSync">
+                    <i class="fas fa-check mr-1 me-1 text-white"></i> Sinkronkan Mapel Terpilih
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <?= $this->endSection(); ?>
 
 <?= $this->section('scripts'); ?>
@@ -321,6 +415,31 @@
 
                 if (window.jQuery) {
                     $('#modalEditMapel').modal('show');
+                }
+            });
+        });
+
+        // Select All handler untuk modal sync
+        var selectAllSync = document.getElementById('selectAllSync');
+        if (selectAllSync) {
+            selectAllSync.addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('.sync-mapel-checkbox:not(:disabled)');
+                checkboxes.forEach(function(cb) {
+                    cb.checked = selectAllSync.checked;
+                });
+            });
+        }
+
+        // Klik area card untuk toggle checkbox
+        var itemCards = document.querySelectorAll('#modalSyncMapel .border.rounded');
+        itemCards.forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'label') {
+                    return; // Biarkan event default checkbox/label
+                }
+                var cb = this.querySelector('.sync-mapel-checkbox:not(:disabled)');
+                if (cb) {
+                    cb.checked = !cb.checked;
                 }
             });
         });

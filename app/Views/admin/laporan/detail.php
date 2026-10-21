@@ -88,6 +88,14 @@
             <a href="<?= base_url('admin/laporan/hasil-supervisi/excel-detail/' . ($schedule['id'] ?? '')) ?>" class="btn btn-success btn-sm">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
+            <?php if (!empty($schedule['indikator_pmm_id'])): ?>
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-kurmer/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-success btn-sm shadow-sm font-weight-bold" title="Cetak Formulir A-D PMM">
+                <i class="fas fa-file-signature mr-1"></i> Formulir A-D (PMM)
+            </a>
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-telaah/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-primary btn-sm shadow-sm font-weight-bold" title="Cetak Telaah ATP / Modul Ajar">
+                <i class="fas fa-file-alt mr-1"></i> Cetak Telaah
+            </a>
+            <?php endif; ?>
             <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-danger btn-sm">
                 <i class="fas fa-file-pdf"></i> Cetak PDF
             </a>
