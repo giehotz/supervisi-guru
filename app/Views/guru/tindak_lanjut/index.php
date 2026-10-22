@@ -9,7 +9,7 @@
             <h1 class="h3 mb-0 text-gray-800">Formulir C & D: Tindak Lanjut & Refleksi</h1>
             <p class="text-muted small mb-0">Siklus Pembinaan Berkelanjutan Pasca Observasi Kelas (Perdirjen GTK No. 7607/2023)</p>
         </div>
-        <a href="<?= base_url('guru/jadwal') ?>" class="btn btn-secondary btn-sm shadow-sm">
+        <a href="<?= base_url('guru/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
         </a>
     </div>

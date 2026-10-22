@@ -61,10 +61,10 @@
 <body>
 
     <div class="no-print mb-4 d-flex justify-content-between align-items-center">
-        <a href="javascript:window.close()" class="btn btn-secondary btn-sm">
+        <a href="javascript:window.close()" class="btn btn-secondary btn-pill">
             &larr; Kembali / Tutup
         </a>
-        <button onclick="window.print()" class="btn btn-primary btn-sm font-weight-bold">
+        <button onclick="window.print()" class="btn btn-primary btn-pill font-weight-bold">
             Cetak / Simpan PDF
         </button>
     </div>

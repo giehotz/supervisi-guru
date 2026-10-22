@@ -212,15 +212,15 @@
                                 <span class="text-muted fw-normal small">(Pilih yang diterapkan)</span>
                             </label>
                             <div class="d-flex flex-wrap gap-2">
-                                <label class="btn btn-outline-primary btn-sm rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
+                                <label class="btn btn-outline-primary btn-pill rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
                                     <input type="checkbox" class="form-check-input mt-0 me-1" id="dif_konten" name="strategi_diferensiasi[]" value="konten">
                                     <span>🎨 Diferensiasi Konten</span>
                                 </label>
-                                <label class="btn btn-outline-info btn-sm rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
+                                <label class="btn btn-outline-info btn-pill rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
                                     <input type="checkbox" class="form-check-input mt-0 me-1" id="dif_proses" name="strategi_diferensiasi[]" value="proses">
                                     <span>⚙️ Diferensiasi Proses</span>
                                 </label>
-                                <label class="btn btn-outline-success btn-sm rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
+                                <label class="btn btn-outline-success btn-pill rounded-pill d-inline-flex align-items-center gap-1 cursor-pointer">
                                     <input type="checkbox" class="form-check-input mt-0 me-1" id="dif_produk" name="strategi_diferensiasi[]" value="produk">
                                     <span>📦 Diferensiasi Produk</span>
                                 </label>
@@ -298,7 +298,7 @@
                             <p class="text-secondary small mx-auto mb-4" style="max-width: 420px;">
                                 Perangkat ajar seperti Modul Ajar, ATP, atau LKPD belum diunggah untuk jadwal supervisi ini. Gunakan formulir di samping untuk mulai menautkan dokumen pertama Anda.
                             </p>
-                            <a href="#nama_dokumen" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            <a href="#nama_dokumen" class="btn btn-outline-primary btn-pill rounded-pill px-3">
                                 <i class="fas fa-plus me-1"></i> Isi Formulir Sekarang
                             </a>
                         </div>
@@ -412,7 +412,7 @@
                                         <!-- Action Buttons Toolbar -->
                                         <div class="d-flex flex-wrap align-items-center justify-content-between pt-2 mt-2 border-top gap-2">
                                             <div class="d-flex flex-wrap gap-2">
-                                                <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 btn-preview"
+                                                <button type="button" class="btn btn-outline-primary btn-pill d-inline-flex align-items-center gap-1 btn-preview"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#previewModal"
                                                     data-url="<?= esc($doc['link_drive']) ?>"
@@ -420,12 +420,12 @@
                                                     <i class="fas fa-eye"></i>
                                                     <span>Preview</span>
                                                 </button>
-                                                <a href="<?= esc($doc['link_drive']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1">
+                                                <a href="<?= esc($doc['link_drive']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-pill d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-external-link-alt"></i>
                                                     <span>Buka Tautan</span>
                                                 </a>
                                                 <?php if (!empty($doc['link_eksternal'])): ?>
-                                                    <a href="<?= esc($doc['link_eksternal']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-sm d-inline-flex align-items-center gap-1">
+                                                    <a href="<?= esc($doc['link_eksternal']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-pill d-inline-flex align-items-center gap-1">
                                                         <i class="fas fa-globe"></i>
                                                         <span>PMM / Referensi</span>
                                                     </a>
@@ -437,7 +437,7 @@
                                                     <form action="<?= base_url('guru/dokumen-ajar/delete/' . $doc['id']) ?>" method="post" class="d-inline form-delete-doc">
                                                         <?= csrf_field() ?>
                                                         <input type="hidden" name="_method" value="DELETE">
-                                                        <button type="button" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 btn-trigger-delete" data-doc-title="<?= esc($doc['nama_dokumen']) ?>">
+                                                        <button type="button" class="btn btn-outline-danger btn-pill d-inline-flex align-items-center gap-1 btn-trigger-delete" data-doc-title="<?= esc($doc['nama_dokumen']) ?>">
                                                             <i class="fas fa-trash-alt"></i>
                                                             <span>Hapus</span>
                                                         </button>
@@ -472,7 +472,7 @@
                     <h5 class="modal-title fw-bold text-dark mb-0" id="previewModalLabel">Preview Dokumen</h5>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="#" id="openExternalBtn" target="_blank" class="btn btn-outline-primary btn-sm">
+                    <a href="#" id="openExternalBtn" target="_blank" class="btn btn-outline-primary btn-pill">
                         <i class="fas fa-external-link-alt me-1"></i> Buka di Tab Baru
                     </a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -491,7 +491,7 @@
                 <div class="text-muted small">
                     <i class="fas fa-info-circle me-1"></i> Jika dokumen tidak tampil, pastikan izin link publik atau klik <strong>Buka di Tab Baru</strong>.
                 </div>
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary btn-pill" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

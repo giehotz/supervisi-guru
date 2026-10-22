@@ -242,21 +242,21 @@
                                         <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3 mb-2">
                                             <div>
                                                 <?php if ($index > 0): ?>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm btn-prev-tab" data-prev-id="<?= $jenisPenilaian[$index - 1]['id'] ?>">
+                                                    <button type="button" class="btn btn-outline-secondary btn-pill btn-prev-tab" data-prev-id="<?= $jenisPenilaian[$index - 1]['id'] ?>">
                                                         <i class="fas fa-arrow-left mr-1"></i> Tahap Sebelumnya
                                                     </button>
                                                 <?php endif; ?>
                                             </div>
                                             <div class="d-flex align-items-center">
-                                                <button type="submit" class="btn btn-outline-primary btn-sm btn-save-step shadow-sm mr-2" data-next-id="<?= ($index < count($jenisPenilaian) - 1) ? $jenisPenilaian[$index + 1]['id'] : 'foto' ?>">
+                                                <button type="submit" class="btn btn-outline-primary btn-pill btn-save-step shadow-sm mr-2" data-next-id="<?= ($index < count($jenisPenilaian) - 1) ? $jenisPenilaian[$index + 1]['id'] : 'foto' ?>">
                                                     <i class="fas fa-save mr-1"></i> Simpan Tahap Ini
                                                 </button>
                                                 <?php if ($index < count($jenisPenilaian) - 1): ?>
-                                                    <button type="button" class="btn btn-primary btn-sm btn-next-tab-save" data-next-id="<?= $jenisPenilaian[$index + 1]['id'] ?>">
+                                                    <button type="button" class="btn btn-primary btn-pill btn-next-tab-save" data-next-id="<?= $jenisPenilaian[$index + 1]['id'] ?>">
                                                         Tahap Selanjutnya <i class="fas fa-arrow-right ml-1"></i>
                                                     </button>
                                                 <?php else: ?>
-                                                    <button type="button" class="btn btn-primary btn-sm btn-next-tab-save" data-next-id="foto">
+                                                    <button type="button" class="btn btn-primary btn-pill btn-next-tab-save" data-next-id="foto">
                                                         Tahap 5: Foto Bukti <i class="fas fa-arrow-right ml-1"></i>
                                                     </button>
                                                 <?php endif; ?>
@@ -278,7 +278,7 @@
                                     5. FOTO BUKTI SUPERVISI
                                     <span class="badge badge-info ml-2" id="photoCountBadge"><?= !empty($existingPhotos) ? count($existingPhotos) : 0 ?> / 5 Foto</span>
                                 </h5>
-                                <a href="<?= base_url('supervisor/foto-bukti/upload/' . (isset($schedule['id']) ? $schedule['id'] : '')) ?>" class="btn btn-outline-primary btn-sm">
+                                <a href="<?= base_url('supervisor/foto-bukti/upload/' . (isset($schedule['id']) ? $schedule['id'] : '')) ?>" class="btn btn-outline-primary btn-pill">
                                     <i class="fas fa-external-link-alt mr-1"></i> Kelola di Halaman Khusus
                                 </a>
                             </div>
@@ -296,7 +296,7 @@
                                         <input type="text" class="form-control form-control-sm" id="quickKeterangan" name="keterangan" placeholder="Contoh: Dokumentasi proses pembelajaran">
                                     </div>
                                     <div class="col-md-2 mt-3 mt-md-0 text-md-right">
-                                        <button type="submit" id="btnQuickUpload" class="btn btn-primary btn-sm btn-block shadow-sm">
+                                        <button type="submit" id="btnQuickUpload" class="btn btn-primary btn-pill btn-block shadow-sm">
                                             <i class="fas fa-upload mr-1"></i> Upload Foto
                                         </button>
                                     </div>
@@ -336,10 +336,10 @@
 
                             <!-- Navigation CTA Buttons -->
                             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                                <button type="button" class="btn btn-outline-secondary btn-sm btn-prev-tab" data-prev-id="<?= $jenisPenilaian[count($jenisPenilaian) - 1]['id'] ?>">
+                                <button type="button" class="btn btn-outline-secondary btn-pill btn-prev-tab" data-prev-id="<?= $jenisPenilaian[count($jenisPenilaian) - 1]['id'] ?>">
                                     <i class="fas fa-arrow-left mr-1"></i> Tahap Sebelumnya
                                 </button>
-                                <button type="button" class="btn btn-success btn-sm btn-trigger-complete shadow-sm">
+                                <button type="button" class="btn btn-success btn-pill btn-trigger-complete shadow-sm">
                                     <i class="fas fa-check-double mr-1"></i> Selesaikan Supervisi
                                 </button>
                             </div>

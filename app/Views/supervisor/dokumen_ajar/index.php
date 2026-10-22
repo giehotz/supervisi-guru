@@ -6,7 +6,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dokumen Ajar Guru</h1>
-        <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-sm shadow-sm">
+        <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali ke Jadwal
         </a>
     </div>
@@ -80,22 +80,22 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-info btn-sm btn-preview"
+                                                <button type="button" class="btn btn-info btn-pill btn-preview"
                                                     data-toggle="modal"
                                                     data-target="#previewModal"
                                                     data-url="<?= $doc['link_drive'] ?>"
                                                     data-name="<?= $doc['nama_dokumen'] ?>">
                                                     <i class="fas fa-eye"></i> Preview
                                                 </button>
-                                                <a href="<?= $doc['link_drive'] ?>" target="_blank" class="btn btn-primary btn-sm">
+                                                <a href="<?= $doc['link_drive'] ?>" target="_blank" class="btn btn-primary btn-pill">
                                                     <i class="fas fa-external-link-alt"></i> Buka
                                                 </a>
 
-                                                <button type="button" class="btn btn-success btn-sm btn-action"
+                                                <button type="button" class="btn btn-success btn-pill btn-action"
                                                     data-id="<?= $doc['id'] ?>" data-action="Disetujui">
                                                     <i class="fas fa-check"></i> Setuju
                                                 </button>
-                                                <button type="button" class="btn btn-danger btn-sm btn-action"
+                                                <button type="button" class="btn btn-danger btn-pill btn-action"
                                                     data-id="<?= $doc['id'] ?>" data-action="Ditolak">
                                                     <i class="fas fa-times"></i> Tolak
                                                 </button>

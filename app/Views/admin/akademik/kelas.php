@@ -10,7 +10,10 @@
             <p class="text-muted small mb-0">Kelola rombongan belajar (rombel), tahun ajaran, dan penetapan wali kelas.</p>
         </div>
         <div>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddKelas">
+            <button type="button" class="btn btn-success btn-pill shadow-sm font-weight-bold px-3 text-white mr-1" data-toggle="modal" data-target="#modalGenerateKelas">
+                <i class="fas fa-magic mr-1 text-white"></i> Generate Rombel Otomatis
+            </button>
+            <button type="button" class="btn btn-primary btn-pill shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddKelas">
                 <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Kelas Baru
             </button>
         </div>
@@ -235,4 +238,118 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Generate Kelas Otomatis -->
+<div class="modal fade" id="modalGenerateKelas" tabindex="-1" role="dialog" aria-labelledby="modalGenerateKelasTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow">
+            <form action="<?= base_url('/admin/akademik/kelas/generate') ?>" method="post" id="formGenerateKelas">
+                <?= csrf_field() ?>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title font-weight-bold" id="modalGenerateKelasTitle">
+                        <i class="fas fa-magic mr-2"></i> Generate Rombel / Kelas Otomatis
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="fas fa-info-circle mr-1"></i> Sistem akan membuat rombel secara massal. Jika kelas dengan nama yang sama sudah ada pada tahun ajaran yang dipilih, data lama tidak akan ditimpa (duplikasi otomatis dilewati).
+                    </div>
+
+                    <!-- Tahun Ajaran -->
+                    <div class="form-group mb-3">
+                        <label class="small font-weight-bold text-gray-700">Tahun Ajaran & Semester <span class="text-danger">*</span></label>
+                        <select class="form-control font-weight-bold" name="tahun_ajar_id" required>
+                            <?php foreach ($tahun_ajars as $tahun): ?>
+                                <option value="<?= $tahun['id'] ?>" <?= ((string)$selectedTahunId === (string)$tahun['id'] || ($selectedTahunId === 'all' && ($tahun['status_aktif'] ?? '') === 'Aktif')) ? 'selected' : '' ?>>
+                                    <?= esc($tahun['tahun_ajar']) ?> - <?= esc($tahun['semester']) ?> <?= ($tahun['status_aktif'] ?? '') === 'Aktif' ? '(Aktif)' : '' ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Tingkat SD/MI 1 - 6 -->
+                    <div class="form-group mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="small font-weight-bold text-gray-700 mb-0">Pilih Tingkat (SD/MI 1 s.d. 6): <span class="text-danger">*</span></label>
+                            <div>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" id="btnCheckAllTingkat">Semua</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" id="btnUncheckAllTingkat">Batal</button>
+                            </div>
+                        </div>
+                        <div class="border rounded p-2 bg-light">
+                            <div class="row no-gutters">
+                                <?php for ($i = 1; $i <= 6; $i++): ?>
+                                    <div class="col-4 mb-1">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="tingkat[]" value="<?= $i ?>" class="custom-control-input cb-tingkat" id="tingkat-<?= $i ?>" checked>
+                                            <label class="custom-control-label small font-weight-bold text-gray-800" for="tingkat-<?= $i ?>">
+                                                Kelas <?= $i ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilihan Rombel / Huruf Akhir -->
+                    <div class="form-group mb-0">
+                        <label class="small font-weight-bold text-gray-700">Kelompok Rombel per Tingkat: <span class="text-danger">*</span></label>
+                        <select class="form-control font-weight-bold" name="rombel_akhir" id="selectRombelAkhir" required>
+                            <option value="A">Rombel A saja (1 Kelas per Tingkat: 1A, 2A, dst)</option>
+                            <option value="B">Rombel A - B (2 Kelas per Tingkat: 1A, 1B, dst)</option>
+                            <option value="C" selected>Rombel A - C (3 Kelas per Tingkat: 1A, 1B, 1C, dst)</option>
+                            <option value="D">Rombel A - D (4 Kelas per Tingkat: 1A, 1B, 1C, 1D, dst)</option>
+                            <option value="E">Rombel A - E (5 Kelas per Tingkat: 1A s.d. 1E, dst)</option>
+                            <option value="F">Rombel A - F (6 Kelas per Tingkat: 1A s.d. 1F, dst)</option>
+                        </select>
+                        <small class="form-text text-muted mt-1">
+                            Contoh jika dipilih <strong>A - C</strong> untuk Tingkat 1 s.d. 6: akan menghasilkan total 18 kelas (1A, 1B, 1C, 2A, ..., 6C).
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times mr-1"></i> Batal
+                    </button>
+                    <button type="submit" class="btn btn-success font-weight-bold text-white shadow-sm">
+                        <i class="fas fa-magic mr-1 text-white"></i> Generate Sekarang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var btnCheckAll = document.getElementById('btnCheckAllTingkat');
+    if (btnCheckAll) {
+        btnCheckAll.addEventListener('click', function() {
+            document.querySelectorAll('.cb-tingkat').forEach(function(cb) { cb.checked = true; });
+        });
+    }
+
+    var btnUncheckAll = document.getElementById('btnUncheckAllTingkat');
+    if (btnUncheckAll) {
+        btnUncheckAll.addEventListener('click', function() {
+            document.querySelectorAll('.cb-tingkat').forEach(function(cb) { cb.checked = false; });
+        });
+    }
+
+    var formGenerate = document.getElementById('formGenerateKelas');
+    if (formGenerate) {
+        formGenerate.addEventListener('submit', function(e) {
+            var checked = document.querySelectorAll('.cb-tingkat:checked').length;
+            if (checked === 0) {
+                e.preventDefault();
+                alert('Pilih minimal satu tingkat kelas untuk di-generate.');
+            }
+        });
+    }
+});
+</script>
 <?= $this->endSection(); ?>

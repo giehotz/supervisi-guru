@@ -125,7 +125,7 @@
                 <div class="text-center py-5 text-muted">
                     <i class="fas fa-calendar-times fa-3x mb-3 text-gray-300"></i>
                     <p class="mb-1 font-weight-bold">Tidak ada data tahun ajaran untuk filter "<?= esc($filterStatus) ?>".</p>
-                    <a href="<?= base_url('/admin/akademik/tahun-ajar?status=Semua') ?>" class="btn btn-outline-primary btn-sm mt-2">
+                    <a href="<?= base_url('/admin/akademik/tahun-ajar?status=Semua') ?>" class="btn btn-outline-primary btn-pill mt-2">
                         <i class="fas fa-eye mr-1"></i> Tampilkan Semua Tahun Ajaran
                     </a>
                 </div>

@@ -12,7 +12,7 @@
             <p class="text-muted small mb-0">Manajemen jadwal pelajaran mingguan, plotting guru mengajar, dan monitoring beban jam tatap muka (JTM).</p>
         </div>
         <div class="mt-3 mt-sm-0 d-flex flex-wrap">
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" style="color: #ffffff !important;" data-toggle="modal" data-target="#modalAddJadwal" onclick="resetFormAdd()">
+            <button type="button" class="btn btn-primary btn-pill shadow-sm font-weight-bold px-3 text-white" style="color: #ffffff !important;" data-toggle="modal" data-target="#modalAddJadwal" onclick="resetFormAdd()">
                 <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Plotting Mengajar
             </button>
         </div>
@@ -122,7 +122,7 @@
                 <div>
                     <?php if ($selectedKelasId): ?>
                         <a href="<?= base_url('admin/akademik/mengajar/cetak-kelas/' . $selectedKelasId . '?tahun_ajar_id=' . $selectedTahunId) ?>" 
-                           target="_blank" class="btn btn-outline-secondary btn-sm shadow-sm font-weight-bold">
+                           target="_blank" class="btn btn-outline-secondary btn-pill shadow-sm font-weight-bold">
                             <i class="fas fa-print mr-1"></i> Cetak Jadwal Kelas
                         </a>
                     <?php endif; ?>
@@ -168,7 +168,7 @@
                                                                     <?= esc($cell['item']['nama_mapel'] ?? 'Mapel') ?>
                                                                 </span>
                                                                 <div class="dropdown no-arrow">
-                                                                    <button class="btn btn-link btn-sm text-secondary p-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <button class="btn btn-link btn-pill text-secondary p-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                         <i class="fas fa-ellipsis-v"></i>
                                                                     </button>
                                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
@@ -194,7 +194,7 @@
                                             <?php else: ?>
                                                 <!-- Slot Kosong dengan Quick Add Button -->
                                                 <td class="p-1 align-middle slot-hover" style="height: 65px;">
-                                                    <button type="button" class="btn btn-sm btn-light border btn-block text-muted quick-add-btn py-2" 
+                                                    <button type="button" class="btn btn-pill btn-light border btn-block text-muted quick-add-btn py-2" 
                                                             title="Klik untuk plotting jadwal di slot ini"
                                                             onclick="quickAddSchedule('<?= $h ?>', <?= $jamKe ?>, 'kelas', <?= $selectedKelasId ?>)">
                                                         <i class="fas fa-plus text-gray-400"></i>
@@ -238,7 +238,7 @@
                 <div>
                     <?php if ($selectedGuruId): ?>
                         <a href="<?= base_url('admin/akademik/mengajar/cetak-guru/' . $selectedGuruId . '?tahun_ajar_id=' . $selectedTahunId) ?>" 
-                           target="_blank" class="btn btn-outline-secondary btn-sm shadow-sm font-weight-bold">
+                           target="_blank" class="btn btn-outline-secondary btn-pill shadow-sm font-weight-bold">
                             <i class="fas fa-print mr-1"></i> Cetak Jadwal Guru
                         </a>
                     <?php endif; ?>
@@ -284,7 +284,7 @@
                                                                     Kelas <?= esc($cell['item']['nama_kelas'] ?? '-') ?>
                                                                 </span>
                                                                 <div class="dropdown no-arrow">
-                                                                    <button class="btn btn-link btn-sm text-secondary p-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    <button class="btn btn-link btn-pill text-secondary p-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                         <i class="fas fa-ellipsis-v"></i>
                                                                     </button>
                                                                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
@@ -309,7 +309,7 @@
                                             <?php else: ?>
                                                 <!-- Slot Kosong dengan Quick Add Button untuk Guru -->
                                                 <td class="p-1 align-middle slot-hover" style="height: 65px;">
-                                                    <button type="button" class="btn btn-sm btn-light border btn-block text-muted quick-add-btn py-2" 
+                                                    <button type="button" class="btn btn-pill btn-light border btn-block text-muted quick-add-btn py-2" 
                                                             title="Plotting jam mengajar untuk guru ini"
                                                             onclick="quickAddSchedule('<?= $h ?>', <?= $jamKe ?>, 'guru', <?= $selectedGuruId ?>)">
                                                         <i class="fas fa-plus text-gray-400"></i>
@@ -400,7 +400,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="<?= base_url('admin/akademik/mengajar?tab=guru&tahun_ajar_id=' . $selectedTahunId . '&guru_id=' . $rb['guru_id']) ?>" 
-                                           class="btn btn-sm btn-outline-primary" title="Lihat Jadwal Guru Ini">
+                                           class="btn btn-pill btn-outline-primary" title="Lihat Jadwal Guru Ini">
                                             <i class="fas fa-calendar-alt mr-1"></i> Jadwal
                                         </a>
                                     </td>
@@ -466,10 +466,10 @@
                                         <?= esc($jadwal['tahun_ajar'] ?? '-') ?> (<?= esc($jadwal['semester'] ?? '-') ?>)
                                     </td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-warning" title="Edit Jadwal" onclick='openEditModal(<?= json_encode($jadwal) ?>)'>
+                                        <button type="button" class="btn btn-pill btn-warning" title="Edit Jadwal" onclick='openEditModal(<?= json_encode($jadwal) ?>)'>
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger" title="Hapus Jadwal" onclick="confirmDelete(<?= $jadwal['id'] ?>, 'tabel')">
+                                        <button type="button" class="btn btn-pill btn-danger" title="Hapus Jadwal" onclick="confirmDelete(<?= $jadwal['id'] ?>, 'tabel')">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </td>
@@ -588,8 +588,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-white border-top">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-3 font-weight-bold text-white" style="color: #ffffff !important;">
+                    <button type="button" class="btn btn-secondary btn-pill" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-pill px-3 font-weight-bold text-white" style="color: #ffffff !important;">
                         <i class="fas fa-save mr-1 text-white"></i> Simpan Plotting
                     </button>
                 </div>
@@ -699,8 +699,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-white border-top">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning btn-sm px-3 font-weight-bold text-dark">
+                    <button type="button" class="btn btn-secondary btn-pill" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-warning btn-pill px-3 font-weight-bold text-dark">
                         <i class="fas fa-save mr-1"></i> Perbarui Plotting
                     </button>
                 </div>

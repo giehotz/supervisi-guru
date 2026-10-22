@@ -79,30 +79,30 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Detail Hasil Supervisi</h1>
         <div>
-            <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '')) ?>" class="btn btn-warning btn-sm shadow-sm font-weight-bold">
+            <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '')) ?>" class="btn btn-warning btn-pill shadow-sm font-weight-bold">
                 <i class="fas fa-edit"></i> Edit Penilaian
             </a>
-            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-info btn-sm shadow-sm font-weight-bold">
+            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-info btn-pill shadow-sm font-weight-bold">
                 <i class="fas fa-camera"></i> Foto Bukti
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/excel-detail/' . ($schedule['id'] ?? '')) ?>" class="btn btn-success btn-sm">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/excel-detail/' . ($schedule['id'] ?? '')) ?>" class="btn btn-success btn-pill">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
             <?php if (!empty($schedule['indikator_pmm_id'])): ?>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-kurmer/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-success btn-sm shadow-sm font-weight-bold" title="Cetak Formulir A-D PMM">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-kurmer/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-success btn-pill shadow-sm font-weight-bold" title="Cetak Formulir A-D PMM">
                 <i class="fas fa-file-signature mr-1"></i> Formulir A-D (PMM)
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-telaah/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-primary btn-sm shadow-sm font-weight-bold" title="Cetak Telaah ATP / Modul Ajar">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-telaah/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-primary btn-pill shadow-sm font-weight-bold" title="Cetak Telaah ATP / Modul Ajar">
                 <i class="fas fa-file-alt mr-1"></i> Cetak Telaah
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-coaching/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-teal btn-sm text-white shadow-sm font-weight-bold" title="Cetak Berita Acara Coaching TIRTA">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-coaching/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-teal btn-pill text-white shadow-sm font-weight-bold" title="Cetak Berita Acara Coaching TIRTA">
                 <i class="fas fa-comments mr-1"></i> Berita Acara Coaching
             </a>
             <?php endif; ?>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-danger btn-sm">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-danger btn-pill">
                 <i class="fas fa-file-pdf"></i> Cetak PDF
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi') ?>" class="btn btn-secondary btn-sm">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi') ?>" class="btn btn-secondary btn-pill">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
@@ -167,7 +167,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Hasil Penilaian</h6>
-            <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '')) ?>" class="btn btn-warning btn-sm font-weight-bold shadow-sm">
+            <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '')) ?>" class="btn btn-warning btn-pill font-weight-bold shadow-sm">
                 <i class="fas fa-edit mr-1"></i> Edit Semua Penilaian
             </a>
         </div>
@@ -223,7 +223,7 @@
                             <div class="d-flex align-items-center">
                                 <span class="badge badge-<?= $badgeClass ?> mr-1"><?= esc($kategori) ?></span>
                                 <span class="badge badge-info mr-2"><?= number_format($nilai, 2) ?></span>
-                                <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '') . '?tab=' . $jenisId) ?>" class="btn btn-outline-warning btn-sm no-print font-weight-bold" title="Edit Komponen Ini di Form">
+                                <a href="<?= base_url('admin/penilaian/form/' . ($schedule['id'] ?? '') . '?tab=' . $jenisId) ?>" class="btn btn-outline-warning btn-pill no-print font-weight-bold" title="Edit Komponen Ini di Form">
                                     <i class="fas fa-edit mr-1"></i> Edit Komponen
                                 </a>
                             </div>
@@ -254,7 +254,7 @@
                                                 </td>
                                                 <td class="align-middle cell-catatan"><?= isset($detail['catatan']) ? esc($detail['catatan']) : '-' ?></td>
                                                 <td class="text-center align-middle no-print">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary btn-quick-edit"
+                                                    <button type="button" class="btn btn-pill btn-outline-primary btn-quick-edit"
                                                         data-jadwal-id="<?= esc($schedule['id']) ?>"
                                                         data-jenis-id="<?= esc($jenisId) ?>"
                                                         data-aspek-id="<?= esc($detail['aspek_penilaian_id']) ?>"
@@ -296,7 +296,7 @@
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="fas fa-camera mr-1"></i> Foto Bukti Supervisi
             </h6>
-            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-primary btn-sm no-print font-weight-bold shadow-sm text-white">
+            <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-primary btn-pill no-print font-weight-bold shadow-sm text-white">
                 <i class="fas fa-upload mr-1 text-white"></i> Kelola / Upload Foto Bukti
             </a>
         </div>
@@ -335,7 +335,7 @@
                 <div class="text-center py-4">
                     <i class="fas fa-camera fa-2x text-gray-300 mb-2"></i>
                     <p class="text-muted mb-2">Belum ada foto bukti supervisi yang diunggah untuk jadwal ini.</p>
-                    <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-outline-primary btn-sm font-weight-bold no-print">
+                    <a href="<?= base_url('admin/foto-bukti/upload/' . ($schedule['id'] ?? '')) ?>" class="btn btn-outline-primary btn-pill font-weight-bold no-print">
                         <i class="fas fa-cloud-upload-alt mr-1"></i> Upload Foto Bukti Sekarang
                     </a>
                 </div>
@@ -551,7 +551,7 @@
                     <div class="form-group mb-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label for="qeCatatan" class="small font-weight-bold text-gray-700 m-0">Catatan / Bukti Fisik:</label>
-                            <button type="button" class="btn btn-link btn-sm p-0 text-muted" id="btnAutoNote">
+                            <button type="button" class="btn btn-link btn-pill p-0 text-muted" id="btnAutoNote">
                                 <i class="fas fa-magic mr-1"></i> Set Catatan Standar
                             </button>
                         </div>
@@ -559,8 +559,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary btn-sm font-weight-bold text-white" id="btnSaveQuickEdit">
+                    <button type="button" class="btn btn-secondary btn-pill" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary btn-pill font-weight-bold text-white" id="btnSaveQuickEdit">
                         <i class="fas fa-save mr-1 text-white"></i> Simpan Perubahan
                     </button>
                 </div>

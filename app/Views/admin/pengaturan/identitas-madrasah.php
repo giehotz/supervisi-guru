@@ -26,16 +26,16 @@
 
                     <div class="d-flex justify-content-center">
                         <?php if (!empty($identitas['logo'])): ?>
-                            <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/logo') ?>" class="btn btn-danger btn-sm mr-2" onclick="return confirm('Hapus logo?')">Hapus Logo</a>
+                            <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/logo') ?>" class="btn btn-danger btn-pill mr-2" onclick="return confirm('Hapus logo?')">Hapus Logo</a>
                         <?php endif; ?>
 
                         <form action="<?= base_url('admin/pengaturan/upload-asset/logo') ?>" method="post" enctype="multipart/form-data" id="formUploadLogo" class="mr-2">
                             <?= csrf_field() ?>
                             <input type="file" name="logo" id="logoInput" style="display:none;" accept="image/*" onchange="document.getElementById('formUploadLogo').submit()">
-                            <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('logoInput').click()">Upload Logo</button>
+                            <button type="button" class="btn btn-primary btn-pill" onclick="document.getElementById('logoInput').click()">Upload Logo</button>
                         </form>
 
-                        <!-- <a href="<?= base_url('admin/pengaturan/sync-profile') ?>" class="btn btn-outline-primary btn-sm">Syncron Profile</a> -->
+                        <!-- <a href="<?= base_url('admin/pengaturan/sync-profile') ?>" class="btn btn-outline-primary btn-pill">Syncron Profile</a> -->
                     </div>
 
                     <hr>
@@ -47,7 +47,7 @@
                             <div class="mb-2">
                                 <img src="<?= base_url('uploads/' . $identitas['sidebar_logo']) ?>" alt="Sidebar Logo" class="img-fluid" style="max-height: 50px;">
                             </div>
-                            <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/sidebar_logo') ?>" class="btn btn-danger btn-sm mb-2" onclick="return confirm('Hapus logo sidebar?')"><i class="fas fa-trash"></i></a>
+                            <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/sidebar_logo') ?>" class="btn btn-danger btn-pill mb-2" onclick="return confirm('Hapus logo sidebar?')"><i class="fas fa-trash"></i></a>
                         <?php else: ?>
                             <p class="small text-muted mb-2">Belum ada logo sidebar</p>
                         <?php endif; ?>
@@ -80,7 +80,7 @@
                             <input type="password" class="form-control" id="konfirmasi_password" name="konfirmasi_password" placeholder="Masukkan Password Baru" required>
                         </div>
                         <div class="text-right">
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                            <button type="submit" class="btn btn-primary btn-pill">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -101,7 +101,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-school mr-2"></i>Identitas Madrasah</h6>
-                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editIdentitasModal">
+                    <button class="btn btn-primary btn-pill" data-toggle="modal" data-target="#editIdentitasModal">
                         <i class="fas fa-edit fa-sm text-white-50"></i> Edit
                     </button>
                 </div>
@@ -211,7 +211,7 @@
                             <small class="form-text text-muted">NIP Kepala Madrasah</small>
                         </div>
                         <div class="text-right">
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
+                            <button type="submit" class="btn btn-primary btn-pill">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -295,7 +295,7 @@
                         </div>
 
                         <div class="text-right">
-                            <button type="submit" class="btn btn-primary btn-sm">
+                            <button type="submit" class="btn btn-primary btn-pill">
                                 <i class="fas fa-save mr-1"></i> Simpan Pengaturan Kop
                             </button>
                         </div>

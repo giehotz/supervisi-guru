@@ -6,10 +6,10 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Manajemen Jadwal Supervisi</h1>
         <div>
-            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-success btn-sm shadow-sm mr-1">
+            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-success btn-pill shadow-sm mr-1">
                 <i class="fas fa-magic mr-1"></i> Generate Jadwal
             </a>
-            <a href="<?= base_url('/admin/jadwal/create') ?>" class="btn btn-primary btn-sm shadow-sm mr-1">
+            <a href="<?= base_url('/admin/jadwal/create') ?>" class="btn btn-primary btn-pill shadow-sm mr-1">
                 <i class="fas fa-plus mr-1"></i> Tambah Jadwal
             </a>
             <?php
@@ -20,7 +20,7 @@
                     $pdfUrl .= '?tahun_ajar_id=all';
                 }
             ?>
-            <a href="<?= $pdfUrl ?>" class="btn btn-danger btn-sm shadow-sm" target="_blank">
+            <a href="<?= $pdfUrl ?>" class="btn btn-danger btn-pill shadow-sm" target="_blank">
                 <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
             </a>
         </div>
@@ -89,7 +89,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Daftar Jadwal Supervisi</h6>
             <div>
                 <!-- Tombol Bulk Delete (Muncul saat ada checkbox dipilih) -->
-                <button type="button" class="btn btn-danger btn-sm shadow-sm" id="btnBulkDelete" style="display: none;">
+                <button type="button" class="btn btn-danger btn-pill shadow-sm" id="btnBulkDelete" style="display: none;">
                     <i class="fas fa-trash-alt mr-1"></i> Hapus Terpilih (<span id="bulkSelectedCount">0</span>)
                 </button>
             </div>

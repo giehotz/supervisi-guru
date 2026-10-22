@@ -10,10 +10,10 @@
             <p class="text-muted small mb-0">Kelola kurikulum dan daftar mata pelajaran madrasah yang diajarkan.</p>
         </div>
         <div class="d-flex align-items-center">
-            <button type="button" class="btn btn-outline-success btn-sm shadow-sm font-weight-bold px-3 mr-2 me-2" data-toggle="modal" data-target="#modalSyncMapel" data-bs-toggle="modal" data-bs-target="#modalSyncMapel">
+            <button type="button" class="btn btn-outline-success btn-pill shadow-sm font-weight-bold px-3 mr-2 me-2" data-toggle="modal" data-target="#modalSyncMapel" data-bs-toggle="modal" data-bs-target="#modalSyncMapel">
                 <i class="fas fa-sync-alt mr-1 me-1"></i> Sinkron Kurikulum Merdeka
             </button>
-            <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddMapel" data-bs-toggle="modal" data-bs-target="#modalAddMapel">
+            <button type="button" class="btn btn-primary btn-pill shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddMapel" data-bs-toggle="modal" data-bs-target="#modalAddMapel">
                 <i class="fas fa-plus-circle mr-1 me-1 text-white"></i> Tambah Mata Pelajaran
             </button>
         </div>

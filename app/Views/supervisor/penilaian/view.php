@@ -8,15 +8,15 @@
         <h1 class="h3 mb-0 text-gray-800">Hasil Penilaian Supervisi</h1>
         <div>
             <?php if (isset($schedule['id']) && !empty($schedule['id'])): ?>
-                <a href="<?= base_url('supervisor/penilaian/print/' . $schedule['id']) ?>" class="btn btn-success btn-sm no-print">
+                <a href="<?= base_url('supervisor/penilaian/print/' . $schedule['id']) ?>" class="btn btn-success btn-pill no-print">
                     <i class="fas fa-file-pdf"></i> Unduh PDF
                 </a>
             <?php else: ?>
-                <button class="btn btn-success btn-sm no-print" disabled>
+                <button class="btn btn-success btn-pill no-print" disabled>
                     <i class="fas fa-file-pdf"></i> Unduh PDF
                 </button>
             <?php endif; ?>
-            <button class="btn btn-primary btn-sm no-print" onclick="window.print()">
+            <button class="btn btn-primary btn-pill no-print" onclick="window.print()">
                 <i class="fas fa-print"></i> Cetak Laporan
             </button>
         </div>
@@ -71,7 +71,7 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Hasil Penilaian</h6>
             <?php if (isset($schedule['status']) && $schedule['status'] == 'Terjadwal'): ?>
-                <button type="button" class="btn btn-success btn-sm" id="completeBtn">
+                <button type="button" class="btn btn-success btn-pill" id="completeBtn">
                     <i class="fas fa-check"></i> Selesaikan Supervisi
                 </button>
             <?php endif; ?>
@@ -318,7 +318,7 @@
                                 <div class="card">
                                     <img src="<?= base_url($photo['file_path']) ?>" class="card-img-top" alt="Foto Bukti Supervisi" style="height: 200px; object-fit: cover;">
                                     <div class="card-body text-center">
-                                        <button class="btn btn-danger btn-sm delete-photo" data-id="<?= $photo['id'] ?>">
+                                        <button class="btn btn-danger btn-pill delete-photo" data-id="<?= $photo['id'] ?>">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </div>

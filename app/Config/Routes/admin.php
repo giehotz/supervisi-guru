@@ -106,6 +106,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     // Kelas & Rombel
     $routes->get('akademik/kelas', 'AkademikController::kelas');
     $routes->post('akademik/kelas/create', 'AkademikController::createKelas');
+    $routes->post('akademik/kelas/generate', 'AkademikController::generateKelas');
     $routes->get('akademik/kelas/(:num)/edit', 'AkademikController::editKelas/$1');
     $routes->post('akademik/kelas/(:num)/update', 'AkademikController::updateKelas/$1');
     $routes->get('akademik/kelas/(:num)/delete', 'AkademikController::deleteKelas/$1');

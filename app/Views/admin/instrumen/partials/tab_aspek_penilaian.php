@@ -56,10 +56,10 @@
                     </td>
                     <td>
                         <div class="btn-list flex-nowrap justify-content-center">
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editAspekModal<?= $aspek['id'] ?? '' ?>">
+                            <button class="btn btn-warning btn-pill" data-bs-toggle="modal" data-bs-target="#editAspekModal<?= $aspek['id'] ?? '' ?>">
                                 <i class="fas fa-edit me-1"></i> Edit
                             </button>
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAspekModal<?= $aspek['id'] ?? '' ?>">
+                            <button class="btn btn-danger btn-pill" data-bs-toggle="modal" data-bs-target="#deleteAspekModal<?= $aspek['id'] ?? '' ?>">
                                 <i class="fas fa-trash me-1"></i> Hapus
                             </button>
                         </div>

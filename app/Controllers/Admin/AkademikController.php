@@ -398,6 +398,90 @@ class AkademikController extends BaseController
         return redirect()->to('/admin/akademik/kelas')->with('success', 'Kelas berhasil ditambahkan.');
     }
 
+    public function generateKelas()
+    {
+        $tahunAjarId = $this->request->getPost('tahun_ajar_id');
+        $tingkats = (array)$this->request->getPost('tingkat');
+        $rombelAkhir = strtoupper(trim((string)$this->request->getPost('rombel_akhir') ?: 'C'));
+
+        if (empty($tahunAjarId)) {
+            return redirect()->back()->withInput()->with('error', 'Pilih tahun ajaran terlebih dahulu.');
+        }
+
+        if (empty($tingkats)) {
+            return redirect()->back()->withInput()->with('error', 'Pilih minimal satu tingkat kelas untuk di-generate.');
+        }
+
+        // Generate daftar huruf rombel dari 'A' sampai $rombelAkhir
+        $hurufRombels = [];
+        $charEnd = in_array($rombelAkhir, ['A', 'B', 'C', 'D', 'E', 'F']) ? $rombelAkhir : 'C';
+        for ($ch = ord('A'); $ch <= ord($charEnd); $ch++) {
+            $hurufRombels[] = chr($ch);
+        }
+
+        // Ambil nama kelas yang sudah ada pada tahun ajaran ini untuk mencegah duplikasi
+        $existingRows = $this->kelasModel
+            ->select('nama_kelas')
+            ->where('tahun_ajar_id', $tahunAjarId)
+            ->findAll();
+        $existingKelas = array_map('strtoupper', array_column($existingRows, 'nama_kelas'));
+
+        // Mapping fase standar Kurikulum Merdeka SD/MI
+        $faseMap = [
+            1 => 'Fase A',
+            2 => 'Fase A',
+            3 => 'Fase B',
+            4 => 'Fase B',
+            5 => 'Fase C',
+            6 => 'Fase C',
+        ];
+
+        $kelasToInsert = [];
+        $skippedCount = 0;
+
+        sort($tingkats, SORT_NUMERIC);
+
+        foreach ($tingkats as $tingkat) {
+            $tingkatNum = (int)$tingkat;
+            if ($tingkatNum < 1 || $tingkatNum > 6) {
+                continue;
+            }
+
+            foreach ($hurufRombels as $huruf) {
+                $namaKelas = $tingkatNum . $huruf;
+
+                // Cek apakah kelas sudah ada (tolak duplikasi)
+                if (in_array(strtoupper($namaKelas), $existingKelas, true)) {
+                    $skippedCount++;
+                    continue;
+                }
+
+                $kelasToInsert[] = [
+                    'tahun_ajar_id' => $tahunAjarId,
+                    'nama_kelas'    => $namaKelas,
+                    'fase'          => $faseMap[$tingkatNum] ?? '',
+                    'wali_kelas'    => null,
+                    'status'        => 'Aktif',
+                ];
+            }
+        }
+
+        if (empty($kelasToInsert)) {
+            return redirect()->to('/admin/akademik/kelas?tahun_ajar_id=' . $tahunAjarId)
+                ->with('error', 'Seluruh kelas yang dipilih sudah terdaftar di tahun ajaran ini (' . $skippedCount . ' kelas dilewati). Tidak ada data baru yang dibuat.');
+        }
+
+        $this->kelasModel->insertBatch($kelasToInsert);
+        $totalCreated = count($kelasToInsert);
+
+        $msg = "Berhasil membuat {$totalCreated} kelas baru.";
+        if ($skippedCount > 0) {
+            $msg .= " ({$skippedCount} kelas dilewati karena sudah ada).";
+        }
+
+        return redirect()->to('/admin/akademik/kelas?tahun_ajar_id=' . $tahunAjarId)->with('success', $msg);
+    }
+
     public function editKelas($id)
     {
         $data['kelas'] = $this->kelasModel->find($id);

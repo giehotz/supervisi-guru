@@ -8,7 +8,7 @@
         <h1 class="h3 mb-0 text-gray-800">Detail Jadwal Supervisi</h1>
         <div>
             <?php if ($schedule['status'] == 'Terjadwal' || $schedule['status'] == 'Selesai'): ?>
-                <a href="<?= base_url('/kepala/penilaian/form/' . $schedule['id']) ?>" class="btn btn-primary btn-sm">
+                <a href="<?= base_url('/kepala/penilaian/form/' . $schedule['id']) ?>" class="btn btn-primary btn-pill">
                     <i class="fas fa-clipboard-check"></i> 
                     <?php if ($schedule['status'] == 'Selesai'): ?>
                         Lihat Penilaian
@@ -17,7 +17,7 @@
                     <?php endif; ?>
                 </a>
             <?php endif; ?>
-            <a href="<?= base_url('/kepala/jadwal') ?>" class="btn btn-secondary btn-sm">
+            <a href="<?= base_url('/kepala/jadwal') ?>" class="btn btn-secondary btn-pill">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>

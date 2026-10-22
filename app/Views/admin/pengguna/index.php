@@ -99,23 +99,23 @@
                         </td>
                         <td class="text-end text-nowrap">
                             <div class="btn-list justify-content-end">
-                                <a href="<?= base_url('/admin/pengguna/' . $user['id'] . '/edit') ?>" class="btn btn-sm btn-outline-warning" title="Edit">
+                                <a href="<?= base_url('/admin/pengguna/' . $user['id'] . '/edit') ?>" class="btn btn-pill btn-outline-warning" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-info btn-reset-password"
+                                <button type="button" class="btn btn-pill btn-outline-info btn-reset-password"
                                     data-id="<?= $user['id'] ?>"
                                     data-username="<?= esc($user['username']) ?>"
                                     title="Reset Password">
                                     <i class="fas fa-key"></i>
                                 </button>
                                 <a href="<?= base_url('/admin/pengguna/' . $user['id'] . '/toggle-status') ?>"
-                                    class="btn btn-sm btn-outline-<?= (strtolower($user['status']) == 'aktif') ? 'secondary' : 'success' ?>"
+                                    class="btn btn-pill btn-outline-<?= (strtolower($user['status']) == 'aktif') ? 'secondary' : 'success' ?>"
                                     onclick="return confirm('Apakah Anda yakin ingin mengubah status pengguna ini?')"
                                     title="<?= (strtolower($user['status']) == 'aktif') ? 'Nonaktifkan' : 'Aktifkan' ?>">
                                     <i class="fas fa-power-off"></i>
                                 </a>
                                 <a href="<?= base_url('/admin/pengguna/' . $user['id'] . '/delete') ?>"
-                                    class="btn btn-sm btn-outline-danger"
+                                    class="btn btn-pill btn-outline-danger"
                                     onclick="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')"
                                     title="Hapus">
                                     <i class="fas fa-trash"></i>

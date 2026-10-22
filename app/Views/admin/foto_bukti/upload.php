@@ -7,7 +7,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Foto Bukti Supervisi</h1>
         <div>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="btn btn-secondary btn-sm">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="btn btn-secondary btn-pill">
                 <i class="fas fa-arrow-left mr-1"></i> Kembali ke Detail
             </a>
         </div>
@@ -104,7 +104,7 @@
                                                  title="Klik untuk memperbesar foto">
                                             <div style="position: absolute; top: 10px; right: 10px;">
                                                 <button type="button" 
-                                                        class="btn btn-danger btn-sm shadow btn-delete-photo rounded-circle" 
+                                                        class="btn btn-danger btn-pill shadow btn-delete-photo rounded-circle" 
                                                         style="width: 32px; height: 32px; padding: 0;"
                                                         data-id="<?= $photo['id'] ?>"
                                                         title="Hapus foto ini">
@@ -209,10 +209,10 @@
                     <hr>
 
                     <div class="text-center">
-                        <a href="<?= base_url('admin/penilaian/form/' . $schedule['id']) ?>" class="btn btn-outline-warning btn-sm btn-block font-weight-bold mb-2">
+                        <a href="<?= base_url('admin/penilaian/form/' . $schedule['id']) ?>" class="btn btn-outline-warning btn-pill btn-block font-weight-bold mb-2">
                             <i class="fas fa-edit mr-1"></i> Buka Form Nilai Supervisi
                         </a>
-                        <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="btn btn-outline-secondary btn-sm btn-block">
+                        <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="btn btn-outline-secondary btn-pill btn-block">
                             <i class="fas fa-eye mr-1"></i> Lihat Laporan Detail
                         </a>
                     </div>

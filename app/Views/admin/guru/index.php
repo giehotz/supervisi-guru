@@ -6,7 +6,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Guru</h1>
-        <a href="<?= base_url('admin/guru/create'); ?>" class="btn btn-primary btn-icon-split btn-sm">
+        <a href="<?= base_url('admin/guru/create'); ?>" class="btn btn-primary btn-icon-split btn-pill">
             <span class="icon text-white-50">
                 <i class="fas fa-plus"></i>
             </span>
@@ -79,19 +79,19 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <a href="<?= base_url('admin/guru/' . $guru['id'] . '/edit'); ?>" class="btn btn-warning btn-circle btn-sm">
+                                    <a href="<?= base_url('admin/guru/' . $guru['id'] . '/edit'); ?>" class="btn btn-warning btn-circle btn-pill">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($guru['is_supervisor'] == 1) : ?>
-                                        <a href="<?= base_url('admin/guru/' . $guru['id'] . '/toggle-supervisor'); ?>" class="btn btn-info btn-circle btn-sm" title="Turunkan sebagai Guru">
+                                        <a href="<?= base_url('admin/guru/' . $guru['id'] . '/toggle-supervisor'); ?>" class="btn btn-info btn-circle btn-pill" title="Turunkan sebagai Guru">
                                             <i class="fas fa-arrow-down"></i>
                                         </a>
                                     <?php else : ?>
-                                        <a href="<?= base_url('admin/guru/' . $guru['id'] . '/toggle-supervisor'); ?>" class="btn btn-success btn-circle btn-sm" title="Angkat sebagai Supervisor">
+                                        <a href="<?= base_url('admin/guru/' . $guru['id'] . '/toggle-supervisor'); ?>" class="btn btn-success btn-circle btn-pill" title="Angkat sebagai Supervisor">
                                             <i class="fas fa-arrow-up"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <a href="<?= base_url('admin/guru/' . $guru['id'] . '/delete'); ?>" class="btn btn-danger btn-circle btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                    <a href="<?= base_url('admin/guru/' . $guru['id'] . '/delete'); ?>" class="btn btn-danger btn-circle btn-pill" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>

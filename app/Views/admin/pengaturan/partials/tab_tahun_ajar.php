@@ -3,7 +3,7 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-calendar-alt mr-2"></i>Daftar Tahun Ajaran & Semester</h6>
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addTahunModal">
+                <button type="button" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#addTahunModal">
                     <i class="fas fa-plus mr-1"></i> Tambah Tahun Ajaran
                 </button>
             </div>
@@ -30,13 +30,13 @@
                                         <?php if ($item['status_aktif'] == 'Aktif') : ?>
                                             <span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> Aktif</span>
                                         <?php else : ?>
-                                            <a href="<?= base_url('admin/pengaturan/tahun-ajar/activate/' . $item['id']) ?>" class="btn btn-sm btn-outline-secondary py-0" title="Klik untuk mengaktifkan">
+                                            <a href="<?= base_url('admin/pengaturan/tahun-ajar/activate/' . $item['id']) ?>" class="btn btn-pill btn-outline-secondary py-0" title="Klik untuk mengaktifkan">
                                                 Non-Aktif
                                             </a>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-warning btn-sm btn-edit-tahun"
+                                        <button type="button" class="btn btn-warning btn-pill btn-edit-tahun"
                                             data-id="<?= $item['id'] ?>"
                                             data-tahun="<?= esc($item['tahun_ajar']) ?>"
                                             data-semester="<?= esc($item['semester']) ?>"
@@ -49,7 +49,7 @@
                                             <form action="<?= base_url('admin/pengaturan/tahun-ajar/delete/' . $item['id']) ?>" method="post" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus tahun ajaran ini?')">
                                                 <?= csrf_field() ?>
                                                 <input type="hidden" name="_method" value="DELETE">
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Hapus Data">
+                                                <button type="submit" class="btn btn-danger btn-pill" title="Hapus Data">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>

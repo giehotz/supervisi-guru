@@ -89,6 +89,7 @@ class GenerateJadwalController extends BaseController
         $tanggalSelesai = $this->request->getPost('tanggal_selesai');
         $selectedSupervisorIds = (array)$this->request->getPost('supervisor_ids');
         $selectedGuruIds = (array)$this->request->getPost('guru_ids');
+        $selectedHari = (array)$this->request->getPost('hari_aktif');
         $maxPerDay = (int)($this->request->getPost('max_per_day') ?? 1);
         $sesiMulai = (int)($this->request->getPost('sesi_mulai') ?? 1);
 
@@ -101,6 +102,10 @@ class GenerateJadwalController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Rentang tanggal pelaksanaan supervisi tidak valid.');
         }
 
+        if (empty($selectedHari)) {
+            return redirect()->back()->withInput()->with('error', 'Pilih minimal satu hari kerja untuk pelaksanaan supervisi.');
+        }
+
         if (empty($selectedSupervisorIds)) {
             return redirect()->back()->withInput()->with('error', 'Pilih minimal satu supervisor yang ditugaskan.');
         }
@@ -108,6 +113,8 @@ class GenerateJadwalController extends BaseController
         if (empty($selectedGuruIds)) {
             return redirect()->back()->withInput()->with('error', 'Pilih minimal satu guru yang akan dijadwalkan.');
         }
+
+        $selectedHari = array_map('intval', $selectedHari);
 
         // Ambil data tahun ajaran
         $tahunAjar = $this->tahunAjarModel->find($tahunAjarId);
@@ -148,7 +155,7 @@ class GenerateJadwalController extends BaseController
             $kelases = $this->kelasModel->where('status', 'Aktif')->findAll();
         }
 
-        // Kumpulkan hari kerja (Senin s.d. Sabtu, abaikan Minggu / Day 7)
+        // Kumpulkan hari kerja sesuai hari yang dipilih pengguna (1=Senin s.d. 6=Sabtu, abaikan Minggu / Day 7)
         $start = new \DateTime($tanggalMulai);
         $end = new \DateTime($tanggalSelesai);
         $end->modify('+1 day'); // Inklusif
@@ -157,14 +164,14 @@ class GenerateJadwalController extends BaseController
         $workingDays = [];
 
         foreach ($period as $dt) {
-            // 1 (Senin) s.d. 6 (Sabtu), 7 adalah Minggu
-            if ($dt->format('N') != 7) {
+            $dayNum = (int)$dt->format('N');
+            if (in_array($dayNum, $selectedHari, true)) {
                 $workingDays[] = $dt->format('Y-m-d');
             }
         }
 
         if (empty($workingDays)) {
-            return redirect()->back()->withInput()->with('error', 'Tidak ada hari kerja (Senin–Sabtu) dalam rentang tanggal yang dipilih.');
+            return redirect()->back()->withInput()->with('error', 'Tidak ada tanggal yang cocok dengan hari kerja terpilih dalam rentang tanggal tersebut.');
         }
 
         // Konfigurasi jam dan slot waktu pelajaran (Jam ke-5 adalah jam istirahat 09:50-10:10, tidak digunakan)
@@ -250,6 +257,21 @@ class GenerateJadwalController extends BaseController
         $totalTerjadwalkan = count($generatedJadwals);
         $sisaBelumTerjadwalkan = count($queueGurus);
 
+        $listHariNama = [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu'
+        ];
+        $namaHariTerpilih = [];
+        foreach ($selectedHari as $h) {
+            if (isset($listHariNama[$h])) {
+                $namaHariTerpilih[] = $listHariNama[$h];
+            }
+        }
+
         $data = [
             'title'                 => 'Pratinjau Hasil Generate Jadwal Otomatis',
             'tahun_ajar'            => $tahunAjar,
@@ -261,7 +283,8 @@ class GenerateJadwalController extends BaseController
             'sisaBelumTerjadwalkan' => $sisaBelumTerjadwalkan,
             'tanggalMulai'          => $tanggalMulai,
             'tanggalSelesai'        => $tanggalSelesai,
-            'totalHariKerja'        => count($workingDays)
+            'totalHariKerja'        => count($workingDays),
+            'hariTerpilih'          => implode(', ', $namaHariTerpilih)
         ];
 
         return view('admin/jadwal/generate_preview', $data);

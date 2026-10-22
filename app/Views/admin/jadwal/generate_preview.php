@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Tinjau simulasi pembagian jadwal supervisi otomatis sebelum disimpan secara permanen ke database.</p>
         </div>
         <div>
-            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-sm shadow-sm">
+            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-pill shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Atur Ulang Parameter
             </a>
         </div>
@@ -20,7 +20,7 @@
     <?php if ($sisaBelumTerjadwalkan > 0): ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-triangle mr-1"></i>
-            <strong>Perhatian:</strong> Terdapat <strong><?= $sisaBelumTerjadwalkan ?> guru</strong> yang belum dapat dijadwalkan karena rentang tanggal kerja (Senin–Sabtu) dan kuota harian supervisor yang Anda pilih sudah terisi penuh. Anda dapat menambah rentang tanggal selesai atau menaikkan kuota harian.
+            <strong>Perhatian:</strong> Terdapat <strong><?= $sisaBelumTerjadwalkan ?> guru</strong> yang belum dapat dijadwalkan karena kuota harian supervisor pada hari kerja terpilih (<?= esc($hariTerpilih ?? '-') ?>) sudah terisi penuh. Anda dapat menambah rentang tanggal selesai atau menaikkan kuota harian.
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -28,7 +28,7 @@
     <?php else: ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle mr-1"></i>
-            <strong>Sempurna!</strong> Seluruh <strong><?= $totalTerjadwalkan ?> guru</strong> berhasil dijadwalkan secara merata pada hari kerja (Senin s.d. Sabtu).
+            <strong>Sempurna!</strong> Seluruh <strong><?= $totalTerjadwalkan ?> guru</strong> berhasil dijadwalkan secara merata pada hari kerja terpilih (<?= esc($hariTerpilih ?? 'Senin s.d. Sabtu') ?>).
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -76,7 +76,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Hari Kerja Tersedia</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalHariKerja ?> Hari</div>
-                            <small class="text-muted">Senin s.d. Sabtu (Tanpa Minggu)</small>
+                            <small class="text-muted" title="<?= esc($hariTerpilih ?? '') ?>"><?= esc($hariTerpilih ?? 'Senin s.d. Sabtu') ?></small>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-business-time fa-2x text-gray-300"></i>
@@ -199,7 +199,7 @@
                 <!-- Footer Action -->
                 <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
                     <div>
-                        <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-sm shadow-sm">
+                        <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-pill shadow-sm">
                             <i class="fas fa-undo mr-1"></i> Atur Ulang Form
                         </a>
                     </div>

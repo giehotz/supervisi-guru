@@ -10,10 +10,10 @@
             <p class="text-muted small mb-0">Dashboard rekapitulasi capaian akademik, evaluasi pembelajaran, dan cetak laporan resmi.</p>
         </div>
         <div class="mt-3 mt-sm-0">
-            <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-2">
+            <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="d-none d-sm-inline-block btn btn-pill btn-danger shadow-sm mr-2">
                 <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> Cetak PDF Rekap Detail
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" class="d-none d-sm-inline-block btn btn-pill btn-primary shadow-sm">
                 <i class="fas fa-clipboard-list fa-sm text-white-50 mr-1"></i> Kelola Hasil Supervisi
             </a>
         </div>
@@ -34,7 +34,7 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <button type="submit" class="btn btn-sm btn-primary">
+                    <button type="submit" class="btn btn-pill btn-primary">
                         <i class="fas fa-filter mr-1"></i> Terapkan
                     </button>
                 </div>
@@ -222,7 +222,7 @@
                 <i class="fas fa-table mr-1"></i> Rekapitulasi Rincian Supervisi Guru (Tahun Ajaran <?= esc($selectedTahunAjar['tahun_ajar'] ?? '-') ?>)
             </h6>
             <div>
-                <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-sm btn-outline-danger shadow-sm">
+                <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-pill btn-outline-danger shadow-sm">
                     <i class="fas fa-print mr-1"></i> Cetak Dokumen Rekap Landscape
                 </a>
             </div>
@@ -312,13 +312,13 @@
                                 <td class="text-center align-middle">
                                     <?php if ($jadwal['status'] === 'Selesai'): ?>
                                         <div class="btn-group">
-                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" class="btn btn-sm btn-info" title="Lihat Detail">
+                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" class="btn btn-pill btn-info" title="Lihat Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" class="btn btn-sm btn-warning" title="Edit Hasil Penilaian">
+                                            <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" class="btn btn-pill btn-warning" title="Edit Hasil Penilaian">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id']) ?>" target="_blank" class="btn btn-sm btn-danger" title="Cetak Dokumen PDF">
+                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id']) ?>" target="_blank" class="btn btn-pill btn-danger" title="Cetak Dokumen PDF">
                                                 <i class="fas fa-print"></i>
                                             </a>
                                         </div>

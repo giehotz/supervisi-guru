@@ -533,7 +533,7 @@
                                     <p class="small text-muted mb-2 text-truncate" title="<?= esc($foto['keterangan'] ?? '-') ?>">
                                         <?= esc($foto['keterangan'] ?: 'Dokumentasi supervisi') ?>
                                     </p>
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 btn-modal-preview"
+                                    <button type="button" class="btn btn-pill btn-outline-primary w-100 btn-modal-preview"
                                             data-src="<?= base_url($foto['file_path']) ?>"
                                             data-keterangan="<?= esc($foto['keterangan'] ?? '') ?>">
                                         <i class="fas fa-search-plus me-1"></i> Perbesar Foto

@@ -88,20 +88,20 @@
                         <td class="text-end text-nowrap">
                             <div class="btn-list justify-content-end">
                                 <?php if (!empty($guru['account_id'])): ?>
-                                    <a href="<?= base_url('/admin/pengguna/guru/' . $guru['account_id'] . '/edit') ?>" class="btn btn-sm btn-outline-warning" title="Edit Data Guru">
+                                    <a href="<?= base_url('/admin/pengguna/guru/' . $guru['account_id'] . '/edit') ?>" class="btn btn-pill btn-outline-warning" title="Edit Data Guru">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if (isset($guru['is_supervisor']) && $guru['is_supervisor'] == 1): ?>
-                                        <a href="<?= base_url('/admin/guru/' . $guru['id'] . '/toggle-supervisor') ?>" class="btn btn-sm btn-outline-info" title="Turunkan sebagai Guru">
+                                        <a href="<?= base_url('/admin/guru/' . $guru['id'] . '/toggle-supervisor') ?>" class="btn btn-pill btn-outline-info" title="Turunkan sebagai Guru">
                                             <i class="fas fa-arrow-down"></i>
                                         </a>
                                     <?php else: ?>
-                                        <a href="<?= base_url('/admin/pengguna/guru/' . $guru['id'] . '/make-supervisor') ?>" class="btn btn-sm btn-outline-success" title="Angkat sebagai Supervisor">
+                                        <a href="<?= base_url('/admin/pengguna/guru/' . $guru['id'] . '/make-supervisor') ?>" class="btn btn-pill btn-outline-success" title="Angkat sebagai Supervisor">
                                             <i class="fas fa-arrow-up"></i>
                                         </a>
                                     <?php endif; ?>
                                     <a href="<?= base_url('/admin/pengguna/' . $guru['account_id'] . '/delete') ?>"
-                                        class="btn btn-sm btn-outline-danger"
+                                        class="btn btn-pill btn-outline-danger"
                                         onclick="return confirm('Apakah Anda yakin ingin menghapus guru ini? Semua data terkait akan terhapus.')"
                                         title="Hapus Akun & Data Guru">
                                         <i class="fas fa-trash"></i>
@@ -109,7 +109,7 @@
                                 <?php else: ?>
                                     <span class="badge bg-danger-lt me-1">User Hilang</span>
                                     <a href="<?= base_url('/admin/guru/' . $guru['id'] . '/delete') ?>"
-                                        class="btn btn-sm btn-outline-danger"
+                                        class="btn btn-pill btn-outline-danger"
                                         onclick="return confirm('Data user tidak ditemukan. Apakah Anda yakin ingin menghapus data profil guru ini?')"
                                         title="Hapus Data Guru Saja">
                                         <i class="fas fa-trash"></i>

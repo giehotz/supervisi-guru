@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Sistem otomatis mendistribusikan jadwal supervisi guru pada hari Senin s.d. Sabtu secara merata.</p>
         </div>
         <div>
-            <a href="<?= base_url('/admin/jadwal') ?>" class="btn btn-secondary btn-sm shadow-sm">
+            <a href="<?= base_url('/admin/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Jadwal
             </a>
         </div>
@@ -71,8 +71,42 @@
                                     <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control form-control-sm" value="<?= esc($default_end_date) ?>" required>
                                 </div>
                             </div>
-                            <small class="form-text text-info mt-1">
-                                <i class="fas fa-info-circle mr-1"></i> Hari <strong>Minggu</strong> otomatis dilewati oleh sistem.
+                        </div>
+
+                        <!-- Pilihan Hari Supervisi Aktif (Senin - Sabtu) -->
+                        <div class="form-group mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="font-weight-bold text-gray-800 small mb-0">Pilih Hari Supervisi Aktif:</label>
+                                <div>
+                                    <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" id="btnCheckAllHari">Semua</button>
+                                    <button type="button" class="btn btn-xs btn-outline-warning py-0 px-2" id="btnExceptJumat">Kecualikan Jumat</button>
+                                </div>
+                            </div>
+                            <div class="border rounded p-2 bg-light">
+                                <div class="row no-gutters">
+                                    <?php 
+                                    $listHari = [
+                                        1 => 'Senin',
+                                        2 => 'Selasa',
+                                        3 => 'Rabu',
+                                        4 => 'Kamis',
+                                        5 => 'Jumat',
+                                        6 => 'Sabtu'
+                                    ];
+                                    foreach ($listHari as $val => $nama): ?>
+                                        <div class="col-4 col-sm-4 mb-1">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" name="hari_aktif[]" value="<?= $val ?>" class="custom-control-input cb-hari" id="hari-<?= $val ?>" checked>
+                                                <label class="custom-control-label small font-weight-bold text-gray-800" for="hari-<?= $val ?>">
+                                                    <?= $nama ?>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle mr-1"></i> Tanggal yang jatuh pada hari tidak dicentang (atau Minggu) otomatis dilewati.
                             </small>
                         </div>
 
@@ -203,7 +237,7 @@
                                 Terpilih: <strong id="selectedGuruCount">0</strong> dari <?= count($gurus) ?> guru
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-primary btn-sm shadow-sm" id="btnSubmitGenerate">
+                                <button type="submit" class="btn btn-primary btn-pill shadow-sm" id="btnSubmitGenerate">
                                     <i class="fas fa-magic mr-1"></i> Generate & Pratinjau Jadwal
                                 </button>
                             </div>
@@ -224,6 +258,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (countElem) {
             countElem.innerText = count;
         }
+    }
+
+    // Toggle Hari Checkboxes
+    var btnCheckAllHari = document.getElementById('btnCheckAllHari');
+    if (btnCheckAllHari) {
+        btnCheckAllHari.addEventListener('click', function() {
+            document.querySelectorAll('.cb-hari').forEach(function(cb) { cb.checked = true; });
+        });
+    }
+
+    var btnExceptJumat = document.getElementById('btnExceptJumat');
+    if (btnExceptJumat) {
+        btnExceptJumat.addEventListener('click', function() {
+            document.querySelectorAll('.cb-hari').forEach(function(cb) {
+                // value 5 adalah Jumat
+                cb.checked = (cb.value !== '5');
+            });
+        });
     }
 
     // Toggle Supervisor Checkboxes
@@ -259,8 +311,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form validation check
     document.getElementById('formGenerateJadwal').addEventListener('submit', function(e) {
+        var checkedHari = document.querySelectorAll('.cb-hari:checked').length;
         var checkedSupervisors = document.querySelectorAll('.cb-supervisor:checked').length;
         var checkedGurus = document.querySelectorAll('.cb-guru:checked').length;
+
+        if (checkedHari === 0) {
+            e.preventDefault();
+            alert('Silakan pilih minimal 1 hari kerja untuk pelaksanaan supervisi.');
+            return;
+        }
 
         if (checkedSupervisors === 0) {
             e.preventDefault();
