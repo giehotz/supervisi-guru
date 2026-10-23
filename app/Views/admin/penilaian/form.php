@@ -1,26 +1,36 @@
-<?= $this->extend('layouts/admin') ?>
+<?php
+$rolePrefix  = $rolePrefix ?? (session()->get('role') ?? 'admin');
+$layout      = $layout ?? ('layouts/' . $rolePrefix);
+$pageTitle   = $pageTitle ?? ($rolePrefix === 'admin' ? 'Edit Hasil Penilaian Supervisi' : 'Form Penilaian Supervisi');
+$backUrl     = $backUrl ?? ($rolePrefix === 'admin' ? base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) : base_url($rolePrefix . '/jadwal'));
+$redirectUrl = $redirectUrl ?? ($rolePrefix === 'admin' ? base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) : base_url($rolePrefix . '/penilaian/view/' . $schedule['id']));
+$totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
+?>
+<?= $this->extend($layout) ?>
 
 <?= $this->section('content') ?>
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Hasil Penilaian Supervisi</h1>
+        <h1 class="h3 mb-0 text-gray-800"><?= esc($pageTitle) ?></h1>
         <div>
-            <a href="<?= base_url('admin/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-info btn-pill mr-2 shadow-sm font-weight-bold">
+            <a href="<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-info btn-pill mr-2 shadow-sm font-weight-bold">
                 <i class="fas fa-camera mr-1"></i> Foto Bukti Supervisi
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>" class="btn btn-secondary btn-pill">
-                <i class="fas fa-arrow-left mr-1"></i> Kembali ke Detail
+            <a href="<?= $backUrl ?>" class="btn btn-secondary btn-pill">
+                <i class="fas fa-arrow-left mr-1"></i> <?= $rolePrefix === 'admin' ? 'Kembali ke Detail' : 'Kembali ke Jadwal' ?>
             </a>
         </div>
     </div>
 
+    <?php if ($rolePrefix === 'admin'): ?>
     <!-- Alert Info Admin -->
     <div class="alert alert-warning border-left-warning shadow-sm" role="alert">
         <i class="fas fa-user-shield mr-2"></i>
         <strong>Mode Administrator:</strong> Anda memiliki hak akses penuh untuk meninjau dan memperbarui skor, catatan, serta rekomendasi penilaian supervisi ini. Perubahan yang Anda simpan akan otomatis memperbarui nilai akhir, predikat ketercapaian, dan dicatat di Audit Log sistem.
     </div>
+    <?php endif; ?>
 
     <!-- Teacher & Schedule Info Card -->
     <div class="card shadow mb-4">
@@ -94,7 +104,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 bg-white">
             <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-tasks mr-1"></i> Form Penilaian Supervisi (4 Tahap / Komponen)
+                <i class="fas fa-tasks mr-1"></i> Form Penilaian Supervisi (<?= $totalTahap ?> Tahap / Komponen)
             </h6>
         </div>
         <div class="card-body">
@@ -129,7 +139,7 @@
                         </li>
                     <?php endforeach; ?>
                 <?php endif; ?>
-                <!-- Tahap 5: Foto Bukti Supervisi -->
+                <!-- Tahap Foto Bukti Supervisi -->
                 <li class="nav-item">
                     <a class="nav-link <?= (isset($activeTab) && $activeTab == 'foto') ? 'active font-weight-bold' : '' ?>" 
                        id="step-foto-tab" 
@@ -140,9 +150,9 @@
                        aria-selected="<?= (isset($activeTab) && $activeTab == 'foto') ? 'true' : 'false' ?>"
                        data-toggle-tooltip="tooltip"
                        data-placement="top"
-                       title="5. FOTO BUKTI SUPERVISI">
+                       title="<?= ($totalTahap + 1) ?>. FOTO BUKTI SUPERVISI">
                         <i class="fas fa-camera mr-1 text-primary"></i>
-                        <span>Tahap 5</span>
+                        <span>FOTO BUKTI SUPERVISI</span>
                         <span class="badge-status-foto">
                             <?php if (!empty($existingPhotos)): ?>
                                 <span class="badge badge-success ml-1">✓</span>
@@ -272,9 +282,11 @@
                                     </label>
                                     <textarea name="rekomendasi" 
                                               id="rekomendasi-<?= $jId ?>" 
-                                              class="form-control" 
+                                              data-jenis-id="<?= $jId ?>"
+                                              class="form-control rekomendasi-textarea" 
                                               rows="3" 
                                               placeholder="Tuliskan rekomendasi atau saran perbaikan untuk komponen penilaian ini..."><?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?></textarea>
+                                    <input type="hidden" name="rekomendasi_<?= $jId ?>" id="rekomendasi-hidden-<?= $jId ?>" value="<?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?>">
                                 </div>
 
                                 <!-- Navigation & Save Buttons -->
@@ -296,7 +308,7 @@
                                             </button>
                                         <?php else: ?>
                                             <button type="button" class="btn btn-primary btn-pill btn-next-tab-save" data-next-id="foto">
-                                                Tahap 5: Foto Bukti <i class="fas fa-arrow-right ml-1"></i>
+                                                Tahap <?= ($totalTahap + 1) ?>: Foto Bukti <i class="fas fa-arrow-right ml-1"></i>
                                             </button>
                                         <?php endif; ?>
                                     </div>
@@ -307,7 +319,7 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <!-- Tab Pane Tahap 5: Foto Bukti Supervisi -->
+                <!-- Tab Pane Foto Bukti Supervisi -->
                 <div class="tab-pane fade <?= (isset($activeTab) && $activeTab == 'foto') ? 'show active' : '' ?>" 
                      id="step-foto" 
                      role="tabpanel" 
@@ -315,10 +327,10 @@
                      
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="font-weight-bold text-gray-800 m-0">
-                            5. FOTO BUKTI SUPERVISI
+                            <?= ($totalTahap + 1) ?>. FOTO BUKTI SUPERVISI
                             <span class="badge badge-info ml-2" id="photoCountBadge"><?= !empty($existingPhotos) ? count($existingPhotos) : 0 ?> / 5 Foto</span>
                         </h5>
-                        <a href="<?= base_url('admin/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-outline-primary btn-pill">
+                        <a href="<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-outline-primary btn-pill">
                             <i class="fas fa-external-link-alt mr-1"></i> Kelola di Halaman Khusus
                         </a>
                     </div>
@@ -549,13 +561,15 @@ $(document).ready(function() {
         form.find('input[name="' + csrfName + '"]').val(csrfHash);
 
         $.ajax({
-            url: '<?= base_url('admin/penilaian/save') ?>',
+            url: '<?= base_url($rolePrefix . '/penilaian/save') ?>',
             method: 'POST',
             data: form.serialize(),
             dataType: 'json',
             success: function(res) {
                 if (res.token) {
                     updateCsrf(res.token);
+                } else if (res.csrf_token) {
+                    updateCsrf(res.csrf_token);
                 }
 
                 if (res.status === 'success') {
@@ -613,13 +627,19 @@ $(document).ready(function() {
         });
     });
 
-    // Handle tombol Complete / Selesaikan Supervisi
+    // Sinkronisasi input rekomendasi ke hidden field untuk submit menyeluruh
+    $(document).on('input propertychange change', '.rekomendasi-textarea', function() {
+        var jId = $(this).data('jenis-id');
+        $('#rekomendasi-hidden-' + jId).val($(this).val());
+    });
+
+    // Handle tombol Complete / Selesaikan Supervisi (Menyimpan seluruh tahap)
     $('#btnCompleteSupervisi').on('click', function() {
         var jadwalId = $(this).data('jadwal-id');
 
         Swal.fire({
             title: 'Simpan & Selesaikan?',
-            text: 'Sistem akan menghitung ulang seluruh skor penilaian dan memperbarui rekapitulasi supervisi ini.',
+            text: 'Sistem akan menyimpan seluruh tahap penilaian, menghitung nilai akhir, dan memperbarui rekapitulasi supervisi ini.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#1cc88a',
@@ -629,29 +649,39 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 var btn = $('#btnCompleteSupervisi');
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Memproses...');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Memproses & Menyimpan...');
+
+                // Kumpulkan seluruh data dari semua form tahap penilaian
+                var allData = $('.form-step-penilaian').serializeArray();
+                var postData = {};
+                $.each(allData, function(i, field) {
+                    if (field.value !== '') {
+                        postData[field.name] = field.value;
+                    }
+                });
+                postData[csrfName] = csrfHash;
 
                 $.ajax({
-                    url: '<?= base_url('admin/penilaian/complete') ?>/' + jadwalId,
+                    url: '<?= base_url($rolePrefix . '/penilaian/complete') ?>/' + jadwalId,
                     method: 'POST',
-                    data: {
-                        [csrfName]: csrfHash
-                    },
+                    data: postData,
                     dataType: 'json',
                     success: function(res) {
                         if (res.token) {
                             updateCsrf(res.token);
+                        } else if (res.csrf_token) {
+                            updateCsrf(res.csrf_token);
                         }
 
                         if (res.status === 'success') {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Berhasil Diperbarui!',
+                                title: 'Berhasil Disimpan & Selesai!',
                                 text: res.message,
                                 timer: 1800,
                                 showConfirmButton: false
                             }).then(() => {
-                                window.location.href = res.redirect || '<?= base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) ?>';
+                                window.location.href = res.redirect || '<?= $redirectUrl ?>';
                             });
                         } else {
                             Swal.fire({
@@ -697,7 +727,7 @@ $(document).ready(function() {
         formData.append(csrfName, csrfHash);
 
         $.ajax({
-            url: '<?= base_url('admin/foto-bukti/upload/' . $schedule['id']) ?>',
+            url: '<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>',
             type: 'POST',
             data: formData,
             processData: false,
@@ -759,7 +789,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '<?= base_url('admin/foto-bukti/delete/') ?>/' + photoId,
+                    url: '<?= base_url($rolePrefix . '/foto-bukti/delete/') ?>/' + photoId,
                     type: 'POST',
                     data: {
                         [csrfName]: csrfHash

@@ -308,6 +308,97 @@ class PenilaianController extends BaseController
         return view('supervisor/penilaian/view', $data);
     }
     
+    protected function saveAssessmentBatch($jadwalId, array $post)
+    {
+        $allJenis = $this->jenisModel->findAll();
+        $allAspek = $this->aspekModel->findAll();
+        $aspekByJenis = [];
+        foreach ($allAspek as $asp) {
+            $aspekByJenis[$asp['jenis_penilaian_id']][] = $asp;
+        }
+
+        foreach ($allJenis as $jenis) {
+            $jId = $jenis['id'];
+            $aspeks = $aspekByJenis[$jId] ?? [];
+            if (empty($aspeks)) {
+                continue;
+            }
+
+            $hasPostForJenis = false;
+            $detailsToInsert = [];
+            $totalSkor = 0;
+            $skorMaksimal = 0;
+
+            foreach ($aspeks as $aspek) {
+                $skorKey = 'skor_' . $aspek['id'];
+                $catatanKey = 'catatan_' . $aspek['id'];
+
+                if (isset($post[$skorKey])) {
+                    $hasPostForJenis = true;
+                    $skor = $post[$skorKey];
+                    $catatan = $post[$catatanKey] ?? '';
+
+                    if ($skor !== null && $skor !== '') {
+                        $detailsToInsert[] = [
+                            'aspek_penilaian_id' => $aspek['id'],
+                            'skor'               => (int)$skor,
+                            'catatan'            => $catatan
+                        ];
+                        $totalSkor += (int)$skor;
+                        $skorMaksimal += (($aspek['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') ? 3 : 4;
+                    }
+                }
+            }
+
+            $rekomendasiKey = 'rekomendasi_' . $jId;
+            $rekomendasi = $post[$rekomendasiKey] ?? ($post['rekomendasi'] ?? null);
+
+            if ($hasPostForJenis || $rekomendasi !== null) {
+                $existingHasil = $this->hasilModel
+                    ->where('jadwal_supervisi_id', $jadwalId)
+                    ->where('jenis_penilaian_id', $jId)
+                    ->first();
+
+                $persen = ($skorMaksimal > 0) ? round(($totalSkor / $skorMaksimal) * 100, 2) : 0;
+                if ($persen >= 86) {
+                    $ketercapaian = 'Baik Sekali';
+                } elseif ($persen >= 70) {
+                    $ketercapaian = 'Baik';
+                } elseif ($persen >= 55) {
+                    $ketercapaian = 'Cukup';
+                } else {
+                    $ketercapaian = 'Kurang';
+                }
+
+                $hasilData = [
+                    'jadwal_supervisi_id' => $jadwalId,
+                    'jenis_penilaian_id'  => $jId,
+                    'rekomendasi'         => $rekomendasi ?? ($existingHasil['rekomendasi'] ?? ''),
+                    'total_skor'          => $totalSkor,
+                    'nilai_akhir'         => $persen,
+                    'ketercapaian'        => $ketercapaian
+                ];
+
+                if ($existingHasil) {
+                    $this->hasilModel->update($existingHasil['id'], $hasilData);
+                    $hasilId = $existingHasil['id'];
+                } else {
+                    $hasilId = $this->hasilModel->insert($hasilData);
+                }
+
+                if ($hasilId && $hasPostForJenis) {
+                    $this->detailModel->where('hasil_supervisi_id', $hasilId)->delete();
+                    if (!empty($detailsToInsert)) {
+                        foreach ($detailsToInsert as &$d) {
+                            $d['hasil_supervisi_id'] = $hasilId;
+                        }
+                        $this->detailModel->insertBatch($detailsToInsert);
+                    }
+                }
+            }
+        }
+    }
+
     public function complete($jadwalId)
     {
         $supervisorId = session()->get('id');
@@ -327,8 +418,12 @@ class PenilaianController extends BaseController
             ]);
         }
 
-        
         try {
+            $postData = $this->request->getPost();
+            if (!empty($postData)) {
+                $this->saveAssessmentBatch($jadwalId, $postData);
+            }
+
             // Hitung total skor dan nilai akhir untuk seluruh supervisi
             $hasilData = $this->hasilModel
                 ->select('hasil_supervisi.*, jenis_penilaian.skor_maksimal, jenis_penilaian.kategori_supervisi')

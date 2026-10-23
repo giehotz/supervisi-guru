@@ -578,14 +578,35 @@ class LaporanController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Data hasil supervisi tidak ditemukan');
         }
         
+        // Get all jenis penilaian for tahap ordering and accurate naming
+        $jenisModel = new \App\Models\JenisPenilaianModel();
+        $allJenis = $jenisModel->findAllWithMappedColumns();
+        $jenisById = [];
+        $tahapNumber = [];
+        foreach ($allJenis as $idx => $j) {
+            $jenisById[$j['id']] = $j;
+            $tahapNumber[$j['id']] = $idx + 1;
+        }
+
         // Get hasil records for this schedule
         $hasilList = $hasilModel->where('jadwal_supervisi_id', $id)->findAll();
+        foreach ($hasilList as &$h) {
+            $jId = $h['jenis_penilaian_id'];
+            $h['nama_jenis'] = $jenisById[$jId]['nama'] ?? ($jenisById[$jId]['nama_jenis'] ?? ('Komponen ' . $jId));
+            $h['tahap_no'] = $tahapNumber[$jId] ?? $jId;
+            $h['skor_maksimal'] = $jenisById[$jId]['skor_maksimal'] ?? 4;
+        }
+        unset($h);
+
+        usort($hasilList, function($a, $b) {
+            return ($a['tahap_no'] ?? 0) <=> ($b['tahap_no'] ?? 0);
+        });
         
         // Get detail results grouped by jenis_penilaian_id
         $detailResults = [];
         foreach ($hasilList as $hasil) {
             $details = $db->table('detail_hasil_penilaian dhp')
-                ->select('dhp.*, ap.nama_aspek')
+                ->select('dhp.*, ap.nama_aspek, ap.tipe_skala')
                 ->join('aspek_penilaian ap', 'ap.id = dhp.aspek_penilaian_id', 'left')
                 ->where('dhp.hasil_supervisi_id', $hasil['id'])
                 ->get()
@@ -638,10 +659,12 @@ class LaporanController extends BaseController
         }
 
         $data = [
-            'schedule' => $schedule,
-            'hasilList' => $hasilList,
+            'schedule'      => $schedule,
+            'hasilList'     => $hasilList,
             'detailResults' => $detailResults,
-            'fotoBukti' => $fotoBukti
+            'fotoBukti'     => $fotoBukti,
+            'jenisById'     => $jenisById,
+            'tahapNumber'   => $tahapNumber
         ];
         
         // Clear any previous output

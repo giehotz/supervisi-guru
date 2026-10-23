@@ -377,34 +377,29 @@
             <div class="section ringkasan-section" style="page-break-inside: avoid;">
                 <div class="section-title">Hasil Penilaian: Ringkasan Nilai Supervisi</div>
                 <?php
-                // (LOGIKA PHP TIDAK DIUBAH)
+                // === Dynamic Tahap & Komponen Penilaian ===
                 $komponen_nilai = [];
                 $total_skor = 0;
                 $total_maksimal = 0;
-
-                // === Array Nama Komponen yang KONSISTEN ===
-                $nama_komponen = [
-                    1 => 'SUPERVISI ADMINISTRASI GURU (PERENCANAAN PEMBELAJARAN)',
-                    2 => 'SUPERVISI PROSES PEMBELAJARAN (PELAKSANAAN PEMBELAJARAN)',
-                    3 => 'SUPERVISI EVALUASI PEMBELAJARAN (PENILAIAN PEMBELAJARAN)',
-                    4 => 'SUPERVISI PENGEMBANGAN DIRI GURU'
-                ];
-
                 if (!empty($hasilList)) {
+                    $counterTahap = 1;
                     foreach ($hasilList as $hasil) {
                         $jenis_id = $hasil['jenis_penilaian_id'];
-                        $nama = isset($nama_komponen[$jenis_id]) ? $nama_komponen[$jenis_id] : ('Komponen ' . $jenis_id);
+                        $tahap_no = $hasil['tahap_no'] ?? ($tahapNumber[$jenis_id] ?? $counterTahap);
+                        $nama_raw = $hasil['nama_jenis'] ?? ($jenisById[$jenis_id]['nama'] ?? ('Komponen ' . $jenis_id));
+                        $nama = 'Tahap ' . $tahap_no . ': ' . $nama_raw;
+                        $counterTahap++;
+
                         $skor_komponen = 0;
-                        $jumlah_aspek = 0;
+                        $skor_maksimal = 0;
 
                         if (isset($detailResults[$jenis_id]) && !empty($detailResults[$jenis_id])) {
                             foreach ($detailResults[$jenis_id] as $detail) {
-                                $skor_komponen += isset($detail['skor']) ? $detail['skor'] : 0;
-                                $jumlah_aspek++;
+                                $skor_komponen += isset($detail['skor']) ? (float)$detail['skor'] : 0;
+                                $skor_maksimal += (($detail['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') ? 3 : 4;
                             }
                         }
 
-                        $skor_maksimal = $jumlah_aspek * 4;
                         $persentase = $skor_maksimal > 0 ? ($skor_komponen / $skor_maksimal) * 100 : 0;
 
                         $komponen_nilai[$jenis_id] = [
@@ -439,10 +434,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>Komponen Penilaian</th>
-                            <th>Skor Diperoleh</th>
-                            <th>Presentase (%)</th>
+                            <th style="width: 5%;">No</th>
+                            <th>Tahap & Komponen Penilaian</th>
+                            <th style="width: 15%;">Skor Diperoleh</th>
+                            <th style="width: 15%;">Persentase (%)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -515,40 +510,30 @@
                 <!-- Bagian Looping Detail Penilaian -->
                 <?php $isFirstAssessment = true; ?>
 
-                <!-- === PERBAIKAN: Gunakan Array yang Konsisten === -->
-                <?php
-                $komponen_nama_list = [
-                    1 => 'SUPERVISI ADMINISTRASI GURU (PERENCANAAN PEMBELAJARAN)',
-                    2 => 'SUPERVISI PROSES PEMBELAJARAN (PELAKSANAAN PEMBELAJARAN)',
-                    3 => 'SUPERVISI EVALUASI PEMBELAJARAN (PENILAIAN PEMBELAJARAN)',
-                    4 => 'SUPERVISI PENGEMBANGAN DIRI GURU'
-                ];
-                ?>
-
-                <?php foreach ($hasilList as $hasil): ?>
-                    <?php
+                <?php 
+                $detailTahapCounter = 1;
+                foreach ($hasilList as $hasil): 
                     $jenisId = $hasil['jenis_penilaian_id'];
+                    $tahapNo = $hasil['tahap_no'] ?? ($tahapNumber[$jenisId] ?? $detailTahapCounter);
+                    $namaRaw = $hasil['nama_jenis'] ?? ($jenisById[$jenisId]['nama'] ?? ('Komponen ' . $jenisId));
+                    $jenisNama = 'TAHAP ' . $tahapNo . ': ' . $namaRaw;
+                    $detailTahapCounter++;
 
-                    // === PERBAIKAN: Gunakan $jenisId sebagai kunci, bukan $counter ===
-                    $jenisNama = $hasil['nama_jenis'] ?? ($komponen_nama_list[$jenisId] ?? 'Komponen Penilaian');
-
-                    // (LOGIKA PHP TIDAK DIUBAH)
                     $total_skor = 0;
-                    $jumlah_aspek = 0;
+                    $skor_maksimal = 0;
                     if (isset($detailResults[$jenisId]) && !empty($detailResults[$jenisId])) {
                         foreach ($detailResults[$jenisId] as $detail) {
-                            $total_skor += isset($detail['skor']) ? $detail['skor'] : 0;
-                            $jumlah_aspek++;
+                            $total_skor += isset($detail['skor']) ? (float)$detail['skor'] : 0;
+                            $skor_maksimal += (($detail['tipe_skala'] ?? '') === 'perilaku_pmm_1_3') ? 3 : 4;
                         }
                     }
-                    $skor_maksimal = $jumlah_aspek * 4;
                     $nilai = $skor_maksimal > 0 ? ($total_skor / $skor_maksimal) * 100 : 0;
 
                     if ($nilai >= 86) {
                         $badgeClass = 'success';
                         $kategori = 'Baik Sekali';
                     } elseif ($nilai >= 70) {
-                        $badgeClass = 'info'; // Menggunakan 'info' agar konsisten dengan ringkasan
+                        $badgeClass = 'info';
                         $kategori = 'Baik';
                     } elseif ($nilai >= 55) {
                         $badgeClass = 'warning';
