@@ -33,14 +33,14 @@
                         <form action="<?= base_url('admin/pengaturan/upload-asset/logo') ?>" method="post" enctype="multipart/form-data" id="formUploadLogo" class="d-inline mr-1">
                             <?= csrf_field() ?>
                             <input type="file" name="logo" id="logoInput" class="d-none" accept="image/jpeg,image/png,image/jpg" onchange="document.getElementById('formUploadLogo').submit()">
-                            <button type="button" class="btn btn-primary btn-pill shadow-sm" onclick="document.getElementById('logoInput').click()">
+                            <button type="button" class="btn btn-primary shadow-sm" onclick="document.getElementById('logoInput').click()">
                                 <i class="fas fa-camera mr-1"></i> <?= !empty($identitas['logo']) ? 'Ganti' : 'Unggah' ?> Logo
                             </button>
                         </form>
 
                         <?php if (!empty($identitas['logo'])): ?>
                             <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/logo') ?>" 
-                               class="btn btn-outline-danger btn-pill shadow-sm" 
+                               class="btn btn-outline-danger shadow-sm" 
                                onclick="return confirm('Apakah Anda yakin ingin menghapus logo madrasah?')">
                                 <i class="fas fa-trash"></i>
                             </a>
@@ -72,14 +72,14 @@
                         <form action="<?= base_url('admin/pengaturan/upload-asset/sidebar_logo') ?>" method="post" enctype="multipart/form-data" id="formUploadSidebarLogo" class="d-inline mr-1">
                             <?= csrf_field() ?>
                             <input type="file" name="sidebar_logo" id="sidebarLogoInput" class="d-none" accept="image/jpeg,image/png,image/jpg" onchange="document.getElementById('formUploadSidebarLogo').submit()">
-                            <button type="button" class="btn btn-info btn-pill shadow-sm" onclick="document.getElementById('sidebarLogoInput').click()">
+                            <button type="button" class="btn btn-info shadow-sm" onclick="document.getElementById('sidebarLogoInput').click()">
                                 <i class="fas fa-upload mr-1"></i> <?= !empty($identitas['sidebar_logo']) ? 'Ganti' : 'Unggah' ?> Sidebar
                             </button>
                         </form>
 
                         <?php if (!empty($identitas['sidebar_logo'])): ?>
                             <a href="<?= base_url('admin/pengaturan/identitas-madrasah/delete-logo/sidebar_logo') ?>" 
-                               class="btn btn-outline-danger btn-pill shadow-sm" 
+                               class="btn btn-outline-danger shadow-sm" 
                                onclick="return confirm('Apakah Anda yakin ingin menghapus logo sidebar?')">
                                 <i class="fas fa-trash"></i>
                             </a>
@@ -123,7 +123,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-warning btn-pill btn-block shadow-sm font-weight-bold text-dark">
+                    <button type="submit" class="btn btn-warning btn-block shadow-sm font-weight-bold text-dark">
                         <i class="fas fa-lock mr-1"></i> Perbarui Password
                     </button>
                 </form>
@@ -224,7 +224,7 @@
                     </div>
 
                     <div class="text-right pt-2 border-top">
-                        <button type="submit" class="btn btn-primary btn-pill shadow-sm font-weight-bold text-white">
+                        <button type="submit" class="btn btn-primary shadow-sm font-weight-bold text-white">
                             <i class="fas fa-save mr-1 text-white"></i> Simpan Identitas Madrasah
                         </button>
                     </div>
@@ -280,7 +280,7 @@
                     </div>
 
                     <div class="text-right pt-2 border-top">
-                        <button type="submit" class="btn btn-info btn-pill px-4 shadow-sm font-weight-bold">
+                        <button type="submit" class="btn btn-info px-4 shadow-sm font-weight-bold">
                             <i class="fas fa-save mr-1"></i> Simpan Data Pimpinan
                         </button>
                     </div>

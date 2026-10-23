@@ -73,9 +73,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('pengguna/guru/(:num)/edit', 'PenggunaController::editGuru/$1');
     $routes->post('pengguna/guru/(:num)/update', 'PenggunaController::updateGuru/$1');
     $routes->get('pengguna/guru/(:num)/make-supervisor', 'PenggunaController::makeSupervisor/$1');
-    $routes->get('pengguna/sync-guru-usernames', 'PenggunaController::syncGuruUsernames');
-    $routes->get('pengguna/sync-guru-nip', 'PenggunaController::syncGuruNip');
-    $routes->get('pengguna/sync-guru-data', 'PenggunaController::syncGuruData');
+    $routes->get('pengguna/sync-guru-usernames', 'PenggunaSyncController::syncGuruUsernames');
+    $routes->get('pengguna/sync-guru-nip', 'PenggunaSyncController::syncGuruNip');
+    $routes->get('pengguna/sync-guru-data', 'PenggunaSyncController::syncGuruData');
     $routes->get('pengguna/supervisor/(:num)/edit', 'PenggunaController::editSupervisor/$1');
     $routes->post('pengguna/supervisor/(:num)/update', 'PenggunaController::updateSupervisor/$1');
     $routes->get('pengguna/delete', 'PenggunaController::delete');
@@ -85,9 +85,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->get('pengguna/(:num)/reset-password', 'PenggunaController::resetPassword/$1');
 
     // Import Guru routes
-    $routes->get('pengguna/import-guru', 'PenggunaController::importGuru');
-    $routes->get('pengguna/import-guru/template', 'PenggunaController::downloadTemplate');
-    $routes->post('pengguna/import-guru/process', 'PenggunaController::processImportGuru');
+    $routes->get('pengguna/import-guru', 'PenggunaSyncController::importGuru');
+    $routes->get('pengguna/import-guru/template', 'PenggunaSyncController::downloadTemplate');
+    $routes->post('pengguna/import-guru/process', 'PenggunaSyncController::processImportGuru');
 
     // Akademik routes - Tahun Ajaran
     $routes->get('akademik/tahun-ajar', 'AkademikController::tahunAjar');
@@ -130,6 +130,16 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
     $routes->post('instrumen/aspek-penilaian/create', 'InstrumenController::createAspekPenilaian');
     $routes->post('instrumen/aspek-penilaian/(:num)/update', 'InstrumenController::updateAspekPenilaian/$1');
     $routes->get('instrumen/aspek-penilaian/(:num)/delete', 'InstrumenController::deleteAspekPenilaian/$1');
+    $routes->post('instrumen/aspek-penilaian/sync', 'AspekPenilaianController::sync');
+
+    // Aspek Penilaian dedicated routes
+    $routes->get('aspek-penilaian', 'AspekPenilaianController::index');
+    $routes->post('aspek-penilaian/store', 'AspekPenilaianController::store');
+    $routes->post('aspek-penilaian/create', 'AspekPenilaianController::store');
+    $routes->post('aspek-penilaian/update/(:num)', 'AspekPenilaianController::update/$1');
+    $routes->post('aspek-penilaian/delete/(:num)', 'AspekPenilaianController::delete/$1');
+    $routes->get('aspek-penilaian/delete/(:num)', 'AspekPenilaianController::delete/$1');
+    $routes->post('aspek-penilaian/sync', 'AspekPenilaianController::sync');
 
     // Jadwal routes
     $routes->get('jadwal', 'JadwalController::index');
@@ -163,22 +173,21 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function ($rou
 
     // Laporan routes
     $routes->get('laporan', 'LaporanController::index');
-    $routes->get('laporan/cetak-rekap-detail', 'LaporanController::exportPdfRekapDetail');
+    $routes->get('laporan/cetak-rekap-detail', 'LaporanCetakController::exportPdfRekapDetail');
     $routes->get('laporan/statistik-pengguna', 'LaporanController::statistikPengguna');
     $routes->get('laporan/hasil-supervisi', 'LaporanController::hasilSupervisi');
     $routes->get('laporan/hasil-supervisi/detail/(:num)', 'LaporanController::detail/$1');
     $routes->get('laporan/hasil-supervisi/edit/(:num)', 'PenilaianController::form/$1');
-    $routes->get('laporan/hasil-supervisi/cetak-detail/(:num)', 'LaporanController::cetakDetail/$1');
-    $routes->get('laporan/hasil-supervisi/cetak-kurmer/(:num)', 'LaporanController::cetakKurmer/$1');
-    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)', 'LaporanController::cetakTelaah/$1');
-    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)/(:num)', 'LaporanController::cetakTelaah/$1/$2');
-    $routes->get('laporan/hasil-supervisi/cetak-coaching/(:num)', 'LaporanController::cetakCoaching/$1');
-    $routes->get('laporan/hasil-supervisi/pdf', 'LaporanController::exportPdf');
-    $routes->get('laporan/hasil-supervisi/excel', 'LaporanController::exportExcel');
-    $routes->post('laporan/hasil-supervisi/batch-excel', 'LaporanController::batchExcel');
+    $routes->get('laporan/hasil-supervisi/cetak-detail/(:num)', 'LaporanCetakController::cetakDetail/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-kurmer/(:num)', 'LaporanCetakController::cetakKurmer/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)', 'LaporanCetakController::cetakTelaah/$1');
+    $routes->get('laporan/hasil-supervisi/cetak-telaah/(:num)/(:num)', 'LaporanCetakController::cetakTelaah/$1/$2');
+    $routes->get('laporan/hasil-supervisi/cetak-coaching/(:num)', 'LaporanCetakController::cetakCoaching/$1');
+    $routes->get('laporan/hasil-supervisi/pdf', 'LaporanCetakController::exportPdf');
+    $routes->get('laporan/hasil-supervisi/excel', 'LaporanExportController::exportExcel');
+    $routes->post('laporan/hasil-supervisi/batch-excel', 'LaporanExportController::batchExcel');
     $routes->get('laporan/hasil-supervisi/batch-excel-all', 'BatchExcelController::exportAll');
-    $routes->get('laporan/export', 'LaporanController::export');
-    $routes->get('laporan/export-pdf', 'LaporanController::exportPdf');
+    $routes->get('laporan/export-pdf', 'LaporanCetakController::exportPdf');
     $routes->get('laporan/audit-log', 'AuditLogController::index');
     $routes->get('laporan/audit-log/delete/(:num)', 'AuditLogController::delete/$1');
     $routes->post('laporan/audit-log/bulk-delete', 'AuditLogController::bulkDelete');

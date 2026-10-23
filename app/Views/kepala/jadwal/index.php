@@ -7,13 +7,13 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Jadwal Supervisi</h1>
         <div>
-            <a href="<?= base_url('/kepala/jadwal/export-excel') ?>" class="btn btn-success btn-pill">
+            <a href="<?= base_url('/kepala/jadwal/export-excel') ?>" class="btn btn-success">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
-            <a href="<?= base_url('/kepala/jadwal/export-pdf') ?>" class="btn btn-danger btn-pill" target="_blank">
+            <a href="<?= base_url('/kepala/jadwal/export-pdf') ?>" class="btn btn-danger" target="_blank">
                 <i class="fas fa-file-pdf"></i> Export PDF
             </a>
-            <a href="<?= base_url('/kepala/jadwal/create') ?>" class="btn btn-primary btn-pill">
+            <a href="<?= base_url('/kepala/jadwal/create') ?>" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tambah Jadwal
             </a>
         </div>
@@ -74,16 +74,16 @@
                                 <td>
                                     <?php if ($schedule['status'] == 'Selesai'): ?>
                                         <a href="<?= base_url('kepala/hasil/detail/' . $schedule['id']) ?>"
-                                            class="btn btn-pill btn-info">Lihat Hasil</a>
-                                        <a href="<?= base_url('kepala/dokumen-ajar/view/' . $schedule['id']) ?>" class="btn btn-pill btn-secondary">
+                                            class="btn btn-info">Lihat Hasil</a>
+                                        <a href="<?= base_url('kepala/dokumen-ajar/view/' . $schedule['id']) ?>" class="btn btn-secondary">
                                             <i class="fas fa-folder-open"></i> Dokumen
                                         </a>
                                     <?php else: ?>
                                         <a href="<?= base_url('kepala/jadwal/' . $schedule['id']) ?>"
-                                            class="btn btn-pill btn-primary">Detail</a>
+                                            class="btn btn-primary">Detail</a>
                                         <a href="<?= base_url('kepala/jadwal/edit/' . $schedule['id']) ?>"
-                                            class="btn btn-pill btn-warning">Edit</a>
-                                        <a href="<?= base_url('kepala/dokumen-ajar/view/' . $schedule['id']) ?>" class="btn btn-pill btn-secondary">
+                                            class="btn btn-warning">Edit</a>
+                                        <a href="<?= base_url('kepala/dokumen-ajar/view/' . $schedule['id']) ?>" class="btn btn-secondary">
                                             <i class="fas fa-folder-open"></i> Dokumen
                                         </a>
                                     <?php endif; ?>

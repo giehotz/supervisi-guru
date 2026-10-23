@@ -2,7 +2,7 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title">Daftar Jenis Penilaian</h3>
-        <button class="btn btn-primary btn-pill btn" data-bs-toggle="modal" data-bs-target="#createJenisModal">
+        <button class="btn btn-primary btn" data-bs-toggle="modal" data-bs-target="#createJenisModal">
             <i class="fas fa-plus me-1"></i> Tambah Jenis Penilaian
         </button>
     </div>
@@ -41,10 +41,10 @@
                     </td>
                     <td>
                         <div class="btn-list flex-nowrap justify-content-center">
-                            <button class="btn btn-warning btn-pill" data-bs-toggle="modal" data-bs-target="#editJenisModal<?= $jenis['id'] ?? '' ?>">
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editJenisModal<?= $jenis['id'] ?? '' ?>">
                                 <i class="fas fa-edit me-1"></i> Edit
                             </button>
-                            <button class="btn btn-danger btn-pill" data-bs-toggle="modal" data-bs-target="#deleteJenisModal<?= $jenis['id'] ?? '' ?>">
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteJenisModal<?= $jenis['id'] ?? '' ?>">
                                 <i class="fas fa-trash me-1"></i> Hapus
                             </button>
                         </div>

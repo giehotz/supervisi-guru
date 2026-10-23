@@ -9,7 +9,7 @@
             <h1 class="h3 mb-0 text-gray-800">Formulir A: Diskusi Persiapan Observasi Kinerja</h1>
             <p class="text-muted small mb-0">Standar Pengelolaan Kinerja Guru Ruang GTK / PMM (Perdirjen GTK No. 7607/2023)</p>
         </div>
-        <a href="<?= base_url('guru/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
+        <a href="<?= base_url('guru/jadwal') ?>" class="btn btn-secondary shadow-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
         </a>
     </div>
@@ -50,7 +50,7 @@
                     <span class="badge badge-secondary px-2 py-1"><i class="fas fa-edit mr-1"></i> Draf Guru (Belum Diajukan)</span>
                 <?php endif; ?>
             </div>
-            <a href="<?= base_url('guru/dokumen-ajar/manage/' . $jadwal['id']) ?>" class="btn btn-outline-primary btn-pill">
+            <a href="<?= base_url('guru/dokumen-ajar/manage/' . $jadwal['id']) ?>" class="btn btn-outline-primary">
                 <i class="fas fa-folder-open mr-1"></i> Kelola Perangkat Ajar
             </a>
         </div>

@@ -225,12 +225,12 @@
                                             <td class="text-end pe-3">
                                                 <div class="btn-group btn-group-sm">
                                                     <a href="<?= base_url('guru/dokumen-ajar/manage/' . $schedule['id']) ?>" 
-                                                       class="btn btn-outline-primary btn-pill" 
+                                                       class="btn btn-outline-primary" 
                                                        title="Kelola Dokumen Ajar">
                                                         <i class="fas fa-file-upload"></i>
                                                     </a>
                                                     <a href="<?= base_url('guru/pra-observasi/' . $schedule['id']) ?>" 
-                                                       class="btn btn-outline-teal btn-pill" 
+                                                       class="btn btn-outline-teal" 
                                                        title="Formulir Pra-Observasi">
                                                         <i class="fas fa-clipboard-list"></i>
                                                     </a>
@@ -332,7 +332,7 @@
                                             </td>
                                             <td class="text-end pe-3">
                                                 <a href="<?= base_url('guru/hasil/' . $jadwal['id']) ?>" 
-                                                   class="btn btn-pill btn-outline-primary"
+                                                   class="btn btn-outline-primary"
                                                    title="Lihat Detail Hasil Supervisi">
                                                     <i class="fas fa-eye me-1"></i> Detail
                                                 </a>

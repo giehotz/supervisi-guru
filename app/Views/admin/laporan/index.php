@@ -12,10 +12,10 @@
             <p class="text-muted small mb-0">Dashboard rekapitulasi capaian akademik, evaluasi pembelajaran, dan cetak laporan resmi.</p>
         </div>
         <div class="mt-3 mt-sm-0 d-flex flex-wrap" style="gap: 8px;">
-            <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-sm btn-pill btn-danger shadow-sm font-weight-bold px-3">
+            <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-sm btn-danger shadow-sm font-weight-bold px-3">
                 <i class="fas fa-file-pdf mr-1"></i> Cetak Rekap Detail (PDF)
             </a>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" class="btn btn-sm btn-pill btn-primary shadow-sm font-weight-bold px-3">
+            <a href="<?= base_url('admin/laporan/hasil-supervisi?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" class="btn btn-sm btn-primary shadow-sm font-weight-bold px-3">
                 <i class="fas fa-clipboard-list mr-1"></i> Kelola Hasil Supervisi
             </a>
         </div>
@@ -284,7 +284,7 @@
                 </span>
             </div>
             <div>
-                <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-sm btn-pill btn-outline-danger shadow-sm font-weight-bold">
+                <a href="<?= base_url('admin/laporan/cetak-rekap-detail?tahun_ajar_id=' . ($tahun_ajar_id ?? '')) ?>" target="_blank" class="btn btn-sm btn-outline-danger shadow-sm font-weight-bold">
                     <i class="fas fa-print mr-1"></i> Cetak Rekap Landscape
                 </a>
             </div>

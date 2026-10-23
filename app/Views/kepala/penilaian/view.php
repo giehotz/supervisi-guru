@@ -7,10 +7,10 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Hasil Penilaian Supervisi</h1>
         <div>
-            <a href="<?= base_url('/kepala/penilaian/print/' . $schedule['id']) ?>" target="_blank" class="btn btn-info btn-pill">
+            <a href="<?= base_url('/kepala/penilaian/print/' . $schedule['id']) ?>" target="_blank" class="btn btn-info">
                 <i class="fas fa-print"></i> Cetak
             </a>
-            <a href="<?= base_url('/kepala/jadwal/' . $schedule['id']) ?>" class="btn btn-secondary btn-pill">
+            <a href="<?= base_url('/kepala/jadwal/' . $schedule['id']) ?>" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>

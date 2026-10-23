@@ -7,7 +7,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Detail Hasil Supervisi</h1>
         <div>
-            <a href="<?= base_url('supervisor/hasil') ?>" class="btn btn-secondary btn-pill mr-2">
+            <a href="<?= base_url('supervisor/hasil') ?>" class="btn btn-secondary mr-2">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
             
@@ -20,7 +20,7 @@
             -->
             <?php if (!empty($schedule['indikator_pmm_id'])): ?>
             <a href="<?= base_url('supervisor/hasil/cetak-kurmer/' . ($schedule['id'] ?? '')) ?>"
-                class="btn btn-success btn-pill d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                class="btn btn-success d-inline-flex align-items-center gap-1 shadow-sm mr-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Cetak Paket Formulir A-D Kurikulum Merdeka (Perdirjen GTK 7607)">
@@ -28,7 +28,7 @@
                 <span>Cetak Formulir A-D (PMM)</span>
             </a>
             <a href="<?= base_url('supervisor/hasil/cetak-telaah/' . ($schedule['id'] ?? '')) ?>"
-                class="btn btn-info btn-pill d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                class="btn btn-info d-inline-flex align-items-center gap-1 shadow-sm mr-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Cetak Format Telaah ATP / Modul Ajar">
@@ -36,7 +36,7 @@
                 <span>Cetak Telaah</span>
             </a>
             <a href="<?= base_url('supervisor/hasil/cetak-coaching/' . ($schedule['id'] ?? '')) ?>"
-                class="btn btn-teal btn-pill text-white d-inline-flex align-items-center gap-1 shadow-sm mr-1"
+                class="btn btn-teal text-white d-inline-flex align-items-center gap-1 shadow-sm mr-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Cetak Berita Acara Percakapan Coaching Alur TIRTA">
@@ -46,7 +46,7 @@
             <?php endif; ?>
 
             <a href="<?= base_url('supervisor/hasil/cetak/' . ($schedule['id'] ?? '')) ?>"
-                class="btn btn-primary btn-pill d-inline-flex align-items-center gap-1"
+                class="btn btn-primary d-inline-flex align-items-center gap-1"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Cetak hasil supervisi dalam format PDF"

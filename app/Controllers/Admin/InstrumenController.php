@@ -112,9 +112,10 @@ class InstrumenController extends BaseController
     {
         $aspekPenilaianData = [
             'jenis_penilaian_id' => $this->request->getPost('jenis_penilaian_id'),
-            'nama_aspek' => $this->request->getPost('nama_aspek'),
-            'urutan' => $this->request->getPost('urutan'),
-            'created_at' => date('Y-m-d H:i:s')
+            'nama_aspek'         => $this->request->getPost('nama_aspek'),
+            'urutan'             => $this->request->getPost('urutan'),
+            'tipe_skala'         => $this->request->getPost('tipe_skala') ?: 'skor_1_4',
+            'created_at'         => date('Y-m-d H:i:s')
         ];
         
         $result = $this->aspekPenilaianModel->insert($aspekPenilaianData);
@@ -130,8 +131,9 @@ class InstrumenController extends BaseController
     {
         $aspekPenilaianData = [
             'jenis_penilaian_id' => $this->request->getPost('jenis_penilaian_id'),
-            'nama_aspek' => $this->request->getPost('nama_aspek'),
-            'urutan' => $this->request->getPost('urutan')
+            'nama_aspek'         => $this->request->getPost('nama_aspek'),
+            'urutan'             => $this->request->getPost('urutan'),
+            'tipe_skala'         => $this->request->getPost('tipe_skala') ?: 'skor_1_4'
         ];
         
         $result = $this->aspekPenilaianModel->update($id, $aspekPenilaianData);

@@ -5,6 +5,48 @@ $pageTitle   = $pageTitle ?? ($rolePrefix === 'admin' ? 'Edit Hasil Penilaian Su
 $backUrl     = $backUrl ?? ($rolePrefix === 'admin' ? base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) : base_url($rolePrefix . '/jadwal'));
 $redirectUrl = $redirectUrl ?? ($rolePrefix === 'admin' ? base_url('admin/laporan/hasil-supervisi/detail/' . $schedule['id']) : base_url($rolePrefix . '/penilaian/view/' . $schedule['id']));
 $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
+
+// Pisahkan jenisPenilaian menjadi 2 Kategori Utama untuk Stepper:
+// 1. Perangkat Ajar (ATP, Modul Ajar, Administrasi Perencanaan)
+// 2. Observasi Kelas & Kinerja (8 Indikator PMM & Pelaksanaan)
+$perangkatList = [];
+$observasiList = [];
+
+foreach ($jenisPenilaian as $jenis) {
+    $jId = $jenis['id'];
+    $namaJenis = $jenis['nama'] ?? ($jenis['nama_jenis'] ?? '');
+    $kategori = $jenis['kategori_supervisi'] ?? '';
+    
+    $isPerangkat = ($kategori === 'perangkat_ajar') 
+        || in_array($jId, [1, 13, 14]) 
+        || stripos($namaJenis, 'perangkat') !== false 
+        || stripos($namaJenis, 'administrasi') !== false 
+        || stripos($namaJenis, 'atp') !== false 
+        || stripos($namaJenis, 'modul ajar') !== false 
+        || stripos($namaJenis, 'perencanaan') !== false;
+
+    if ($isPerangkat) {
+        $perangkatList[] = $jenis;
+    } else {
+        $observasiList[] = $jenis;
+    }
+}
+
+$perangkatFilled = 0;
+foreach ($perangkatList as $p) {
+    if (isset($existingResults[$p['id']])) {
+        $perangkatFilled++;
+    }
+}
+
+$observasiFilled = 0;
+foreach ($observasiList as $o) {
+    if (isset($existingResults[$o['id']])) {
+        $observasiFilled++;
+    }
+}
+
+$fokusPmmId = $schedule['indikator_pmm_id'] ?? null;
 ?>
 <?= $this->extend($layout) ?>
 
@@ -15,10 +57,10 @@ $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><?= esc($pageTitle) ?></h1>
         <div>
-            <a href="<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-info btn-pill mr-2 shadow-sm font-weight-bold">
+            <a href="<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-info mr-2 shadow-sm font-weight-bold">
                 <i class="fas fa-camera mr-1"></i> Foto Bukti Supervisi
             </a>
-            <a href="<?= $backUrl ?>" class="btn btn-secondary btn-pill">
+            <a href="<?= $backUrl ?>" class="btn btn-secondary">
                 <i class="fas fa-arrow-left mr-1"></i> <?= $rolePrefix === 'admin' ? 'Kembali ke Detail' : 'Kembali ke Jadwal' ?>
             </a>
         </div>
@@ -32,310 +74,530 @@ $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
     </div>
     <?php endif; ?>
 
-    <!-- Teacher & Schedule Info Card -->
+    <!-- Teacher & Schedule Info Card Partial -->
+    <?= view('admin/penilaian/partials/info_jadwal', ['schedule' => $schedule]) ?>
+
+    <!-- 3-Step Wizard Navigation -->
     <div class="card shadow mb-4">
-        <div class="card-header py-3 bg-white d-flex align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-info-circle mr-1"></i> Informasi Guru & Pelaksanaan Supervisi
-            </h6>
-            <span class="badge badge-<?= $schedule['status'] === 'Selesai' ? 'success' : 'info' ?> px-3 py-2">
-                Status: <?= esc($schedule['status']) ?>
-            </span>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <table class="table table-borderless table-sm mb-0">
-                        <tr>
-                            <td width="35%"><strong>Nama Guru</strong></td>
-                            <td width="5%">:</td>
-                            <td><strong><?= isset($schedule['nama_guru']) ? esc($schedule['nama_guru']) : '-' ?></strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>NIP Guru</strong></td>
-                            <td>:</td>
-                            <td><?= !empty($schedule['nip_guru']) ? esc($schedule['nip_guru']) : '-' ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Mata Pelajaran</strong></td>
-                            <td>:</td>
-                            <td><?= isset($schedule['mata_pelajaran']) && $schedule['mata_pelajaran'] !== '' ? esc($schedule['mata_pelajaran']) : (isset($schedule['guru_mata_pelajaran']) ? esc($schedule['guru_mata_pelajaran']) : '-') ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Materi Supervisi</strong></td>
-                            <td>:</td>
-                            <td><?= !empty($schedule['materi_supervisi']) ? esc($schedule['materi_supervisi']) : '-' ?></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-md-6">
-                    <table class="table table-borderless table-sm mb-0">
-                        <tr>
-                            <td width="35%"><strong>Tahun Ajaran</strong></td>
-                            <td width="5%">:</td>
-                            <td><?= esc($schedule['tahun_ajar'] ?? '-') ?> (<?= esc($schedule['semester'] ?? '-') ?>)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Tanggal Supervisi</strong></td>
-                            <td>:</td>
-                            <td><?= !empty($schedule['tanggal_supervisi']) ? date('d M Y', strtotime($schedule['tanggal_supervisi'])) : '-' ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Kelas</strong></td>
-                            <td>:</td>
-                            <td><?= isset($schedule['kelas']) ? esc($schedule['kelas']) : '-' ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Supervisor / Penilai</strong></td>
-                            <td>:</td>
-                            <td>
-                                <span class="badge badge-light border text-dark">
-                                    <i class="fas fa-user-tie mr-1"></i> <?= !empty($schedule['nama_supervisor']) ? esc($schedule['nama_supervisor']) : 'Supervisor Pembina' ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
+        <div class="card-header py-3 bg-white border-bottom">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-tasks mr-1"></i> Form Penilaian Supervisi (3 Tahap Ringkas)
+                </h6>
+                <div class="small text-muted">
+                    Total: <strong><?= $totalTahap ?> Komponen Instrumen</strong> terkelompok rapi
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Multi-step Assessment Form Card -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 bg-white">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-tasks mr-1"></i> Form Penilaian Supervisi (<?= $totalTahap ?> Tahap / Komponen)
-            </h6>
-        </div>
-        <div class="card-body">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" id="assessmentTabs" role="tablist">
-                <?php if (!empty($jenisPenilaian) && is_array($jenisPenilaian)): ?>
-                    <?php foreach ($jenisPenilaian as $index => $jenis): ?>
-                        <?php 
-                            $jId = $jenis['id'];
-                            $isTabActive = ($activeTab == $jId || ($activeTab == null && $index == 0));
-                            $namaJenis = $jenis['nama'] ?? ($jenis['nama_jenis'] ?? ('Tahap ' . ($index + 1)));
-                        ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= $isTabActive ? 'active font-weight-bold' : '' ?>" 
-                               id="step-<?= $jId ?>-tab" 
-                               data-toggle="tab" 
-                               href="#step-<?= $jId ?>" 
-                               role="tab"
-                               aria-controls="step-<?= $jId ?>"
-                               aria-selected="<?= $isTabActive ? 'true' : 'false' ?>"
-                               data-toggle-tooltip="tooltip"
-                               data-placement="top"
-                               title="<?= ($index + 1) . '. ' . esc($namaJenis) ?>">
-                                <i class="fas fa-clipboard-check mr-1 text-primary"></i>
-                                <span>Tahap <?= ($index + 1) ?></span>
-                                <span class="badge-status-<?= $jId ?>">
-                                    <?php if (isset($existingResults[$jId])): ?>
-                                        <span class="badge badge-success ml-1">✓</span>
-                                    <?php endif; ?>
-                                </span>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                <!-- Tahap Foto Bukti Supervisi -->
+        <div class="card-body p-3 p-md-4">
+            
+            <!-- Step Navigation Pills -->
+            <ul class="nav nav-pills nav-fill bg-light p-2 rounded mb-4 shadow-sm" id="wizardSteps" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link <?= (isset($activeTab) && $activeTab == 'foto') ? 'active font-weight-bold' : '' ?>" 
+                    <a class="nav-link active font-weight-bold py-3 text-left text-md-center wizard-step-tab" 
+                       id="step-perangkat-tab" 
+                       data-toggle="pill" 
+                       href="#step-perangkat" 
+                       role="tab" 
+                       aria-controls="step-perangkat" 
+                       aria-selected="true">
+                        <span class="badge badge-primary rounded-circle mr-1 px-2 py-1 step-num">1</span>
+                        <span><i class="fas fa-file-alt mr-1"></i> 1. Telaah Perangkat Ajar</span>
+                        <span class="badge badge-light border ml-1 badge-step-counter" id="badgeCountPerangkat">
+                            <?= $perangkatFilled ?> / <?= count($perangkatList) ?>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold py-3 text-left text-md-center wizard-step-tab" 
+                       id="step-observasi-tab" 
+                       data-toggle="pill" 
+                       href="#step-observasi" 
+                       role="tab" 
+                       aria-controls="step-observasi" 
+                       aria-selected="false">
+                        <span class="badge badge-secondary rounded-circle mr-1 px-2 py-1 step-num">2</span>
+                        <span><i class="fas fa-chalkboard-teacher mr-1"></i> 2. Observasi Kelas & Kinerja</span>
+                        <span class="badge badge-light border ml-1 badge-step-counter" id="badgeCountObservasi">
+                            <?= $observasiFilled ?> / <?= count($observasiList) ?>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold py-3 text-left text-md-center wizard-step-tab" 
                        id="step-foto-tab" 
-                       data-toggle="tab" 
-                       href="#step-foto" 
-                       role="tab"
-                       aria-controls="step-foto"
-                       aria-selected="<?= (isset($activeTab) && $activeTab == 'foto') ? 'true' : 'false' ?>"
-                       data-toggle-tooltip="tooltip"
-                       data-placement="top"
-                       title="<?= ($totalTahap + 1) ?>. FOTO BUKTI SUPERVISI">
-                        <i class="fas fa-camera mr-1 text-primary"></i>
-                        <span>FOTO BUKTI SUPERVISI</span>
-                        <span class="badge-status-foto">
-                            <?php if (!empty($existingPhotos)): ?>
-                                <span class="badge badge-success ml-1">✓</span>
-                            <?php endif; ?>
+                       data-toggle="pill" 
+                       href="#step-foto-pane" 
+                       role="tab" 
+                       aria-controls="step-foto-pane" 
+                       aria-selected="false">
+                        <span class="badge badge-secondary rounded-circle mr-1 px-2 py-1 step-num">3</span>
+                        <span><i class="fas fa-camera-retro mr-1"></i> 3. Foto Bukti & Selesai</span>
+                        <span class="badge badge-light border ml-1">
+                            <?= !empty($existingPhotos) ? count($existingPhotos) : 0 ?> Foto
                         </span>
                     </a>
                 </li>
             </ul>
 
-            <!-- Tab panes -->
-            <div class="tab-content pt-4" id="assessmentTabsContent">
-                <?php if (!empty($jenisPenilaian) && is_array($jenisPenilaian)): ?>
-                    <?php foreach ($jenisPenilaian as $index => $jenis): ?>
-                        <?php 
-                            $jId = $jenis['id'];
-                            $isTabActive = ($activeTab == $jId || ($activeTab == null && $index == 0));
-                            $namaJenis = $jenis['nama'] ?? ($jenis['nama_jenis'] ?? ('Komponen ' . $jId));
-                        ?>
-                        <div class="tab-pane fade <?= $isTabActive ? 'show active' : '' ?>" 
-                             id="step-<?= $jId ?>" 
-                             role="tabpanel"
-                             aria-labelledby="step-<?= $jId ?>-tab">
-                             
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="font-weight-bold text-gray-800 m-0">
-                                    <?= ($index + 1) . '. ' . esc($namaJenis) ?>
-                                </h5>
-                                <span class="badge badge-primary px-3 py-2">
-                                    Skor Maksimal per Aspek: 4
-                                </span>
-                            </div>
+            <!-- Wizard Step Content Panes -->
+            <div class="tab-content" id="wizardStepsContent">
 
-                            <!-- Bulk Edit Box -->
-                            <div class="alert alert-light border shadow-sm mb-4">
-                                <div class="row align-items-center">
-                                    <div class="col-md-3">
-                                        <label class="small font-weight-bold text-gray-700 mb-1">
-                                            <i class="fas fa-magic mr-1 text-primary"></i> Atur Cepat Semua Skor:
-                                        </label>
-                                        <select class="form-control form-control-sm bulk-skor-select" id="bulk-skor-<?= $jId ?>" data-tab-id="<?= $jId ?>">
-                                            <option value="">-- Pilih Skor --</option>
-                                            <option value="4">4 - Sangat Baik</option>
-                                            <option value="3">3 - Baik</option>
-                                            <option value="2">2 - Cukup</option>
-                                            <option value="1">1 - Kurang</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3 mt-md-4 mt-2">
-                                        <button type="button" class="btn btn-pill btn-outline-primary bulk-edit-apply-btn" data-tab-id="<?= $jId ?>">
-                                            <i class="fas fa-check mr-1"></i> Terapkan ke Semua Aspek
-                                        </button>
-                                    </div>
-                                    <div class="col-md-6 text-md-right text-muted small mt-md-4 mt-2">
-                                        <i class="fas fa-info-circle mr-1"></i> Catatan akan terisi otomatis sesuai skala skor dan tetap dapat diedit secara manual.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Assessment Form for this Step -->
-                            <form id="form-<?= $jId ?>" class="form-step-penilaian">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="jadwal_id" value="<?= esc($schedule['id']) ?>">
-                                <input type="hidden" name="jenis_penilaian_id" value="<?= esc($jId) ?>">
-
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-bordered table-hover" width="100%">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th width="5%" class="text-center">No</th>
-                                                <th width="35%">Aspek Penilaian</th>
-                                                <th width="20%">Skor (1 - 4)</th>
-                                                <th width="40%">Catatan / Bukti Fisik</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if (!empty($aspekByJenis[$jId])): ?>
-                                                <?php $no = 1; ?>
-                                                <?php foreach ($aspekByJenis[$jId] as $aspek): ?>
-                                                    <?php 
-                                                        $aspekId = $aspek['id'];
-                                                        $existingDetail = $existingDetails[$jId][$aspekId] ?? null;
-                                                        $currentSkor = $existingDetail['skor'] ?? '';
-                                                        $currentCatatan = $existingDetail['catatan'] ?? '';
-                                                    ?>
-                                                    <tr>
-                                                        <td class="text-center align-middle"><?= $no++ ?></td>
-                                                        <td class="align-middle">
-                                                            <strong><?= esc($aspek['nama_aspek']) ?></strong>
-                                                        </td>
-                                                        <td class="align-middle">
-                                                            <select name="skor_<?= $aspekId ?>" 
-                                                                    class="form-control form-control-sm skala-dropdown" 
-                                                                    data-aspek="<?= $aspekId ?>"
-                                                                    data-tab-id="<?= $jId ?>" 
-                                                                    required>
-                                                                <option value="">-- Pilih --</option>
-                                                                <option value="4" <?= $currentSkor == 4 ? 'selected' : '' ?>>4 - Sangat Baik</option>
-                                                                <option value="3" <?= $currentSkor == 3 ? 'selected' : '' ?>>3 - Baik</option>
-                                                                <option value="2" <?= $currentSkor == 2 ? 'selected' : '' ?>>2 - Cukup</option>
-                                                                <option value="1" <?= $currentSkor == 1 ? 'selected' : '' ?>>1 - Kurang</option>
-                                                            </select>
-                                                        </td>
-                                                        <td class="align-middle">
-                                                            <textarea name="catatan_<?= $aspekId ?>" 
-                                                                      class="form-control form-control-sm catatan-field" 
-                                                                      data-aspek="<?= $aspekId ?>" 
-                                                                      rows="2" 
-                                                                      placeholder="Tulis catatan atau bukti fisik..."><?= esc($currentCatatan) ?></textarea>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <tr>
-                                                    <td colspan="4" class="text-center py-4 text-muted">
-                                                        Tidak ada aspek penilaian pada komponen ini.
-                                                    </td>
-                                                </tr>
-                                            <?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <!-- Rekomendasi Section -->
-                                <div class="form-group mb-4 bg-light p-3 rounded border">
-                                    <label for="rekomendasi-<?= $jId ?>" class="font-weight-bold text-gray-800">
-                                        <i class="fas fa-comment-dots text-primary mr-1"></i> Rekomendasi Perbaikan untuk <?= esc($namaJenis) ?>:
-                                    </label>
-                                    <textarea name="rekomendasi" 
-                                              id="rekomendasi-<?= $jId ?>" 
-                                              data-jenis-id="<?= $jId ?>"
-                                              class="form-control rekomendasi-textarea" 
-                                              rows="3" 
-                                              placeholder="Tuliskan rekomendasi atau saran perbaikan untuk komponen penilaian ini..."><?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?></textarea>
-                                    <input type="hidden" name="rekomendasi_<?= $jId ?>" id="rekomendasi-hidden-<?= $jId ?>" value="<?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?>">
-                                </div>
-
-                                <!-- Navigation & Save Buttons -->
-                                <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-3">
-                                    <div>
-                                        <?php if ($index > 0): ?>
-                                            <button type="button" class="btn btn-outline-secondary btn-pill btn-prev-tab" data-prev-id="<?= $jenisPenilaian[$index - 1]['id'] ?>">
-                                                <i class="fas fa-arrow-left mr-1"></i> Tahap Sebelumnya
-                                            </button>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <button type="submit" class="btn btn-outline-primary btn-pill btn-save-step shadow-sm mr-2" data-next-id="<?= ($index < count($jenisPenilaian) - 1) ? $jenisPenilaian[$index + 1]['id'] : 'foto' ?>">
-                                            <i class="fas fa-save mr-1"></i> Simpan Tahap Ini
-                                        </button>
-                                        <?php if ($index < count($jenisPenilaian) - 1): ?>
-                                            <button type="button" class="btn btn-primary btn-pill btn-next-tab-save" data-next-id="<?= $jenisPenilaian[$index + 1]['id'] ?>">
-                                                Tahap Selanjutnya <i class="fas fa-arrow-right ml-1"></i>
-                                            </button>
-                                        <?php else: ?>
-                                            <button type="button" class="btn btn-primary btn-pill btn-next-tab-save" data-next-id="foto">
-                                                Tahap <?= ($totalTahap + 1) ?>: Foto Bukti <i class="fas fa-arrow-right ml-1"></i>
-                                            </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </form>
-
+                <!-- ========================================== -->
+                <!-- TAHAP 1: TELAAH PERANGKAT AJAR            -->
+                <!-- ========================================== -->
+                <div class="tab-pane fade show active" id="step-perangkat" role="tabpanel" aria-labelledby="step-perangkat-tab">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div>
+                            <h5 class="font-weight-bold text-gray-800 m-0">
+                                <i class="fas fa-clipboard-list text-primary mr-1"></i> Tahap 1: Telaah Dokumen & Perangkat Ajar
+                            </h5>
+                            <small class="text-muted">Telaah perencanaan, Alur Tujuan Pembelajaran (ATP), dan Modul Ajar / RPP Guru</small>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-
-                <!-- Tab Pane Foto Bukti Supervisi -->
-                <div class="tab-pane fade <?= (isset($activeTab) && $activeTab == 'foto') ? 'show active' : '' ?>" 
-                     id="step-foto" 
-                     role="tabpanel" 
-                     aria-labelledby="step-foto-tab">
-                     
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="font-weight-bold text-gray-800 m-0">
-                            <?= ($totalTahap + 1) ?>. FOTO BUKTI SUPERVISI
-                            <span class="badge badge-info ml-2" id="photoCountBadge"><?= !empty($existingPhotos) ? count($existingPhotos) : 0 ?> / 5 Foto</span>
-                        </h5>
-                        <a href="<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>" class="btn btn-outline-primary btn-pill">
-                            <i class="fas fa-external-link-alt mr-1"></i> Kelola di Halaman Khusus
-                        </a>
+                        <div class="mt-2 mt-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-expand-all mr-1" data-target="#accordionPerangkat">
+                                <i class="fas fa-angle-double-down mr-1"></i> Buka Semua
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-collapse-all" data-target="#accordionPerangkat">
+                                <i class="fas fa-angle-double-up mr-1"></i> Tutup Semua
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Form Upload Cepat -->
+                    <!-- Accordion Perangkat Ajar -->
+                    <div class="accordion" id="accordionPerangkat">
+                        <?php foreach ($perangkatList as $pIdx => $jenis): ?>
+                            <?php 
+                                $jId = $jenis['id'];
+                                $namaJenis = $jenis['nama'] ?? ($jenis['nama_jenis'] ?? ('Komponen ' . $jId));
+                                $aspeks = $aspekByJenis[$jId] ?? [];
+                                $hasResult = isset($existingResults[$jId]);
+                                $isOpen = ($pIdx === 0); // Komponen pertama dibuka secara default
+                            ?>
+                            <div class="card mb-3 border shadow-sm accordion-component-card" id="card-component-<?= $jId ?>">
+                                <div class="card-header bg-white py-3" id="heading-<?= $jId ?>">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                                        <button class="btn btn-link text-dark text-left font-weight-bold p-0 d-flex align-items-center accordion-toggle-btn" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#collapse-<?= $jId ?>" 
+                                                aria-expanded="<?= $isOpen ? 'true' : 'false' ?>" 
+                                                aria-controls="collapse-<?= $jId ?>">
+                                            <i class="fas <?= $isOpen ? 'fa-chevron-down' : 'fa-chevron-right' ?> mr-2 text-primary chevron-icon"></i>
+                                            <span class="component-title"><?= ($pIdx + 1) . '. ' . esc($namaJenis) ?></span>
+                                            <span class="badge-status-<?= $jId ?> ml-2">
+                                                <?php if ($hasResult): ?>
+                                                    <span class="badge badge-success"><i class="fas fa-check mr-1"></i>Tersimpan</span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-light border text-muted">Belum Diisi</span>
+                                                <?php endif; ?>
+                                            </span>
+                                        </button>
+                                        <div class="d-flex align-items-center mt-2 mt-md-0">
+                                            <span class="badge badge-light border mr-2">
+                                                <?= count($aspeks) ?> Aspek
+                                            </span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary btn-save-single" data-form-id="form-<?= $jId ?>">
+                                                <i class="fas fa-save mr-1"></i> Simpan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse-<?= $jId ?>" class="collapse <?= $isOpen ? 'show' : '' ?>" aria-labelledby="heading-<?= $jId ?>">
+                                    <div class="card-body bg-light-soft pt-3">
+                                        <!-- Bulk Edit Box -->
+                                        <div class="alert alert-light border shadow-sm mb-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-4">
+                                                    <label class="small font-weight-bold text-gray-700 mb-1">
+                                                        <i class="fas fa-magic mr-1 text-primary"></i> Atur Cepat Skor:
+                                                    </label>
+                                                    <select class="form-control bulk-skor-select" id="bulk-skor-<?= $jId ?>" data-tab-id="<?= $jId ?>">
+                                                        <option value="">-- Pilih Skor --</option>
+                                                        <option value="4">4 - Sangat Baik</option>
+                                                        <option value="3">3 - Baik</option>
+                                                        <option value="2">2 - Cukup</option>
+                                                        <option value="1">1 - Kurang</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5 mt-md-4 mt-2">
+                                                    <button type="button" class="btn btn-outline-primary bulk-edit-apply-btn mr-1 mb-1" data-tab-id="<?= $jId ?>">
+                                                        <i class="fas fa-check mr-1"></i> Terapkan ke Semua Aspek
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-reset-bulk-catatan mb-1" data-tab-id="<?= $jId ?>">
+                                                        <i class="fas fa-undo mr-1"></i> Reset Catatan
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-3 text-md-right text-muted small mt-md-4 mt-2">
+                                                    <i class="fas fa-info-circle mr-1"></i> Catatan dapat diedit atau di-reset.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Assessment Form -->
+                                        <form id="form-<?= $jId ?>" class="form-step-penilaian" data-group="perangkat">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="jadwal_id" value="<?= esc($schedule['id']) ?>">
+                                            <input type="hidden" name="jenis_penilaian_id" value="<?= esc($jId) ?>">
+
+                                            <div class="table-responsive bg-white rounded border mb-3">
+                                                <table class="table table-bordered table-hover mb-0" width="100%">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th width="5%" class="text-center">No</th>
+                                                            <th width="35%">Aspek Penilaian</th>
+                                                            <th width="20%">Skor (1 - 4)</th>
+                                                            <th width="40%">Catatan / Bukti Fisik</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php if (!empty($aspeks)): ?>
+                                                            <?php $no = 1; ?>
+                                                            <?php foreach ($aspeks as $aspek): ?>
+                                                                <?php 
+                                                                    $aspekId = $aspek['id'];
+                                                                    $existingDetail = $existingDetails[$jId][$aspekId] ?? null;
+                                                                    $currentSkor = $existingDetail['skor'] ?? '';
+                                                                    $currentCatatan = $existingDetail['catatan'] ?? '';
+                                                                ?>
+                                                                <tr>
+                                                                    <td class="text-center align-middle"><?= $no++ ?></td>
+                                                                    <td class="align-middle">
+                                                                        <strong><?= esc($aspek['nama_aspek']) ?></strong>
+                                                                        <?php if (!empty($aspek['fokus_perilaku'])): ?>
+                                                                            <div class="small text-muted mt-1">
+                                                                                <i class="fas fa-bullseye text-info mr-1"></i><?= esc($aspek['fokus_perilaku']) ?>
+                                                                            </div>
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                                    <td class="align-middle">
+                                                                        <select name="skor_<?= $aspekId ?>" 
+                                                                                class="form-control skala-dropdown" 
+                                                                                data-aspek="<?= $aspekId ?>"
+                                                                                data-nama-aspek="<?= esc($aspek['nama_aspek']) ?>"
+                                                                                data-fokus-perilaku="<?= esc($aspek['fokus_perilaku'] ?? '') ?>"
+                                                                                data-kategori="<?= esc($jenis['kategori_supervisi'] ?? '') ?>"
+                                                                                data-tab-id="<?= $jId ?>" 
+                                                                                required>
+                                                                            <option value="">-- Pilih --</option>
+                                                                            <option value="4" <?= $currentSkor == 4 ? 'selected' : '' ?>>4 - Sangat Baik</option>
+                                                                            <option value="3" <?= $currentSkor == 3 ? 'selected' : '' ?>>3 - Baik</option>
+                                                                            <option value="2" <?= $currentSkor == 2 ? 'selected' : '' ?>>2 - Cukup</option>
+                                                                            <option value="1" <?= $currentSkor == 1 ? 'selected' : '' ?>>1 - Kurang</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td class="align-middle">
+                                                                        <textarea name="catatan_<?= $aspekId ?>" 
+                                                                                  class="form-control catatan-field" 
+                                                                                  data-aspek="<?= $aspekId ?>" 
+                                                                                  data-nama-aspek="<?= esc($aspek['nama_aspek']) ?>"
+                                                                                  data-fokus-perilaku="<?= esc($aspek['fokus_perilaku'] ?? '') ?>"
+                                                                                  data-kategori="<?= esc($jenis['kategori_supervisi'] ?? '') ?>"
+                                                                                  rows="3" 
+                                                                                  placeholder="Tulis catatan atau bukti fisik..."><?= esc($currentCatatan) ?></textarea>
+                                                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                                                            <button type="button" class="btn btn-xs btn-link text-muted p-0 btn-regen-catatan" data-aspek="<?= $aspekId ?>" title="Refresh catatan otomatis sesuai skor">
+                                                                                <i class="fas fa-magic mr-1"></i>Catatan Otomatis
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-xs btn-link text-danger p-0 btn-clear-single-catatan" data-aspek="<?= $aspekId ?>" title="Kosongkan catatan aspek ini">
+                                                                                <i class="fas fa-eraser mr-1"></i>Kosongkan
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center py-3 text-muted">
+                                                                    Tidak ada aspek penilaian pada komponen ini.
+                                                                </td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Rekomendasi Section -->
+                                            <div class="form-group mb-3 bg-white p-3 rounded border">
+                                                <label for="rekomendasi-<?= $jId ?>" class="font-weight-bold text-gray-800 small">
+                                                    <i class="fas fa-comment-dots text-primary mr-1"></i> Rekomendasi Perbaikan:
+                                                </label>
+                                                <textarea name="rekomendasi" 
+                                                          id="rekomendasi-<?= $jId ?>" 
+                                                          data-jenis-id="<?= $jId ?>"
+                                                          class="form-control rekomendasi-textarea" 
+                                                          rows="3" 
+                                                          placeholder="Tuliskan rekomendasi atau catatan tindak lanjut perbaikan..."><?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?></textarea>
+                                                <input type="hidden" name="rekomendasi_<?= $jId ?>" id="rekomendasi-hidden-<?= $jId ?>" value="<?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?>">
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Step 1 Bottom Navigation -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top mt-4">
+                        <div class="text-muted small mb-2 mb-md-0">
+                            <i class="fas fa-info-circle mr-1"></i> Data pada tahap ini otomatis disimpan saat Anda menekan tombol lanjut.
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-primary mr-2 btn-save-step-group" data-group="perangkat">
+                                <i class="fas fa-save mr-1"></i> Simpan Tahap 1
+                            </button>
+                            <button type="button" class="btn btn-primary btn-wizard-next shadow-sm" data-next-step="step-observasi">
+                                Lanjut ke Observasi Kelas <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- TAHAP 2: OBSERVASI KELAS & KINERJA         -->
+                <!-- ========================================== -->
+                <div class="tab-pane fade" id="step-observasi" role="tabpanel" aria-labelledby="step-observasi-tab">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div>
+                            <h5 class="font-weight-bold text-gray-800 m-0">
+                                <i class="fas fa-chalkboard-teacher text-primary mr-1"></i> Tahap 2: Observasi Kelas & Praktik Kinerja
+                            </h5>
+                            <small class="text-muted">Penilaian fokus observasi praktik pembelajaran di dalam ruang kelas</small>
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-expand-all mr-1" data-target="#accordionObservasi">
+                                <i class="fas fa-angle-double-down mr-1"></i> Buka Semua
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-collapse-all" data-target="#accordionObservasi">
+                                <i class="fas fa-angle-double-up mr-1"></i> Tutup Semua
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Accordion Observasi Kelas -->
+                    <div class="accordion" id="accordionObservasi">
+                        <?php foreach ($observasiList as $oIdx => $jenis): ?>
+                            <?php 
+                                $jId = $jenis['id'];
+                                $namaJenis = $jenis['nama'] ?? ($jenis['nama_jenis'] ?? ('Komponen ' . $jId));
+                                $aspeks = $aspekByJenis[$jId] ?? [];
+                                $hasResult = isset($existingResults[$jId]);
+                                
+                                // Cek apakah komponen ini merupakan Fokus Utama Jadwal guru
+                                $isFokus = ($fokusPmmId && $fokusPmmId == $jId);
+                                
+                                // Status buka: fokus utama otomatis terbuka; bila tidak ada fokus spesifik, item pertama yang terbuka
+                                $isOpen = $isFokus || (!$fokusPmmId && $oIdx === 0);
+                            ?>
+                            <div class="card mb-3 border shadow-sm accordion-component-card <?= $isFokus ? 'border-left-warning' : '' ?>" id="card-component-<?= $jId ?>">
+                                <div class="card-header bg-white py-3 <?= $isFokus ? 'bg-warning-soft' : '' ?>" id="heading-<?= $jId ?>">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                                        <button class="btn btn-link text-dark text-left font-weight-bold p-0 d-flex align-items-center accordion-toggle-btn" 
+                                                type="button" 
+                                                data-toggle="collapse" 
+                                                data-target="#collapse-<?= $jId ?>" 
+                                                aria-expanded="<?= $isOpen ? 'true' : 'false' ?>" 
+                                                aria-controls="collapse-<?= $jId ?>">
+                                            <i class="fas <?= $isOpen ? 'fa-chevron-down' : 'fa-chevron-right' ?> mr-2 text-primary chevron-icon"></i>
+                                            <span class="component-title"><?= ($oIdx + 1) . '. ' . esc($namaJenis) ?></span>
+                                            
+                                            <?php if ($isFokus): ?>
+                                                <span class="badge badge-warning text-dark ml-2 font-weight-bold shadow-sm">
+                                                    <i class="fas fa-star mr-1"></i>Fokus Utama Jadwal
+                                                </span>
+                                            <?php endif; ?>
+
+                                            <span class="badge-status-<?= $jId ?> ml-2">
+                                                <?php if ($hasResult): ?>
+                                                    <span class="badge badge-success"><i class="fas fa-check mr-1"></i>Tersimpan</span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-light border text-muted">Belum Diisi</span>
+                                                <?php endif; ?>
+                                            </span>
+                                        </button>
+                                        <div class="d-flex align-items-center mt-2 mt-md-0">
+                                            <span class="badge badge-light border mr-2">
+                                                <?= count($aspeks) ?> Aspek
+                                            </span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary btn-save-single" data-form-id="form-<?= $jId ?>">
+                                                <i class="fas fa-save mr-1"></i> Simpan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse-<?= $jId ?>" class="collapse <?= $isOpen ? 'show' : '' ?>" aria-labelledby="heading-<?= $jId ?>">
+                                    <div class="card-body bg-light-soft pt-3">
+                                        <!-- Bulk Edit Box -->
+                                        <div class="alert alert-light border shadow-sm mb-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-4">
+                                                    <label class="small font-weight-bold text-gray-700 mb-1">
+                                                        <i class="fas fa-magic mr-1 text-primary"></i> Atur Cepat Skor:
+                                                    </label>
+                                                    <select class="form-control bulk-skor-select" id="bulk-skor-<?= $jId ?>" data-tab-id="<?= $jId ?>">
+                                                        <option value="">-- Pilih Skor --</option>
+                                                        <option value="4">4 - Sangat Baik</option>
+                                                        <option value="3">3 - Baik</option>
+                                                        <option value="2">2 - Cukup</option>
+                                                        <option value="1">1 - Kurang</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5 mt-md-4 mt-2">
+                                                    <button type="button" class="btn btn-outline-primary bulk-edit-apply-btn mr-1 mb-1" data-tab-id="<?= $jId ?>">
+                                                        <i class="fas fa-check mr-1"></i> Terapkan ke Semua Aspek
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-reset-bulk-catatan mb-1" data-tab-id="<?= $jId ?>">
+                                                        <i class="fas fa-undo mr-1"></i> Reset Catatan
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-3 text-md-right text-muted small mt-md-4 mt-2">
+                                                    <i class="fas fa-info-circle mr-1"></i> Catatan dapat diedit atau di-reset.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Assessment Form -->
+                                        <form id="form-<?= $jId ?>" class="form-step-penilaian" data-group="observasi">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="jadwal_id" value="<?= esc($schedule['id']) ?>">
+                                            <input type="hidden" name="jenis_penilaian_id" value="<?= esc($jId) ?>">
+
+                                            <div class="table-responsive bg-white rounded border mb-3">
+                                                <table class="table table-bordered table-hover mb-0" width="100%">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th width="5%" class="text-center">No</th>
+                                                            <th width="35%">Aspek Penilaian</th>
+                                                            <th width="20%">Skor (1 - 4)</th>
+                                                            <th width="40%">Catatan / Bukti Fisik</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php if (!empty($aspeks)): ?>
+                                                            <?php $no = 1; ?>
+                                                            <?php foreach ($aspeks as $aspek): ?>
+                                                                <?php 
+                                                                    $aspekId = $aspek['id'];
+                                                                    $existingDetail = $existingDetails[$jId][$aspekId] ?? null;
+                                                                    $currentSkor = $existingDetail['skor'] ?? '';
+                                                                    $currentCatatan = $existingDetail['catatan'] ?? '';
+                                                                ?>
+                                                                <tr>
+                                                                    <td class="text-center align-middle"><?= $no++ ?></td>
+                                                                    <td class="align-middle">
+                                                                        <strong><?= esc($aspek['nama_aspek']) ?></strong>
+                                                                        <?php if (!empty($aspek['fokus_perilaku'])): ?>
+                                                                            <div class="small text-muted mt-1">
+                                                                                <i class="fas fa-bullseye text-info mr-1"></i><?= esc($aspek['fokus_perilaku']) ?>
+                                                                            </div>
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                                    <td class="align-middle">
+                                                                        <select name="skor_<?= $aspekId ?>" 
+                                                                                class="form-control skala-dropdown" 
+                                                                                data-aspek="<?= $aspekId ?>"
+                                                                                data-nama-aspek="<?= esc($aspek['nama_aspek']) ?>"
+                                                                                data-fokus-perilaku="<?= esc($aspek['fokus_perilaku'] ?? '') ?>"
+                                                                                data-kategori="<?= esc($jenis['kategori_supervisi'] ?? '') ?>"
+                                                                                data-tab-id="<?= $jId ?>" 
+                                                                                required>
+                                                                            <option value="">-- Pilih --</option>
+                                                                            <option value="4" <?= $currentSkor == 4 ? 'selected' : '' ?>>4 - Sangat Baik</option>
+                                                                            <option value="3" <?= $currentSkor == 3 ? 'selected' : '' ?>>3 - Baik</option>
+                                                                            <option value="2" <?= $currentSkor == 2 ? 'selected' : '' ?>>2 - Cukup</option>
+                                                                            <option value="1" <?= $currentSkor == 1 ? 'selected' : '' ?>>1 - Kurang</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td class="align-middle">
+                                                                        <textarea name="catatan_<?= $aspekId ?>" 
+                                                                                  class="form-control catatan-field" 
+                                                                                  data-aspek="<?= $aspekId ?>" 
+                                                                                  data-nama-aspek="<?= esc($aspek['nama_aspek']) ?>"
+                                                                                  data-fokus-perilaku="<?= esc($aspek['fokus_perilaku'] ?? '') ?>"
+                                                                                  data-kategori="<?= esc($jenis['kategori_supervisi'] ?? '') ?>"
+                                                                                  rows="3" 
+                                                                                  placeholder="Tulis catatan atau bukti fisik..."><?= esc($currentCatatan) ?></textarea>
+                                                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                                                            <button type="button" class="btn btn-xs btn-link text-muted p-0 btn-regen-catatan" data-aspek="<?= $aspekId ?>" title="Refresh catatan otomatis sesuai skor">
+                                                                                <i class="fas fa-magic mr-1"></i>Catatan Otomatis
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-xs btn-link text-danger p-0 btn-clear-single-catatan" data-aspek="<?= $aspekId ?>" title="Kosongkan catatan aspek ini">
+                                                                                <i class="fas fa-eraser mr-1"></i>Kosongkan
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center py-3 text-muted">
+                                                                    Tidak ada aspek penilaian pada komponen ini.
+                                                                </td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Rekomendasi Section -->
+                                            <div class="form-group mb-3 bg-white p-3 rounded border">
+                                                <label for="rekomendasi-<?= $jId ?>" class="font-weight-bold text-gray-800 small">
+                                                    <i class="fas fa-comment-dots text-primary mr-1"></i> Rekomendasi Perbaikan:
+                                                </label>
+                                                <textarea name="rekomendasi" 
+                                                          id="rekomendasi-<?= $jId ?>" 
+                                                          data-jenis-id="<?= $jId ?>"
+                                                          class="form-control rekomendasi-textarea" 
+                                                          rows="3" 
+                                                          placeholder="Tuliskan rekomendasi atau catatan tindak lanjut perbaikan..."><?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?></textarea>
+                                                <input type="hidden" name="rekomendasi_<?= $jId ?>" id="rekomendasi-hidden-<?= $jId ?>" value="<?= esc($existingResults[$jId]['rekomendasi'] ?? '') ?>">
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Step 2 Bottom Navigation -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top mt-4">
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary btn-wizard-prev" data-prev-step="step-perangkat">
+                                <i class="fas fa-arrow-left mr-1"></i> Kembali ke Perangkat Ajar
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center mt-2 mt-md-0">
+                            <button type="button" class="btn btn-outline-primary mr-2 btn-save-step-group" data-group="observasi">
+                                <i class="fas fa-save mr-1"></i> Simpan Tahap 2
+                            </button>
+                            <button type="button" class="btn btn-primary btn-wizard-next shadow-sm" data-next-step="step-foto-pane">
+                                Lanjut ke Foto & Selesai <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- TAHAP 3: FOTO BUKTI & PENYELESAIAN         -->
+                <!-- ========================================== -->
+                <div class="tab-pane fade" id="step-foto-pane" role="tabpanel" aria-labelledby="step-foto-tab">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div>
+                            <h5 class="font-weight-bold text-gray-800 m-0">
+                                <i class="fas fa-camera-retro text-primary mr-1"></i> Tahap 3: Foto Bukti Supervisi & Penyelesaian
+                            </h5>
+                            <small class="text-muted">Upload dokumentasi visual pelaksanaan supervisi dan finalisasi rekapitulasi penilaian</small>
+                        </div>
+                        <span class="badge badge-info px-3 py-2" id="photoCountBadge">
+                            <?= !empty($existingPhotos) ? count($existingPhotos) : 0 ?> / 5 Foto Terunggah
+                        </span>
+                    </div>
+
+                    <!-- Form Upload Cepat Foto -->
                     <form id="quickPhotoUploadForm" enctype="multipart/form-data" class="mb-4 p-3 bg-light rounded border shadow-sm">
                         <div class="row align-items-end">
                             <div class="col-md-5">
@@ -345,10 +607,10 @@ $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
                             </div>
                             <div class="col-md-5 mt-2 mt-md-0">
                                 <label for="quickKeterangan" class="font-weight-bold small text-gray-700">Keterangan Foto (Opsional):</label>
-                                <input type="text" class="form-control form-control-sm" id="quickKeterangan" name="keterangan" placeholder="Contoh: Dokumentasi proses pembelajaran">
+                                <input type="text" class="form-control" id="quickKeterangan" name="keterangan" placeholder="Contoh: Dokumentasi proses pembelajaran di kelas">
                             </div>
                             <div class="col-md-2 mt-3 mt-md-0 text-md-right">
-                                <button type="submit" id="btnQuickUpload" class="btn btn-primary btn-pill btn-block shadow-sm">
+                                <button type="submit" id="btnQuickUpload" class="btn btn-primary btn-block shadow-sm">
                                     <i class="fas fa-upload mr-1"></i> Upload Foto
                                 </button>
                             </div>
@@ -356,7 +618,7 @@ $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
                     </form>
 
                     <!-- Galeri Foto Terunggah -->
-                    <div id="quickPhotoGallery" class="row">
+                    <div id="quickPhotoGallery" class="row mb-4">
                         <?php if (!empty($existingPhotos)): ?>
                             <?php foreach ($existingPhotos as $photo): ?>
                                 <div class="col-md-3 col-sm-6 mb-3 photo-card-<?= $photo['id'] ?>">
@@ -386,465 +648,78 @@ $totalTahap  = !empty($jenisPenilaian) ? count($jenisPenilaian) : 0;
                         <?php endif; ?>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                        <button type="button" class="btn btn-outline-secondary btn-pill btn-prev-tab" data-prev-id="<?= $jenisPenilaian[count($jenisPenilaian) - 1]['id'] ?>">
-                            <i class="fas fa-arrow-left mr-1"></i> Tahap Sebelumnya
-                        </button>
-                        <button type="button" class="btn btn-success btn-pill btn-trigger-complete shadow-sm">
-                            <i class="fas fa-check-double mr-1"></i> Selesaikan Supervisi
+                    <!-- Final Save & Complete Card -->
+                    <div class="alert alert-success border-left-success shadow-sm p-4 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="font-weight-bold text-success mb-1">
+                                    <i class="fas fa-check-circle mr-1"></i> Siap Menyelesaikan Penilaian Supervisi?
+                                </h5>
+                                <p class="mb-1 text-gray-800">
+                                    Klik tombol di samping untuk menyimpan seluruh skor secara terpadu, menghitung nilai akhir, menetapkan predikat kualifikasi, dan memperbarui rekapitulasi.
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i> Anda akan otomatis dialihkan ke halaman <strong>Detail Hasil Supervisi</strong> setelah proses selesai.
+                                </small>
+                            </div>
+                            <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                                <button type="button" id="btnCompleteSupervisi" class="btn btn-success btn-lg shadow" data-jadwal-id="<?= esc($schedule['id']) ?>">
+                                    <i class="fas fa-check-double mr-1"></i> Simpan & Selesaikan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 Bottom Navigation -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-wizard-prev" data-prev-step="step-observasi">
+                            <i class="fas fa-arrow-left mr-1"></i> Kembali ke Observasi Kelas
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Final Save & Complete Card -->
-    <div class="card shadow mb-5 border-left-success">
-        <div class="card-header py-3 bg-white">
-            <h6 class="m-0 font-weight-bold text-success">
-                <i class="fas fa-check-circle mr-1"></i> Selesaikan dan Perbarui Rekapitulasi Supervisi
-            </h6>
-        </div>
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <p class="mb-1 text-gray-800">
-                        Klik tombol di samping untuk menghitung ulang seluruh skor, menetapkan predikat kualifikasi baru, dan menyimpan pembaruan hasil supervisi.
-                    </p>
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle mr-1"></i> Anda akan langsung dialihkan kembali ke halaman <strong>Detail Hasil Supervisi</strong> dengan data terbaru.
-                    </small>
                 </div>
-                <div class="col-md-4 text-md-right mt-3 mt-md-0">
-                    <button type="button" id="btnCompleteSupervisi" class="btn btn-success btn-lg shadow-sm" data-jadwal-id="<?= esc($schedule['id']) ?>">
-                        <i class="fas fa-check-double mr-1"></i> Simpan & Selesaikan
-                    </button>
-                </div>
+
             </div>
         </div>
     </div>
 
 </div>
+
+<style>
+.bg-light-soft {
+    background-color: #fbfbfd;
+}
+.bg-warning-soft {
+    background-color: #fffdf5;
+}
+.wizard-step-tab {
+    color: #4e73df;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out;
+}
+.wizard-step-tab.active {
+    background-color: #4e73df !important;
+    color: #fff !important;
+    box-shadow: 0 4px 10px rgba(78, 115, 223, 0.25);
+}
+.wizard-step-tab.active .badge-primary {
+    background-color: #fff !important;
+    color: #4e73df !important;
+}
+.wizard-step-tab.active .badge-step-counter {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+.accordion-toggle-btn:hover {
+    text-decoration: none;
+}
+.chevron-icon {
+    transition: transform 0.2s ease;
+}
+</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-$(document).ready(function() {
-    // CSRF Management
-    var csrfName = '<?= csrf_token() ?>';
-    var csrfHash = '<?= csrf_hash() ?>';
-
-    function updateCsrf(newToken) {
-        if (newToken) {
-            csrfHash = newToken;
-            $('input[name="' + csrfName + '"]').val(newToken);
-        }
-    }
-
-    // Inisialisasi tooltip pada tab navigasi agar judul lengkap tampil saat hover
-    $('#assessmentTabs [data-toggle="tab"]').tooltip({
-        boundary: 'window',
-        placement: 'top',
-        trigger: 'hover'
-    }).on('click', function() {
-        $(this).tooltip('hide');
-    });
-
-    // Config standar teks catatan otomatis berdasarkan skala 1 - 4
-    const skalaConfig = {
-        1: { kategori: "Kurang", catatan: "Kurang, Tidak memiliki bukti dukung." },
-        2: { kategori: "Cukup", catatan: "Cukup, Memiliki bukti dukung, tetapi belum lengkap." },
-        3: { kategori: "Baik", catatan: "Baik, Memiliki bukti dukung yang lengkap, namun belum sepenuhnya sesuai." },
-        4: { kategori: "Sangat Baik", catatan: "Sangat Baik, Memiliki bukti dukung yang lengkap dan sepenuhnya sesuai." }
-    };
-
-    // Auto-fill catatan saat dropdown skor berubah
-    $(document).on('change', '.skala-dropdown', function() {
-        var dropdown = $(this);
-        var aspekId = dropdown.data('aspek');
-        var score = dropdown.val();
-        var catatanField = dropdown.closest('tr').find('.catatan-field');
-
-        if (score && skalaConfig[score]) {
-            // Jika catatan kosong atau cocok dengan default catatan lain, perbarui otomatis
-            var currentVal = catatanField.val().trim();
-            var isDefault = currentVal === "" || 
-                            currentVal === skalaConfig[1].catatan || 
-                            currentVal === skalaConfig[2].catatan || 
-                            currentVal === skalaConfig[3].catatan || 
-                            currentVal === skalaConfig[4].catatan;
-
-            if (isDefault) {
-                catatanField.val(skalaConfig[score].catatan);
-            }
-        }
-    });
-
-    // Bulk edit per tab
-    $(document).on('click', '.bulk-edit-apply-btn', function() {
-        var tabId = $(this).data('tab-id');
-        var select = $('#bulk-skor-' + tabId);
-        var score = select.val();
-
-        if (!score) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Perhatian',
-                text: 'Silakan pilih skor terlebih dahulu pada dropdown!'
-            });
-            return;
-        }
-
-        var activePane = $('#step-' + tabId);
-        activePane.find('.skala-dropdown').each(function() {
-            var dropdown = $(this);
-            dropdown.val(score);
-            var catatanField = dropdown.closest('tr').find('.catatan-field');
-            if (skalaConfig[score]) {
-                catatanField.val(skalaConfig[score].catatan);
-            }
-        });
-
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Semua aspek pada komponen ini telah diatur ke skor ' + score + '.',
-            timer: 1500,
-            showConfirmButton: false
-        });
-    });
-
-    // Navigasi Prev Tab
-    $(document).on('click', '.btn-prev-tab', function() {
-        var prevId = $(this).data('prev-id');
-        var targetTab = $('#step-' + prevId + '-tab');
-        targetTab.tooltip('hide');
-        targetTab.tab('show');
-        if ($('#assessmentTabs').length) {
-            $('html, body').animate({ scrollTop: $('#assessmentTabs').offset().top - 20 }, 300);
-        }
-    });
-
-    // Navigasi Next Tab dengan Simpan Otomatis (Save & Next)
-    $(document).on('click', '.btn-next-tab-save', function() {
-        var nextId = $(this).data('next-id');
-        var form = $(this).closest('form');
-        form.data('next-tab-id', nextId);
-        form.data('trigger-next', true);
-        form.trigger('submit');
-    });
-
-    // Tombol trigger Selesaikan Supervisi dari Tahap 5
-    $(document).on('click', '.btn-trigger-complete', function() {
-        $('#btnCompleteSupervisi').trigger('click');
-    });
-
-    // Handle AJAX form submission per tab
-    $('.form-step-penilaian').on('submit', function(e) {
-        e.preventDefault();
-
-        var form = $(this);
-        var submitBtn = form.find('.btn-save-step');
-        var nextBtn = form.find('.btn-next-tab-save');
-        var originalBtnHtml = submitBtn.html();
-        var originalNextHtml = nextBtn.html();
-        var tabId = form.find('input[name="jenis_penilaian_id"]').val();
-
-        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
-        if (nextBtn.length) {
-            nextBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
-        }
-
-        // Pastikan CSRF token terbaru terkirim
-        form.find('input[name="' + csrfName + '"]').val(csrfHash);
-
-        $.ajax({
-            url: '<?= base_url($rolePrefix . '/penilaian/save') ?>',
-            method: 'POST',
-            data: form.serialize(),
-            dataType: 'json',
-            success: function(res) {
-                if (res.token) {
-                    updateCsrf(res.token);
-                } else if (res.csrf_token) {
-                    updateCsrf(res.csrf_token);
-                }
-
-                if (res.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Tersimpan!',
-                        text: res.message || 'Penilaian tahap ini berhasil disimpan.',
-                        timer: 1400,
-                        showConfirmButton: false
-                    });
-
-                    // Update badge checkmark pada tab header
-                    $('.badge-status-' + tabId).html('<span class="badge badge-success ml-1">✓</span>');
-
-                    // Auto-pindah ke tab berikutnya
-                    var nextTabId = form.data('next-tab-id') || form.find('.btn-save-step').data('next-id');
-                    if (nextTabId) {
-                        setTimeout(function() {
-                            var targetTab = $('#step-' + nextTabId + '-tab');
-                            targetTab.tooltip('hide');
-                            targetTab.tab('show');
-                            if ($('#assessmentTabs').length) {
-                                $('html, body').animate({ scrollTop: $('#assessmentTabs').offset().top - 20 }, 300);
-                            }
-                        }, 600);
-                    }
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Menyimpan',
-                        text: res.message || 'Terjadi kesalahan saat menyimpan data.'
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                let msg = 'Terjadi kesalahan pada server: ' + error;
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error Server',
-                    text: msg
-                });
-                if (xhr.responseJSON && xhr.responseJSON.token) {
-                    updateCsrf(xhr.responseJSON.token);
-                }
-            },
-            complete: function() {
-                submitBtn.prop('disabled', false).html(originalBtnHtml);
-                if (nextBtn.length) {
-                    nextBtn.prop('disabled', false).html(originalNextHtml);
-                }
-            }
-        });
-    });
-
-    // Sinkronisasi input rekomendasi ke hidden field untuk submit menyeluruh
-    $(document).on('input propertychange change', '.rekomendasi-textarea', function() {
-        var jId = $(this).data('jenis-id');
-        $('#rekomendasi-hidden-' + jId).val($(this).val());
-    });
-
-    // Handle tombol Complete / Selesaikan Supervisi (Menyimpan seluruh tahap)
-    $('#btnCompleteSupervisi').on('click', function() {
-        var jadwalId = $(this).data('jadwal-id');
-
-        Swal.fire({
-            title: 'Simpan & Selesaikan?',
-            text: 'Sistem akan menyimpan seluruh tahap penilaian, menghitung nilai akhir, dan memperbarui rekapitulasi supervisi ini.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#1cc88a',
-            cancelButtonColor: '#858796',
-            confirmButtonText: '<i class="fas fa-check mr-1"></i> Ya, Simpan Sekarang!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var btn = $('#btnCompleteSupervisi');
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Memproses & Menyimpan...');
-
-                // Kumpulkan seluruh data dari semua form tahap penilaian
-                var allData = $('.form-step-penilaian').serializeArray();
-                var postData = {};
-                $.each(allData, function(i, field) {
-                    if (field.value !== '') {
-                        postData[field.name] = field.value;
-                    }
-                });
-                postData[csrfName] = csrfHash;
-
-                $.ajax({
-                    url: '<?= base_url($rolePrefix . '/penilaian/complete') ?>/' + jadwalId,
-                    method: 'POST',
-                    data: postData,
-                    dataType: 'json',
-                    success: function(res) {
-                        if (res.token) {
-                            updateCsrf(res.token);
-                        } else if (res.csrf_token) {
-                            updateCsrf(res.csrf_token);
-                        }
-
-                        if (res.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Disimpan & Selesai!',
-                                text: res.message,
-                                timer: 1800,
-                                showConfirmButton: false
-                            }).then(() => {
-                                window.location.href = res.redirect || '<?= $redirectUrl ?>';
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: res.message || 'Gagal memperbarui hasil supervisi.'
-                            });
-                            btn.prop('disabled', false).html('<i class="fas fa-check-double mr-1"></i> Simpan & Selesaikan');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Terjadi kesalahan: ' + error
-                        });
-                        btn.prop('disabled', false).html('<i class="fas fa-check-double mr-1"></i> Simpan & Selesaikan');
-                    }
-                });
-            }
-        });
-    });
-
-    // Handle Quick Photo Upload
-    $('#quickPhotoUploadForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        var fileInput = $('#quickPhotos')[0];
-        if (!fileInput.files || fileInput.files.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan',
-                text: 'Silakan pilih file foto terlebih dahulu.'
-            });
-            return;
-        }
-
-        var btn = $('#btnQuickUpload');
-        var originalBtnHtml = btn.html();
-        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Mengupload...');
-
-        var formData = new FormData(this);
-        formData.append(csrfName, csrfHash);
-
-        $.ajax({
-            url: '<?= base_url($rolePrefix . '/foto-bukti/upload/' . $schedule['id']) ?>',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function(res) {
-                if (res.token) {
-                    updateCsrf(res.token);
-                } else if (res.csrf_token) {
-                    updateCsrf(res.csrf_token);
-                }
-
-                if (res.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: res.message || 'Foto bukti berhasil diupload.',
-                        timer: 1600,
-                        showConfirmButton: false
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: res.message || 'Terjadi kesalahan saat mengupload foto.'
-                    });
-                    btn.prop('disabled', false).html(originalBtnHtml);
-                }
-            },
-            error: function(xhr, status, error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Terjadi kesalahan jaringan atau server: ' + error
-                });
-                if (xhr.responseJSON && xhr.responseJSON.token) {
-                    updateCsrf(xhr.responseJSON.token);
-                }
-                btn.prop('disabled', false).html(originalBtnHtml);
-            }
-        });
-    });
-
-    // Handle Quick Photo Delete
-    $(document).on('click', '.btn-delete-quick-photo', function() {
-        var photoId = $(this).data('id');
-
-        Swal.fire({
-            title: 'Hapus Foto?',
-            text: 'Foto dokumentasi ini akan dihapus secara permanen.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '<?= base_url($rolePrefix . '/foto-bukti/delete/') ?>/' + photoId,
-                    type: 'POST',
-                    data: {
-                        [csrfName]: csrfHash
-                    },
-                    dataType: 'json',
-                    success: function(res) {
-                        if (res.token) {
-                            updateCsrf(res.token);
-                        } else if (res.csrf_token) {
-                            updateCsrf(res.csrf_token);
-                        }
-
-                        if (res.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Terhapus!',
-                                text: res.message || 'Foto berhasil dihapus.',
-                                timer: 1200,
-                                showConfirmButton: false
-                            });
-                            $('.photo-card-' + photoId).fadeOut(400, function() {
-                                $(this).remove();
-                                var totalRemaining = $('#quickPhotoGallery [class*="photo-card-"]').length;
-                                $('#photoCountBadge').text(totalRemaining + ' / 5 Foto');
-                                if (totalRemaining === 0) {
-                                    $('#quickPhotoGallery').html(`
-                                        <div class="col-12 text-center py-4 text-muted empty-photo-msg">
-                                            <i class="fas fa-images fa-3x mb-2 text-gray-300"></i>
-                                            <p class="mb-0">Belum ada foto dokumentasi yang diupload untuk supervisi ini.</p>
-                                        </div>
-                                    `);
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: res.message || 'Gagal menghapus foto.'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Gagal menghapus foto: ' + error
-                        });
-                        if (xhr.responseJSON && xhr.responseJSON.token) {
-                            updateCsrf(xhr.responseJSON.token);
-                        }
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
+<?= view('admin/penilaian/partials/scripts', get_defined_vars()) ?>
 <?= $this->endSection() ?>

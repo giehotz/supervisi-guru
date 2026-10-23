@@ -52,6 +52,8 @@ $(document).ready(function() {
         $('#dataTableAspek').DataTable({
             language: {
                 search: "Cari:",
+                emptyTable: "Tidak ada data tersedia",
+                zeroRecords: "Tidak ada data yang cocok dengan pencarian/filter",
                 lengthMenu: "Tampilkan _MENU_ entri",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                 infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",

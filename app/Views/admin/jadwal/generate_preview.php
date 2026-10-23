@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Tinjau simulasi pembagian jadwal supervisi otomatis sebelum disimpan secara permanen ke database.</p>
         </div>
         <div>
-            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-pill shadow-sm">
+            <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Atur Ulang Parameter
             </a>
         </div>
@@ -199,7 +199,7 @@
                 <!-- Footer Action -->
                 <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
                     <div>
-                        <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary btn-pill shadow-sm">
+                        <a href="<?= base_url('/admin/jadwal/generate') ?>" class="btn btn-secondary shadow-sm">
                             <i class="fas fa-undo mr-1"></i> Atur Ulang Form
                         </a>
                     </div>

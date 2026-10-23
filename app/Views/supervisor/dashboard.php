@@ -121,7 +121,7 @@
                                             <td><?= $schedule['jam_ke'] ?></td>
                                             <td>
                                                 <a href="<?= base_url('supervisor/penilaian/form/' . $schedule['id']) ?>" 
-                                                   class="btn btn-pill btn-primary">Mulai Penilaian</a>
+                                                   class="btn btn-primary">Mulai Penilaian</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -163,7 +163,7 @@
                                             <td><?= $schedule['kelas'] ?></td>
                                             <td>
                                                 <a href="<?= base_url('supervisor/jadwal/detail/' . $schedule['id']) ?>" 
-                                                   class="btn btn-pill btn-info">Lihat Detail</a>
+                                                   class="btn btn-info">Lihat Detail</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

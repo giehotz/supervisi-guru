@@ -79,7 +79,7 @@
             </div>
 
             <div class="text-right">
-                <button type="submit" class="btn btn-primary btn-pill">
+                <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save mr-1"></i> Simpan Pengaturan Kop
                 </button>
             </div>

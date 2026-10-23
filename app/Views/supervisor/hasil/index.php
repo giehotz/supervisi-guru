@@ -67,7 +67,7 @@
                                     </td>
                                     <td>
                                         <a href="<?= base_url('supervisor/hasil/detail/' . $jadwal['id']) ?>" 
-                                           class="btn btn-info btn-pill">
+                                           class="btn btn-info">
                                             <i class="fas fa-eye"></i> Lihat Detail
                                         </a>
                                     </td>

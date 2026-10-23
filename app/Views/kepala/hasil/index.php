@@ -48,13 +48,13 @@
                                 <td><?= $jadwal['kelas'] ?></td>
                                 <td>
                                     <a href="<?= base_url('kepala/penilaian/form/' . $jadwal['id']) ?>"
-                                        class="btn btn-pill btn-warning">
+                                        class="btn btn-warning">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                     <a href="<?= base_url('kepala/hasil/detail/' . $jadwal['id']) ?>"
-                                        class="btn btn-pill btn-primary">Lihat Detail</a>
+                                        class="btn btn-primary">Lihat Detail</a>
                                     <a href="<?= base_url('kepala/foto-bukti/upload/' . $jadwal['id']) ?>"
-                                        class="btn btn-pill btn-info">
+                                        class="btn btn-info">
                                         Upload <i class="fas fa-camera"></i>
                                     </a>
                                 </td>

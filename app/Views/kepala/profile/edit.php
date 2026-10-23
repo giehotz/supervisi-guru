@@ -47,7 +47,7 @@
                                         <img id="currentPhoto" src="<?= base_url('uploads/profile/' . $user['foto_profil']) ?>" 
                                              alt="Current Profile Photo" class="img-thumbnail" width="150">
                                     </div>
-                                    <button type="button" class="btn btn-danger btn-pill" onclick="deletePhoto()">
+                                    <button type="button" class="btn btn-danger" onclick="deletePhoto()">
                                         <i class="fas fa-trash"></i> Hapus Foto
                                     </button>
                                 <?php else: ?>

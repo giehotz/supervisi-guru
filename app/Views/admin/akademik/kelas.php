@@ -10,10 +10,10 @@
             <p class="text-muted small mb-0">Kelola rombongan belajar (rombel), tahun ajaran, dan penetapan wali kelas.</p>
         </div>
         <div>
-            <button type="button" class="btn btn-success btn-pill shadow-sm font-weight-bold px-3 text-white mr-1" data-toggle="modal" data-target="#modalGenerateKelas">
+            <button type="button" class="btn btn-success shadow-sm font-weight-bold px-3 text-white mr-1" data-toggle="modal" data-target="#modalGenerateKelas">
                 <i class="fas fa-magic mr-1 text-white"></i> Generate Rombel Otomatis
             </button>
-            <button type="button" class="btn btn-primary btn-pill shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddKelas">
+            <button type="button" class="btn btn-primary shadow-sm font-weight-bold px-3 text-white" data-toggle="modal" data-target="#modalAddKelas">
                 <i class="fas fa-plus-circle mr-1 text-white"></i> Tambah Kelas Baru
             </button>
         </div>

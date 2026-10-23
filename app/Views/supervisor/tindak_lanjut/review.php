@@ -9,7 +9,7 @@
             <h1 class="h3 mb-0 text-gray-800">Evaluasi Tindak Lanjut & Refleksi Guru (Form C & D)</h1>
             <p class="text-muted small mb-0">Penilaian pembinaan berkelanjutan mengacu Perdirjen GTK No. 7607/B.B1/HK.03/2023</p>
         </div>
-        <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
+        <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary shadow-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
         </a>
     </div>

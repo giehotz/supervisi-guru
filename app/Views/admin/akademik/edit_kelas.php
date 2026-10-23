@@ -9,7 +9,7 @@
             <h1 class="h3 mb-1 text-gray-800 font-weight-bold">Edit Kelas / Rombel</h1>
             <p class="text-muted small mb-0">Perbarui identitas kelas, tahun ajaran, atau wali kelas.</p>
         </div>
-        <a href="<?= base_url('/admin/akademik/kelas') ?>" class="btn btn-secondary btn-pill shadow-sm">
+        <a href="<?= base_url('/admin/akademik/kelas') ?>" class="btn btn-secondary shadow-sm">
             <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Kelas
         </a>
     </div>

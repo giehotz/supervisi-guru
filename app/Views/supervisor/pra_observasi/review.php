@@ -11,11 +11,11 @@
         </div>
         <div class="d-flex gap-2">
             <?php if (!empty($coachingLog)): ?>
-                <a href="<?= base_url('supervisor/hasil/cetak-coaching/' . $jadwal['id']) ?>" target="_blank" class="btn btn-info btn-pill shadow-sm" title="Cetak Berita Acara Coaching TIRTA">
+                <a href="<?= base_url('supervisor/hasil/cetak-coaching/' . $jadwal['id']) ?>" target="_blank" class="btn btn-info shadow-sm" title="Cetak Berita Acara Coaching TIRTA">
                     <i class="fas fa-file-pdf fa-sm text-white-50 mr-1"></i> Berita Acara Coaching (TIRTA)
                 </a>
             <?php endif; ?>
-            <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
+            <a href="<?= base_url('supervisor/jadwal') ?>" class="btn btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Kembali ke Jadwal
             </a>
         </div>
@@ -180,7 +180,7 @@
                                             <small class="text-muted d-block">TP: <?= esc($doc['tujuan_pembelajaran']) ?></small>
                                         <?php endif; ?>
                                     </div>
-                                    <a href="<?= esc($doc['link_drive']) ?>" target="_blank" class="btn btn-outline-primary btn-pill">
+                                    <a href="<?= esc($doc['link_drive']) ?>" target="_blank" class="btn btn-outline-primary">
                                         <i class="fas fa-external-link-alt mr-1"></i> Buka Tautan
                                     </a>
                                 </div>

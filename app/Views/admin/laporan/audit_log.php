@@ -93,7 +93,7 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Daftar Aktivitas</h6>
-        <button type="button" class="btn btn-danger btn-pill" id="bulkDeleteBtn" style="display:none;">
+        <button type="button" class="btn btn-danger" id="bulkDeleteBtn" style="display:none;">
             <i class="fas fa-trash"></i> Hapus Terpilih
         </button>
     </div>
@@ -147,7 +147,7 @@
                                 <td><?= date('d M Y H:i:s', strtotime($log['created_at'])); ?></td>
                                 <td>
                                     <a href="<?= base_url('admin/laporan/audit-log/delete/' . $log['id']); ?>"
-                                        class="btn btn-danger btn-pill"
+                                        class="btn btn-danger"
                                         onclick="return confirm('Apakah Anda yakin ingin menghapus log ini?')">
                                         <i class="fas fa-trash"></i> Hapus
                                     </a>

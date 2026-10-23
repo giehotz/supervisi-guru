@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Sistem otomatis mendistribusikan jadwal supervisi guru pada hari Senin s.d. Sabtu secara merata.</p>
         </div>
         <div>
-            <a href="<?= base_url('/admin/jadwal') ?>" class="btn btn-secondary btn-pill shadow-sm">
+            <a href="<?= base_url('/admin/jadwal') ?>" class="btn btn-secondary shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Kembali ke Daftar Jadwal
             </a>
         </div>
@@ -177,11 +177,11 @@
                             <i class="fas fa-users mr-1"></i> 2. Pilih Guru yang Akan Dijadwalkan
                         </h6>
                         <div>
-                            <button type="button" class="btn btn-xs btn-primary py-0 px-2" id="btnSelectOnlyUnscheduled">
+                            <button type="button" class="btn btn-primary py-0 px-2" id="btnSelectOnlyUnscheduled">
                                 <i class="fas fa-filter mr-1"></i> Hanya Guru Belum Ada Jadwal
                             </button>
-                            <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2" id="btnCheckAllGuru">Pilih Semua</button>
-                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" id="btnUncheckAllGuru">Kosongkan</button>
+                            <button type="button" class="btn btn-outline-primary py-0 px-2" id="btnCheckAllGuru">Pilih Semua</button>
+                            <button type="button" class="btn btn-outline-secondary py-0 px-2" id="btnUncheckAllGuru">Kosongkan</button>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -237,7 +237,7 @@
                                 Terpilih: <strong id="selectedGuruCount">0</strong> dari <?= count($gurus) ?> guru
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-primary btn-pill shadow-sm" id="btnSubmitGenerate">
+                                <button type="submit" class="btn btn-primary shadow-sm" id="btnSubmitGenerate">
                                     <i class="fas fa-magic mr-1"></i> Generate & Pratinjau Jadwal
                                 </button>
                             </div>

@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Kelola tahun ajaran, semester, dan penetapan tahun ajaran aktif untuk operasional madrasah.</p>
         </div>
         <div>
-    <button type="button" class="btn btn-blue btn-pill btn-primary shadow-sm" data-toggle="modal" data-target="#modalAddTahun">
+    <button type="button" class="btn btn-blue btn-primary shadow-sm" data-toggle="modal" data-target="#modalAddTahun">
         <i class="fas fa-plus-circle mr-1"></i> Tambah Tahun Ajaran
     </button>
 </div>
@@ -125,7 +125,7 @@
                 <div class="text-center py-5 text-muted">
                     <i class="fas fa-calendar-times fa-3x mb-3 text-gray-300"></i>
                     <p class="mb-1 font-weight-bold">Tidak ada data tahun ajaran untuk filter "<?= esc($filterStatus) ?>".</p>
-                    <a href="<?= base_url('/admin/akademik/tahun-ajar?status=Semua') ?>" class="btn btn-outline-primary btn-pill mt-2">
+                    <a href="<?= base_url('/admin/akademik/tahun-ajar?status=Semua') ?>" class="btn btn-outline-primary mt-2">
                         <i class="fas fa-eye mr-1"></i> Tampilkan Semua Tahun Ajaran
                     </a>
                 </div>

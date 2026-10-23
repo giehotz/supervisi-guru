@@ -48,13 +48,15 @@
         <!-- Nav Tabs -->
         <ul class="nav nav-tabs mb-3" id="instrumenTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <a class="nav-link <?= ($currentTab === 'jenis') ? 'active' : '' ?>" id="jenis-tab" data-bs-toggle="tab" href="#jenis-pane" role="tab" aria-controls="jenis-pane" aria-selected="<?= ($currentTab === 'jenis') ? 'true' : 'false' ?>">
-                    <i class="fas fa-layer-group me-2"></i> Jenis Penilaian
+                <a class="nav-link <?= ($currentTab === 'jenis') ? 'active font-weight-bold' : '' ?>" id="jenis-tab" data-bs-toggle="tab" href="#jenis-pane" role="tab" aria-controls="jenis-pane" aria-selected="<?= ($currentTab === 'jenis') ? 'true' : 'false' ?>">
+                    <i class="fas fa-layer-group me-2 text-primary"></i> Jenis Penilaian
+                    <span class="badge bg-blue-lt ms-2"><?= !empty($jenis_penilaians) ? count($jenis_penilaians) : 0 ?></span>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link <?= ($currentTab === 'aspek') ? 'active' : '' ?>" id="aspek-tab" data-bs-toggle="tab" href="#aspek-pane" role="tab" aria-controls="aspek-pane" aria-selected="<?= ($currentTab === 'aspek') ? 'true' : 'false' ?>">
-                    <i class="fas fa-list-check me-2"></i> Aspek Penilaian
+                <a class="nav-link <?= ($currentTab === 'aspek') ? 'active font-weight-bold' : '' ?>" id="aspek-tab" data-bs-toggle="tab" href="#aspek-pane" role="tab" aria-controls="aspek-pane" aria-selected="<?= ($currentTab === 'aspek') ? 'true' : 'false' ?>">
+                    <i class="fas fa-list-check me-2 text-primary"></i> Aspek Penilaian
+                    <span class="badge bg-purple-lt ms-2"><?= !empty($aspek_penilaians) ? count($aspek_penilaians) : 0 ?></span>
                 </a>
             </li>
         </ul>
@@ -91,6 +93,8 @@ $(document).ready(function() {
         $('#dataTableJenis').DataTable({
             language: {
                 search: "Cari:",
+                emptyTable: "Tidak ada data tersedia",
+                zeroRecords: "Tidak ada data yang cocok dengan pencarian/filter",
                 lengthMenu: "Tampilkan _MENU_ entri",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                 infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
@@ -109,6 +113,8 @@ $(document).ready(function() {
         $('#dataTableAspek').DataTable({
             language: {
                 search: "Cari:",
+                emptyTable: "Tidak ada data tersedia",
+                zeroRecords: "Tidak ada data yang cocok dengan pencarian/filter",
                 lengthMenu: "Tampilkan _MENU_ entri",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                 infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
@@ -158,7 +164,7 @@ $(document).ready(function() {
 
 window.filterAspekByJenis = function(jenisName) {
     if ($.fn.DataTable.isDataTable('#dataTableAspek')) {
-        $('#dataTableAspek').DataTable().column(1).search(jenisName ? '^' + $.fn.dataTable.util.escapeRegex(jenisName) + '$' : '', true, false).draw();
+        $('#dataTableAspek').DataTable().column(1).search(jenisName ? $.fn.dataTable.util.escapeRegex(jenisName) : '', true, false).draw();
     }
 };
 </script>

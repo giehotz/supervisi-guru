@@ -49,12 +49,12 @@
                                     <td>
                                         <!-- Check document count logic could be here if we joined tables, 
                                              but for now simple link is enough -->
-                                        <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-pill btn-light border">
+                                        <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-light border">
                                             <i class="fas fa-folder-open text-warning"></i> Kelola
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-primary btn-pill">
+                                        <a href="<?= base_url('guru/dokumen-ajar/manage/' . $item['id']) ?>" class="btn btn-primary">
                                             <i class="fas fa-edit"></i> Edit Dokumen
                                         </a>
                                     </td>

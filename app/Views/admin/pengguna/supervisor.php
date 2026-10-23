@@ -81,11 +81,11 @@
                     </td>
                     <td class="text-end text-nowrap">
                         <div class="btn-list justify-content-end">
-                            <a href="<?= base_url('/admin/pengguna/supervisor/' . $supervisor['user_id'] . '/edit') ?>" class="btn btn-pill btn-outline-warning" title="Edit">
+                            <a href="<?= base_url('/admin/pengguna/supervisor/' . $supervisor['user_id'] . '/edit') ?>" class="btn btn-outline-warning" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <a href="<?= base_url('/admin/pengguna/' . $supervisor['user_id'] . '/delete') ?>" 
-                               class="btn btn-pill btn-outline-danger"
+                               class="btn btn-outline-danger"
                                onclick="return confirm('Apakah Anda yakin ingin menghapus supervisor ini? Semua data terkait akan terhapus.')"
                                title="Hapus">
                                 <i class="fas fa-trash"></i>

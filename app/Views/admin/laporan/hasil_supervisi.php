@@ -95,15 +95,15 @@
                 </div>
                 <div class="d-flex flex-wrap" style="gap: 8px;">
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/pdf') ?><?= $exportQuery ?>" 
-                       class="btn btn-sm btn-pill btn-danger shadow-sm font-weight-bold" target="_blank" title="Unduh rekap nilai format PDF"> 
+                       class="btn btn-sm btn-danger shadow-sm font-weight-bold" target="_blank" title="Unduh rekap nilai format PDF"> 
                         <i class="fas fa-file-pdf mr-1"></i> Rekap PDF
                     </a>
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/excel') ?><?= $exportQuery ?>" 
-                       class="btn btn-sm btn-pill btn-success shadow-sm font-weight-bold" title="Unduh rekap penilaian format Excel">
+                       class="btn btn-sm btn-success shadow-sm font-weight-bold" title="Unduh rekap penilaian format Excel">
                         <i class="fas fa-file-excel mr-1"></i> Rekap Excel
                     </a>
                     <a href="<?= base_url('admin/laporan/hasil-supervisi/batch-excel-all') ?><?= $exportQuery ?>" 
-                       class="btn btn-sm btn-pill btn-info shadow-sm font-weight-bold" title="Unduh detail seluruh nilai instrumen guru">
+                       class="btn btn-sm btn-info shadow-sm font-weight-bold" title="Unduh detail seluruh nilai instrumen guru">
                         <i class="fas fa-table mr-1"></i> Detail Semua Guru (Excel)
                     </a>
                 </div>
@@ -122,7 +122,7 @@
                     Total: <strong><?= !empty($jadwals) ? count($jadwals) : 0 ?></strong> Data
                 </span>
             </div>
-            <button type="button" id="batchExcelBtn" class="btn btn-sm btn-pill btn-success shadow-sm font-weight-bold" disabled>
+            <button type="button" id="batchExcelBtn" class="btn btn-sm btn-success shadow-sm font-weight-bold" disabled>
                 <i class="fas fa-file-excel mr-1"></i> Export Pilihan Excel (<span id="selectedCountText">0</span>)
             </button>
         </div>
@@ -247,11 +247,11 @@
                                             <?php if ($jadwal['status'] == 'Selesai'): ?>
                                                 <div class="d-inline-flex" style="gap: 4px;">
                                                     <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" 
-                                                       class="btn btn-sm btn-pill btn-primary px-2 font-weight-bold shadow-sm" title="Lihat Rekap Nilai">
+                                                       class="btn btn-sm btn-primary px-2 font-weight-bold shadow-sm" title="Lihat Rekap Nilai">
                                                         <i class="fas fa-eye mr-1"></i> Detail
                                                     </a>
                                                     <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" 
-                                                       class="btn btn-sm btn-pill btn-outline-warning text-dark font-weight-bold px-2 shadow-sm" title="Edit Hasil Penilaian">
+                                                       class="btn btn-sm btn-outline-warning text-dark font-weight-bold px-2 shadow-sm" title="Edit Hasil Penilaian">
                                                         <i class="fas fa-edit mr-1"></i> Edit
                                                     </a>
                                                 </div>

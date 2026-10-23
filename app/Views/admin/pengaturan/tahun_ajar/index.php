@@ -32,7 +32,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Daftar Tahun Ajaran</h6>
-                    <button type="button" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#addModal">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
                         <i class="fas fa-plus"></i> Tambah Data
                     </button>
                 </div>
@@ -59,13 +59,13 @@
                                             <?php if ($item['status_aktif'] == 'Aktif') : ?>
                                                 <span class="badge badge-success">Aktif</span>
                                             <?php else : ?>
-                                                <a href="<?= base_url('admin/pengaturan/tahun-ajar/activate/' . $item['id']) ?>" class="btn btn-pill btn-light border" title="Klik untuk mengaktifkan">
+                                                <a href="<?= base_url('admin/pengaturan/tahun-ajar/activate/' . $item['id']) ?>" class="btn btn-light border" title="Klik untuk mengaktifkan">
                                                     Non-Aktif
                                                 </a>
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-warning btn-pill btn-edit"
+                                            <button type="button" class="btn btn-warning btn-edit"
                                                 data-id="<?= $item['id'] ?>"
                                                 data-tahun="<?= $item['tahun_ajar'] ?>"
                                                 data-semester="<?= $item['semester'] ?>"
@@ -78,7 +78,7 @@
                                                 <form action="<?= base_url('admin/pengaturan/tahun-ajar/delete/' . $item['id']) ?>" method="post" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="_method" value="DELETE">
-                                                    <button type="submit" class="btn btn-danger btn-pill">
+                                                    <button type="submit" class="btn btn-danger">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

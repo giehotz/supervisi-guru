@@ -8,23 +8,23 @@
         <h1 class="h3 mb-0 text-gray-800">Detail Hasil Supervisi</h1>
         <div>
             <?php if (!empty($schedule['indikator_pmm_id'])): ?>
-            <a href="<?= base_url('kepala/hasil/cetak-kurmer/' . $schedule['id']) ?>" class="btn btn-success btn-pill shadow-sm" target="_blank" title="Cetak Formulir A-D PMM">
+            <a href="<?= base_url('kepala/hasil/cetak-kurmer/' . $schedule['id']) ?>" class="btn btn-success shadow-sm" target="_blank" title="Cetak Formulir A-D PMM">
                 <i class="fas fa-file-signature mr-1"></i> Formulir A-D (PMM)
             </a>
-            <a href="<?= base_url('kepala/hasil/cetak-telaah/' . $schedule['id']) ?>" class="btn btn-info btn-pill shadow-sm" target="_blank" title="Cetak Format Telaah ATP / Modul Ajar">
+            <a href="<?= base_url('kepala/hasil/cetak-telaah/' . $schedule['id']) ?>" class="btn btn-info shadow-sm" target="_blank" title="Cetak Format Telaah ATP / Modul Ajar">
                 <i class="fas fa-file-alt mr-1"></i> Cetak Telaah
             </a>
-            <a href="<?= base_url('kepala/hasil/cetak-coaching/' . $schedule['id']) ?>" class="btn btn-teal btn-pill text-white shadow-sm" target="_blank" title="Cetak Berita Acara Coaching TIRTA">
+            <a href="<?= base_url('kepala/hasil/cetak-coaching/' . $schedule['id']) ?>" class="btn btn-teal text-white shadow-sm" target="_blank" title="Cetak Berita Acara Coaching TIRTA">
                 <i class="fas fa-comments mr-1"></i> Berita Acara Coaching
             </a>
             <?php endif; ?>
-            <a href="<?= base_url('kepala/hasil/pdf/' . $schedule['id']) ?>" class="btn btn-danger btn-pill" target="_blank">
+            <a href="<?= base_url('kepala/hasil/pdf/' . $schedule['id']) ?>" class="btn btn-danger" target="_blank">
                 <i class="fas fa-file-pdf"></i> PDF
             </a>
-            <a href="<?= base_url('kepala/hasil/export/' . $schedule['id']) ?>" class="btn btn-success btn-pill">
+            <a href="<?= base_url('kepala/hasil/export/' . $schedule['id']) ?>" class="btn btn-success">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
-            <a href="<?= base_url('kepala/hasil') ?>" class="btn btn-secondary btn-pill">
+            <a href="<?= base_url('kepala/hasil') ?>" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>

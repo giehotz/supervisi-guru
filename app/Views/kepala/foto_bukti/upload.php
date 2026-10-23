@@ -6,7 +6,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Upload Foto Bukti Supervisi</h1>
-        <a href="<?= base_url('kepala/hasil') ?>" class="btn btn-secondary btn-pill">
+        <a href="<?= base_url('kepala/hasil') ?>" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
@@ -110,7 +110,7 @@
                                             <?php if (!empty($photo['keterangan'])): ?>
                                                 <p class="card-text"><?= esc($photo['keterangan']) ?></p>
                                             <?php endif; ?>
-                                            <button class="btn btn-danger btn-pill delete-photo" data-id="<?= $photo['id'] ?>">
+                                            <button class="btn btn-danger delete-photo" data-id="<?= $photo['id'] ?>">
                                                 <i class="fas fa-trash"></i> Hapus
                                             </button>
                                         </div>

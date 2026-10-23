@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Kelola arsip cadangan (backup) dan pemulihan data (restore) sistem supervisi madrasah.</p>
         </div>
         <div>
-            <a href="<?= base_url('/admin/pengaturan') ?>" class="btn btn-secondary btn-pill shadow-sm">
+            <a href="<?= base_url('/admin/pengaturan') ?>" class="btn btn-secondary shadow-sm">
                 <i class="fas fa-cogs mr-1"></i> Pengaturan Sistem
             </a>
         </div>
