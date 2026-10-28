@@ -30,6 +30,9 @@
         </div>
     </div>
 
+    <!-- Digital Signature Status & Action Box -->
+    <?= $this->include('partials/digital_signature_box') ?>
+
     <!-- Teacher Info -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">

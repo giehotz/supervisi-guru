@@ -109,6 +109,13 @@
     </style>
 </head>
 <body>
+    <?php
+    helper('signature');
+    $isPolos = !empty($is_polos);
+    $isDraft = !empty($is_draft);
+    $signatures = $signatures ?? [];
+    ?>
+    <?= render_pdf_draft_watermark($isDraft) ?>
 
     <!-- ============================================================== -->
     <!-- FORMULIR A: LEMBAR DISKUSI PERSIAPAN OBSERVASI PRAKTIK KINERJA -->
@@ -432,18 +439,27 @@
         <p style="margin: 4px 0 0 0;"><?= nl2br(esc($tindakLanjut['catatan_supervisor_d'] ?? 'Praktik baik telah diterapkan secara berkelanjutan di kelas.')) ?></p>
     </div>
 
-    <table class="signature-table">
+    <table class="signature-table" style="width: 100%; border: 0px none transparent !important; margin-top: 30px;">
         <tr>
-            <td style="width: 50%;">
-                Mengetahui,<br>
-                Kepala Sekolah / Penilai<br><br><br><br>
-                <strong><u><?= esc($schedule['nama_kepala'] ?? $schedule['nama_supervisor']) ?></u></strong><br>
-                NIP. <?= esc($schedule['nip_kepala'] ?? $schedule['nip_supervisor'] ?? '-') ?>
+            <td style="width: 48%; vertical-align: top; border: 0px none transparent !important;">
+                <?= render_signature_block_dompdf(
+                    'Mengetahui,<br>Kepala Madrasah / Penilai',
+                    $schedule['nama_kepala'] ?? $schedule['nama_supervisor'] ?? 'Kepala Madrasah',
+                    $schedule['nip_kepala'] ?? $schedule['nip_supervisor'] ?? '',
+                    $signatures['kepala'] ?? $signatures['supervisor'] ?? null,
+                    $isPolos
+                ) ?>
             </td>
-            <td style="width: 50%;">
-                Guru yang Diobservasi<br><br><br><br><br>
-                <strong><u><?= esc($schedule['nama_guru']) ?></u></strong><br>
-                NIP. <?= esc($schedule['nip_guru'] ?? '-') ?>
+            <td style="width: 4%; border: 0px none transparent !important;"></td>
+            <td style="width: 48%; vertical-align: top; border: 0px none transparent !important;">
+                <?= render_signature_block_dompdf(
+                    'Guru yang Diobservasi',
+                    $schedule['nama_guru'] ?? '',
+                    $schedule['nip_guru'] ?? '',
+                    $signatures['guru'] ?? null,
+                    $isPolos,
+                    ($schedule['kota_madrasah'] ?? 'Gisting') . ', ' . format_tanggal_indonesia(date('Y-m'))
+                ) ?>
             </td>
         </tr>
     </table>

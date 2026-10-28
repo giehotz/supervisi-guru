@@ -408,17 +408,30 @@
                                 <!-- Aksi -->
                                 <td class="text-center align-middle">
                                     <?php if ($jadwal['status'] === 'Selesai'): ?>
-                                        <div class="btn-group btn-group-sm shadow-sm" role="group">
-                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" class="btn btn-primary" title="Lihat Rekap Penilaian">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" class="btn btn-warning text-dark font-weight-bold" title="Edit Hasil Penilaian">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id']) ?>" target="_blank" class="btn btn-danger" title="Cetak Dokumen PDF">
-                                                <i class="fas fa-file-pdf"></i>
-                                            </a>
-                                        </div>
+                                            <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                                <a href="<?= base_url('admin/laporan/hasil-supervisi/detail/' . $jadwal['id']) ?>" class="btn btn-primary" title="Lihat Rekap Penilaian">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="<?= base_url('admin/penilaian/form/' . $jadwal['id']) ?>" class="btn btn-warning text-dark font-weight-bold" title="Edit Hasil Penilaian">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id'] . '?mode=digital') ?>" target="_blank" class="btn btn-danger" title="Cetak PDF (Dengan TTD Digital QR)">
+                                                        <i class="fas fa-file-pdf"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Pilihan Cetak PDF">
+                                                        <span class="sr-only">Toggle Dropdown</span>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-right shadow">
+                                                        <a class="dropdown-item small" href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id'] . '?mode=digital') ?>" target="_blank">
+                                                            <i class="fas fa-qrcode text-success mr-2"></i> PDF (Dengan TTD Digital QR)
+                                                        </a>
+                                                        <a class="dropdown-item small" href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . $jadwal['id'] . '?mode=polos') ?>" target="_blank">
+                                                            <i class="fas fa-pen-nib text-secondary mr-2"></i> PDF Polos (Untuk TTD Basah)
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                     <?php else: ?>
                                         <span class="badge badge-pill badge-light border text-muted px-2 py-1 small" title="Supervisi belum selesai dinilai">
                                             <i class="fas fa-hourglass-half mr-1 text-warning"></i> Menunggu

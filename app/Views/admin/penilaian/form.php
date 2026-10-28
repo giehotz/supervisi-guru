@@ -66,6 +66,19 @@ $fokusPmmId = $schedule['indikator_pmm_id'] ?? null;
         </div>
     </div>
 
+    <?php if (!empty($isLockedBySignature)): ?>
+    <!-- Alert Penilaian Terkunci -->
+    <div class="alert alert-danger border-left-danger shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-lock fa-2x mr-3 text-danger"></i>
+            <div>
+                <h5 class="alert-heading font-weight-bold mb-1">Penilaian Terkunci (Tanda Tangan Digital Aktif)</h5>
+                <p class="mb-0 small">Dokumen hasil supervisi ini telah mulai ditandatangani secara digital. Untuk menjaga integritas data keabsahan, formulir penilaian dinonaktifkan. Jika terdapat revisi nilai yang mendesak, Administrator harus melakukan <strong>Reset Tanda Tangan</strong> terlebih dahulu melalui halaman Detail Hasil Supervisi.</p>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <?php if ($rolePrefix === 'admin'): ?>
     <!-- Alert Info Admin -->
     <div class="alert alert-warning border-left-warning shadow-sm" role="alert">

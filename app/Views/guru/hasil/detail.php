@@ -50,6 +50,8 @@
         </div>
     </div>
 
+    <!-- Digital Signature Status & Action Box -->
+    <?= $this->include('partials/digital_signature_box') ?>
     <?php
         // Hitung rata-rata nilai akhir dan predikat keseluruhan
         $totalNilaiSemua = 0;

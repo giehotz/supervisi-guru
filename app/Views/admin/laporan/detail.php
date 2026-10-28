@@ -99,14 +99,30 @@
                 <i class="fas fa-comments mr-1"></i> Berita Acara Coaching
             </a>
             <?php endif; ?>
-            <a href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '')) ?>" target="_blank" class="btn btn-danger">
-                <i class="fas fa-file-pdf"></i> Cetak PDF
-            </a>
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-danger dropdown-toggle shadow-sm font-weight-bold" type="button" id="dropdownCetakPdf" data-bs-toggle="dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
+                </button>
+                <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="dropdownCetakPdf">
+                    <a class="dropdown-item py-2" href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '') . '?mode=digital') ?>" target="_blank">
+                        <div class="font-weight-bold text-success"><i class="fas fa-qrcode mr-2"></i> PDF (Dengan TTD Digital QR)</div>
+                        <small class="text-muted d-block">Menyertakan QR code tanda tangan elektronik resmi</small>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item py-2" href="<?= base_url('admin/laporan/hasil-supervisi/cetak-detail/' . ($schedule['id'] ?? '') . '?mode=polos') ?>" target="_blank">
+                        <div class="font-weight-bold text-secondary"><i class="fas fa-pen-nib mr-2"></i> PDF Polos (TTD Basah Manual)</div>
+                        <small class="text-muted d-block">Format tanda tangan manual kosong untuk cap fisik</small>
+                    </a>
+                </div>
+            </div>
             <a href="<?= base_url('admin/laporan/hasil-supervisi') ?>" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
+
+    <!-- Digital Signature Status & Action Box -->
+    <?= $this->include('partials/digital_signature_box') ?>
 
     <!-- Teacher Info -->
     <div class="card shadow mb-4">

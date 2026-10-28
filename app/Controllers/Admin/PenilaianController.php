@@ -92,15 +92,19 @@ class PenilaianController extends BaseController
         $fotoModel = new \App\Models\FotoBuktiModel();
         $existingPhotos = $fotoModel->where('jadwal_supervisi_id', $jadwalId)->findAll();
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $isLockedBySignature = $signatureModel->hasAnySignature($jadwalId);
+
         $data = [
-            'title'           => 'Edit Hasil Penilaian Supervisi',
-            'schedule'        => $schedule,
-            'jenisPenilaian'  => $jenisPenilaian,
-            'aspekByJenis'    => $aspekByJenis,
-            'existingResults' => $existingResults,
-            'existingDetails' => $existingDetails,
-            'existingPhotos'  => $existingPhotos,
-            'activeTab'       => $activeTab,
+            'title'               => 'Edit Hasil Penilaian Supervisi',
+            'schedule'            => $schedule,
+            'jenisPenilaian'      => $jenisPenilaian,
+            'aspekByJenis'        => $aspekByJenis,
+            'existingResults'     => $existingResults,
+            'existingDetails'     => $existingDetails,
+            'existingPhotos'      => $existingPhotos,
+            'activeTab'           => $activeTab,
+            'isLockedBySignature' => $isLockedBySignature,
         ];
 
         return view('admin/penilaian/form', $data);
@@ -128,6 +132,16 @@ class PenilaianController extends BaseController
                 return $this->response->setJSON([
                     'status'  => 'error',
                     'message' => 'Jadwal tidak ditemukan',
+                    'token'   => csrf_hash()
+                ]);
+            }
+
+            // Kunci edit jika dokumen telah mulai ditandatangani digital
+            $signatureModel = new \App\Models\DokumenSignatureModel();
+            if ($signatureModel->hasAnySignature($jadwalId)) {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Penilaian tidak dapat diubah karena dokumen supervisi telah mulai ditandatangani secara digital. Silakan lakukan Reset Tanda Tangan terlebih dahulu jika diperlukan revisi.',
                     'token'   => csrf_hash()
                 ]);
             }
@@ -265,6 +279,16 @@ class PenilaianController extends BaseController
                 return $this->response->setJSON([
                     'status'  => 'error',
                     'message' => 'Jadwal supervisi tidak ditemukan',
+                    'token'   => csrf_hash()
+                ]);
+            }
+
+            // Kunci edit jika dokumen telah mulai ditandatangani digital
+            $signatureModel = new \App\Models\DokumenSignatureModel();
+            if ($signatureModel->hasAnySignature($jadwalId)) {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Penilaian tidak dapat diubah karena dokumen supervisi telah mulai ditandatangani secara digital. Silakan lakukan Reset Tanda Tangan terlebih dahulu jika diperlukan revisi.',
                     'token'   => csrf_hash()
                 ]);
             }
@@ -469,6 +493,16 @@ class PenilaianController extends BaseController
                 return $this->response->setJSON([
                     'status'  => 'error',
                     'message' => 'Jadwal tidak ditemukan',
+                    'token'   => csrf_hash()
+                ]);
+            }
+
+            // Kunci edit jika dokumen telah mulai ditandatangani digital
+            $signatureModel = new \App\Models\DokumenSignatureModel();
+            if ($signatureModel->hasAnySignature($jadwalId)) {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Penilaian tidak dapat diubah karena dokumen supervisi telah mulai ditandatangani secara digital. Silakan lakukan Reset Tanda Tangan terlebih dahulu jika diperlukan revisi.',
                     'token'   => csrf_hash()
                 ]);
             }

@@ -120,11 +120,19 @@ class PdfController extends BaseController
             $schedule['nip_supervisor'] = '';
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isDraft        = empty($signatures['kepala']);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+
         $data = [
-            'schedule' => $schedule,
-            'hasilList' => $hasilList,
+            'schedule'      => $schedule,
+            'hasilList'     => $hasilList,
             'detailResults' => $detailResults,
-            'fotoBukti' => $fotoBukti
+            'fotoBukti'     => $fotoBukti,
+            'signatures'    => $signatures,
+            'is_draft'      => $isDraft,
+            'is_polos'      => $isPolos,
         ];
 
         // Clear any previous output
@@ -203,6 +211,11 @@ class PdfController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isDraft        = empty($signatures['kepala']);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+
         $data = [
             'schedule'       => $schedule,
             'praObservasi'   => $praObservasi,
@@ -211,6 +224,9 @@ class PdfController extends BaseController
             'indikatorNama'  => $indikatorNama,
             'hasilUtama'     => $hasil,
             'detailsByAspek' => $detailsByAspek,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -282,12 +298,20 @@ class PdfController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isDraft        = empty($signatures['kepala']);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+
         $data = [
             'schedule'       => $schedule,
             'jenisPenilaian' => $jenisPenilaian,
             'aspekList'      => $aspekList,
             'hasil'          => $hasil,
-            'detailResults'  => $detailResults
+            'detailResults'  => $detailResults,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -336,11 +360,19 @@ class PdfController extends BaseController
         $praObservasi = $praModel->getByJadwal($jadwalId);
         $tindakLanjut = $tlModel->getByJadwal($jadwalId);
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isDraft        = empty($signatures['kepala']);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+
         $data = [
             'schedule'     => $schedule,
             'coachingList' => $coachingList,
             'praObservasi' => $praObservasi,
             'tindakLanjut' => $tindakLanjut,
+            'signatures'   => $signatures,
+            'is_draft'     => $isDraft,
+            'is_polos'     => $isPolos,
         ];
 
         while (ob_get_level()) {

@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public $baseURL = 'http://localhost:8080';
+    public $baseURL = 'http://localhost:8080/';
 
 
     /**
@@ -30,7 +30,7 @@ class App extends BaseConfig
      *
      * @var list<string>
      */
-    public array $allowedHostnames = [];
+    public array $allowedHostnames = ['localhost', '127.0.0.1'];
 
     /**
      * --------------------------------------------------------------------------

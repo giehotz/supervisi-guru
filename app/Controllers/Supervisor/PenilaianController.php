@@ -53,6 +53,13 @@ class PenilaianController extends BaseController
         }
 
 
+        // Kunci edit jika dokumen telah mulai ditandatangani digital
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        if ($signatureModel->hasAnySignature($jadwalId)) {
+            return redirect()->to(base_url('supervisor/hasil/detail/' . $jadwalId))
+                ->with('error', 'Penilaian tidak dapat diubah karena dokumen supervisi telah mulai ditandatangani secara digital. Hubungi Admin jika diperlukan reset tanda tangan.');
+        }
+
         // Get all assessment types with mapped columns to ensure we get latest skor_maksimal
         $jenisPenilaian = $this->jenisModel->findAllWithMappedColumns();
 
@@ -133,6 +140,16 @@ class PenilaianController extends BaseController
                 ]);
             }
 
+
+            // Kunci edit jika dokumen telah mulai ditandatangani digital
+            $signatureModel = new \App\Models\DokumenSignatureModel();
+            if ($signatureModel->hasAnySignature($jadwalId)) {
+                return $this->response->setJSON([
+                    'status'  => 'error',
+                    'message' => 'Penilaian tidak dapat diubah karena dokumen supervisi telah mulai ditandatangani secara digital. Hubungi Admin jika diperlukan reset.',
+                    'token'   => csrf_hash()
+                ]);
+            }
 
             // Cek apakah hasil untuk jenis penilaian ini sudah ada
             $existingHasil = $this->hasilModel

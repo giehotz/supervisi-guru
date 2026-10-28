@@ -213,21 +213,32 @@
     </div>
     <?php endif; ?>
 
-    <table class="signature-table">
+    <?php
+    helper('signature');
+    $isPolos = !empty($is_polos);
+    $signatures = $signatures ?? [];
+    ?>
+    <table class="signature-table" style="width: 100%; border: 0px none transparent !important; margin-top: 25px;">
         <tr>
-            <td style="width: 50%;">
-                Mengetahui / Mengonfirmasi,<br>
-                Guru Mata Pelajaran
-                <div style="height: 60px;"></div>
-                <strong><u><?= esc($schedule['nama_guru']) ?></u></strong><br>
-                NIP. <?= esc($schedule['nip_guru'] ?? '-') ?>
+            <td style="width: 48%; vertical-align: top; border: 0px none transparent !important;">
+                <?= render_signature_block_dompdf(
+                    'Guru Mata Pelajaran',
+                    $schedule['nama_guru'] ?? '',
+                    $schedule['nip_guru'] ?? '',
+                    $signatures['guru'] ?? null,
+                    $isPolos
+                ) ?>
             </td>
-            <td style="width: 50%;">
-                Ditetapkan di Tempat Supervisi,<br>
-                Supervisor / Penilai
-                <div style="height: 60px;"></div>
-                <strong><u><?= esc($schedule['nama_supervisor'] ?? 'Supervisor') ?></u></strong><br>
-                NIP. <?= esc($schedule['nip_supervisor'] ?? '-') ?>
+            <td style="width: 4%; border: 0px none transparent !important;"></td>
+            <td style="width: 48%; vertical-align: top; border: 0px none transparent !important;">
+                <?= render_signature_block_dompdf(
+                    'Supervisor / Penilai',
+                    $schedule['nama_supervisor'] ?? 'Supervisor',
+                    $schedule['nip_supervisor'] ?? '',
+                    $signatures['supervisor'] ?? null,
+                    $isPolos,
+                    'Ditetapkan di Tempat Supervisi'
+                ) ?>
             </td>
         </tr>
     </table>

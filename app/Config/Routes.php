@@ -43,6 +43,17 @@ $routes->get('/auth/logout', 'Auth::logout', ['as' => 'logout']);
 // Dashboard route
 $routes->get('/dashboard', 'Dashboard::index', ['as' => 'dashboard']);
 
+// Public Document Verification (Scan QR Code)
+$routes->get('/verifikasi/dokumen/(:any)', 'VerifikasiController::dokumen/$1');
+
+// Digital Signature Endpoints
+$routes->group('signature', ['filter' => 'auth'], function($routes) {
+    $routes->post('sign/(:num)', 'SignatureController::sign/$1');
+    $routes->get('status/(:num)', 'SignatureController::status/$1');
+    $routes->post('reset/(:num)', 'SignatureController::reset/$1');
+    $routes->post('sign-all-admin/(:num)', 'SignatureController::signAllAdmin/$1');
+});
+
 // Daftar modul routes yang akan dimuat
 $modules = [
     'auth',

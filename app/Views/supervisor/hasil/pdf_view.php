@@ -287,6 +287,13 @@
 </head>
 
 <body>
+    <?php
+    helper('signature');
+    $isPolos = !empty($is_polos);
+    $isDraft = !empty($is_draft);
+    $signatures = $signatures ?? [];
+    ?>
+    <?= render_pdf_draft_watermark($isDraft) ?>
 
     <!-- Footer -->
     <div class="footer">
@@ -608,61 +615,50 @@
         </div>
 
 
-        <!-- Tanda Tangan -->
-        <!-- Kode tanda tangan Anda sudah sangat baik untuk dompdf -->
-        <table class="signature-table">
+        <!-- Tanda Tangan Digital / Manual -->
+        <table class="signature-table" style="width: 100%; border: 0px none transparent !important; margin-top: 30px;">
             <!-- Baris Atas: Guru dan Supervisor -->
             <tr>
                 <!-- Kolom Kiri: Guru yang Disupervisi -->
-                <td style="width: 33.3%;" class="signature-block">
-                    <p>Guru yang Disupervisi,</p>
-                    <div class="signature-space"></div>
-                    <p style="margin: 2px 0; font-weight: bold; text-decoration: underline;">
-                        <?= esc($schedule['nama_guru'] ?? '') ?>
-                    </p>
-                    <p style="margin: 2px 0;">
-                        NIP: <?= esc($schedule['nip_guru'] ?? '') ?>
-                    </p>
+                <td style="width: 38%; vertical-align: top; border: 0px none transparent !important;">
+                    <?= render_signature_block_dompdf(
+                        'Guru yang Disupervisi',
+                        $schedule['nama_guru'] ?? '',
+                        $schedule['nip_guru'] ?? '',
+                        $signatures['guru'] ?? null,
+                        $isPolos
+                    ) ?>
                 </td>
 
-                <!-- Kolom Tengah: Kosong (Spacer) -->
-                <td style="width: 33.3%;">
-                    <!-- Sel ini sengaja dikosongkan untuk spasi -->
-                </td>
+                <!-- Kolom Tengah: Spacer -->
+                <td style="width: 24%; border: 0px none transparent !important;"></td>
 
                 <!-- Kolom Kanan: Supervisor -->
-                <td style="width: 33.3%;" class="signature-block">
-                    <p>Gisting, <?= format_tanggal_indonesia(date('Y-m')) ?><br>
-                        Supervisor,</p>
-                    <div class="signature-space"></div>
-                    <p style="margin: 2px 0; font-weight: bold; text-decoration: underline;">
-                        <?= esc($schedule['nama_supervisor'] ?? '...........................') ?>
-                    </p>
-                    <p style="margin: 2px 0;">
-                        NIP: <?= esc($schedule['nip_supervisor'] ?? '...........................') ?>
-                    </p>
+                <td style="width: 38%; vertical-align: top; border: 0px none transparent !important;">
+                    <?= render_signature_block_dompdf(
+                        'Supervisor',
+                        $schedule['nama_supervisor'] ?? 'Supervisor',
+                        $schedule['nip_supervisor'] ?? '',
+                        $signatures['supervisor'] ?? null,
+                        $isPolos,
+                        ($schedule['kota_madrasah'] ?? 'Gisting') . ', ' . format_tanggal_indonesia(date('Y-m'))
+                    ) ?>
                 </td>
             </tr>
 
             <!-- Baris Bawah: Kepala Sekolah (Tengah) -->
             <tr>
-                <!-- Kolom Kiri: Kosong -->
-                <td></td>
-
-                <!-- Kolom Tengah: Kepala Sekolah -->
-                <td style="padding-top: 40px;" class="signature-block">
-                    <p>Mengetahui,<br>Kepala Madrasah</p>
-                    <div class="signature-space"></div>
-                    <p style="margin: 2px 0; font-weight: bold; text-decoration: underline;">
-                        <?= esc($schedule['nama_kepala'] ?? '...........................') ?>
-                    </p>
-                    <p style="margin: 2px 0;">
-                        NIP: <?= esc($schedule['nip_kepala'] ?? '...........................') ?>
-                    </p>
+                <td style="border: 0px none transparent !important;"></td>
+                <td style="width: 38%; padding-top: 25px; vertical-align: top; border: 0px none transparent !important;">
+                    <?= render_signature_block_dompdf(
+                        'Mengetahui,<br>Kepala Madrasah',
+                        $schedule['nama_kepala'] ?? '',
+                        $schedule['nip_kepala'] ?? '',
+                        $signatures['kepala'] ?? null,
+                        $isPolos
+                    ) ?>
                 </td>
-
-                <!-- Kolom Kanan: Kosong -->
-                <td></td>
+                <td style="border: 0px none transparent !important;"></td>
             </tr>
         </table>
 

@@ -284,13 +284,21 @@ class LaporanCetakController extends BaseController
             $schedule['nip_supervisor'] = '';
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($id);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = false; // Admin view does not watermark draft
+
         $data = [
             'schedule'      => $schedule,
             'hasilList'     => $hasilList,
             'detailResults' => $detailResults,
             'fotoBukti'     => $fotoBukti,
             'jenisById'     => $jenisById,
-            'tahapNumber'   => $tahapNumber
+            'tahapNumber'   => $tahapNumber,
+            'signatures'    => $signatures,
+            'is_draft'      => $isDraft,
+            'is_polos'      => $isPolos,
         ];
         
         // Clear any previous output
@@ -365,6 +373,11 @@ class LaporanCetakController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = false;
+
         $data = [
             'schedule'       => $schedule,
             'praObservasi'   => $praObservasi,
@@ -373,6 +386,9 @@ class LaporanCetakController extends BaseController
             'indikatorNama'  => $indikatorNama,
             'hasilUtama'     => $hasil,
             'detailsByAspek' => $detailsByAspek,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -443,12 +459,20 @@ class LaporanCetakController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = false;
+
         $data = [
             'schedule'       => $schedule,
             'jenisPenilaian' => $jenisPenilaian,
             'aspekList'      => $aspekList,
             'hasil'          => $hasil,
-            'detailResults'  => $detailResults
+            'detailResults'  => $detailResults,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -495,11 +519,19 @@ class LaporanCetakController extends BaseController
         $praObservasi = $praModel->getByJadwal($jadwalId);
         $tindakLanjut = $tlModel->getByJadwal($jadwalId);
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = false;
+
         $data = [
             'schedule'     => $schedule,
             'coachingList' => $coachingList,
             'praObservasi' => $praObservasi,
             'tindakLanjut' => $tindakLanjut,
+            'signatures'   => $signatures,
+            'is_draft'     => $isDraft,
+            'is_polos'     => $isPolos,
         ];
 
         while (ob_get_level()) {

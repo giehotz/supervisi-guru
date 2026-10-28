@@ -49,11 +49,12 @@ class LaporanController extends BaseController
 
         // 3. Query Jadwal Supervisi pada tahun ajaran yang dipilih
         $jadwalQuery = $jadwalModel
-            ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran, kelas.nama_kelas, supervisor.username as nama_supervisor')
+            ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran, kelas.nama_kelas, users.username as nama_supervisor')
             ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id')
-            ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
-            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
-            ->join('users as supervisor', 'supervisor.id = jadwal_supervisi.supervisor_id', 'left');
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left');
+
 
         if ($tahun_ajar_id) {
             $jadwalQuery->where('jadwal_supervisi.tahun_ajar_id', $tahun_ajar_id);
@@ -246,7 +247,8 @@ class LaporanController extends BaseController
         $jadwalQuery = $jadwalModel
             ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru')
             ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id')
-            ->join('guru', 'guru.id = jadwal_supervisi.guru_id');
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left');
             
         // Apply filters
         if (!empty($tahun_ajar_id) && $tahun_ajar_id !== 'all') {
@@ -341,9 +343,10 @@ class LaporanController extends BaseController
         
         // Get schedule with related data
         $schedule = $jadwalModel
-            ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran')
+            ->select('jadwal_supervisi.*, tahun_ajar.tahun_ajar, tahun_ajar.semester, guru.nama as nama_guru, guru.nip as nip_guru, guru.mata_pelajaran, users.username as nama_supervisor, users.nip as nip_supervisor')
             ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id')
-            ->join('guru', 'guru.id = jadwal_supervisi.guru_id')
+            ->join('guru', 'guru.id = jadwal_supervisi.guru_id', 'left')
+            ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
             ->where('jadwal_supervisi.id', $id)
             ->where('jadwal_supervisi.status', 'Selesai')
             ->first();

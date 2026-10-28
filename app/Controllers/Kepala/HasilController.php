@@ -403,11 +403,19 @@ class HasilController extends BaseController
             ->where('jadwal_supervisi_id', $id)
             ->findAll();
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($id);
+        $isDraft        = empty($signatures['kepala']);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+
         $data = [
-            'schedule' => $schedule,
-            'hasilList' => $processedHasilPenilaian, // Changed to match view expectation
+            'schedule'      => $schedule,
+            'hasilList'     => $processedHasilPenilaian, // Changed to match view expectation
             'detailResults' => $detailResults,
-            'fotoBukti' => $uploadedPhotos // Changed to match view expectation
+            'fotoBukti'     => $uploadedPhotos, // Changed to match view expectation
+            'signatures'    => $signatures,
+            'is_draft'      => $isDraft,
+            'is_polos'      => $isPolos,
         ];
 
         // Generate PDF using Dompdf
@@ -475,6 +483,11 @@ class HasilController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = empty($signatures['kepala']);
+
         $data = [
             'schedule'       => $schedule,
             'praObservasi'   => $praObservasi,
@@ -483,6 +496,9 @@ class HasilController extends BaseController
             'indikatorNama'  => $indikatorNama,
             'hasilUtama'     => $hasil,
             'detailsByAspek' => $detailsByAspek,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -550,12 +566,20 @@ class HasilController extends BaseController
             }
         }
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = empty($signatures['kepala']);
+
         $data = [
             'schedule'       => $schedule,
             'jenisPenilaian' => $jenisPenilaian,
             'aspekList'      => $aspekList,
             'hasil'          => $hasil,
-            'detailResults'  => $detailResults
+            'detailResults'  => $detailResults,
+            'signatures'     => $signatures,
+            'is_draft'       => $isDraft,
+            'is_polos'       => $isPolos,
         ];
 
         while (ob_get_level()) {
@@ -601,11 +625,19 @@ class HasilController extends BaseController
         $praObservasi = $praModel->getByJadwal($jadwalId);
         $tindakLanjut = $tlModel->getByJadwal($jadwalId);
 
+        $signatureModel = new \App\Models\DokumenSignatureModel();
+        $signatures     = $signatureModel->getSignaturesByJadwal($jadwalId);
+        $isPolos        = ($this->request->getGet('mode') === 'polos');
+        $isDraft        = empty($signatures['kepala']);
+
         $data = [
             'schedule'     => $schedule,
             'coachingList' => $coachingList,
             'praObservasi' => $praObservasi,
             'tindakLanjut' => $tindakLanjut,
+            'signatures'   => $signatures,
+            'is_draft'     => $isDraft,
+            'is_polos'     => $isPolos,
         ];
 
         while (ob_get_level()) {
