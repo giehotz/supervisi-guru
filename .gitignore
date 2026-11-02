@@ -74,6 +74,7 @@ yarn-error.log*
 .codegraph/
 graphify-out/
 flow/
+KONFIG-SSH-REMOTE.md
 
 #-----------------------------------------------------------
 # Large Archives, Local Backups & Scratch Files
