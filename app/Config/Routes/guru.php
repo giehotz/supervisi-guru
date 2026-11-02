@@ -36,6 +36,7 @@ $routes->group('guru', ['filter' => 'auth', 'args' => ['guru']], function ($rout
     // Formulir A (Pra-Observasi) routes
     $routes->get('pra-observasi/(:num)', 'Guru\PraObservasiController::index/$1');
     $routes->post('pra-observasi/save', 'Guru\PraObservasiController::save');
+    $routes->post('pra-observasi/tarik/(:num)', 'Guru\PraObservasiController::tarik/$1');
 
     // Formulir C & D (Tindak Lanjut & Refleksi) routes
     $routes->get('tindak-lanjut/(:num)', 'Guru\TindakLanjutController::index/$1');

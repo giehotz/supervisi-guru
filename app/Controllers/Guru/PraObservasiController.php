@@ -8,6 +8,7 @@ use App\Models\GuruModel;
 use App\Models\JenisPenilaianModel;
 use App\Models\AspekPenilaianModel;
 use App\Models\PraObservasiModel;
+use App\Models\DokumenAjarModel;
 
 class PraObservasiController extends BaseController
 {
@@ -16,14 +17,16 @@ class PraObservasiController extends BaseController
     protected $jenisModel;
     protected $aspekModel;
     protected $praModel;
+    protected $dokumenModel;
 
     public function __construct()
     {
-        $this->jadwalModel = new JadwalSupervisiModel();
-        $this->guruModel   = new GuruModel();
-        $this->jenisModel  = new JenisPenilaianModel();
-        $this->aspekModel  = new AspekPenilaianModel();
-        $this->praModel    = new PraObservasiModel();
+        $this->jadwalModel  = new JadwalSupervisiModel();
+        $this->guruModel    = new GuruModel();
+        $this->jenisModel   = new JenisPenilaianModel();
+        $this->aspekModel   = new AspekPenilaianModel();
+        $this->praModel     = new PraObservasiModel();
+        $this->dokumenModel = new DokumenAjarModel();
     }
 
     public function index($jadwalId)
@@ -37,10 +40,12 @@ class PraObservasiController extends BaseController
 
         // Ambil jadwal supervisi dan verifikasi hak akses
         $jadwal = $this->jadwalModel
-            ->select('jadwal_supervisi.*, kelas.nama_kelas, kelas.fase as kelas_fase, tahun_ajar.tahun_ajar, tahun_ajar.semester, users.username as supervisor_name')
+            ->select('jadwal_supervisi.*, kelas.nama_kelas, kelas.fase as kelas_fase, tahun_ajar.tahun_ajar, tahun_ajar.semester, 
+                      COALESCE(supervisor_guru.nama, users.username) as supervisor_name')
             ->join('kelas', 'kelas.id = jadwal_supervisi.kelas_id', 'left')
             ->join('tahun_ajar', 'tahun_ajar.id = jadwal_supervisi.tahun_ajar_id', 'left')
             ->join('users', 'users.id = jadwal_supervisi.supervisor_id', 'left')
+            ->join('guru as supervisor_guru', 'supervisor_guru.user_id = users.id', 'left')
             ->where('jadwal_supervisi.id', $jadwalId)
             ->where('jadwal_supervisi.guru_id', $guru['id'])
             ->first();
@@ -79,6 +84,12 @@ class PraObservasiController extends BaseController
             $fokusDipilih = is_array($decoded) ? $decoded : [];
         }
 
+        // Ambil dokumen perangkat ajar yang telah diunggah untuk jadwal ini
+        $dokumenList = $this->dokumenModel
+            ->where('jadwal_id', $jadwalId)
+            ->orderBy('id', 'DESC')
+            ->findAll();
+
         $data = [
             'title'              => 'Formulir A: Diskusi Persiapan Observasi Kinerja',
             'jadwal'             => $jadwal,
@@ -86,6 +97,7 @@ class PraObservasiController extends BaseController
             'fokusPerIndikator'  => $fokusPerIndikator,
             'praObservasi'       => $praObservasi,
             'fokusDipilih'       => $fokusDipilih,
+            'dokumenList'        => $dokumenList,
         ];
 
         return view('guru/pra_observasi/form', $data);
@@ -107,20 +119,62 @@ class PraObservasiController extends BaseController
             return redirect()->back()->with('error', 'Jadwal supervisi tidak ditemukan.');
         }
 
-        $fokusDipilih = $this->request->getPost('fokus_perilaku_dipilih');
-        if (empty($fokusDipilih) || !is_array($fokusDipilih)) {
-            return redirect()->back()->withInput()->with('error', 'Pilih minimal 1 fokus perilaku yang ingin diobservasi.');
+        $existing = $this->praModel->getByJadwal($jadwalId);
+        if ($existing && $existing['status_kesepakatan'] === 'disepakati') {
+            return redirect()->back()->with('error', 'Formulir A telah disepakati bersama supervisor dan tidak dapat diubah lagi.');
         }
 
         $aksi = $this->request->getPost('aksi'); // 'draft' atau 'ajukan'
-        $statusKesepakatan = ($aksi === 'ajukan') ? 'diajukan' : 'draft_guru';
+        $indikatorId  = (int)$this->request->getPost('indikator_pmm_id');
+        $fokusDipilih = $this->request->getPost('fokus_perilaku_dipilih');
+        if (!is_array($fokusDipilih)) {
+            $fokusDipilih = [];
+        }
 
-        $indikatorId = $this->request->getPost('indikator_pmm_id');
-        if (empty($indikatorId) && !empty($fokusDipilih)) {
-            $firstAspek = $this->aspekModel->find($fokusDipilih[0]);
-            if ($firstAspek) {
-                $indikatorId = $firstAspek['jenis_penilaian_id'];
+        if ($aksi === 'ajukan') {
+            // Validasi ketat saat Pengajuan ke Supervisor
+            if (empty($indikatorId)) {
+                return redirect()->back()->withInput()->with('error', 'Pilihlah 1 target Indikator Kinerja PMM.');
             }
+
+            $countFokus = count($fokusDipilih);
+            if ($countFokus < 1 || $countFokus > 3) {
+                return redirect()->back()->withInput()->with('error', 'Pilih minimal 1 dan maksimal 3 fokus perilaku yang ingin diobservasi.');
+            }
+
+            // Validasi bahwa fokus perilaku yang dipilih benar-benar milik indikator terpilih
+            $validAspeks = $this->aspekModel
+                ->where('jenis_penilaian_id', $indikatorId)
+                ->whereIn('id', $fokusDipilih)
+                ->findAll();
+
+            if (count($validAspeks) !== $countFokus) {
+                return redirect()->back()->withInput()->with('error', 'Fokus perilaku yang dipilih harus sesuai dengan indikator kinerja yang Anda pilih.');
+            }
+
+            // Validasi isian narasi esensial
+            $upayaMempelajari = trim((string)$this->request->getPost('upaya_mempelajari'));
+            $tujuanSesi       = trim((string)$this->request->getPost('tujuan_pembelajaran_sesi'));
+
+            if ($upayaMempelajari === '' || $tujuanSesi === '') {
+                return redirect()->back()->withInput()->with('error', 'Harap isi Upaya Mempelajari Target Perilaku dan Tujuan Pembelajaran Sesi sebelum mengajukan.');
+            }
+
+            $statusKesepakatan = 'diajukan';
+        } else {
+            // Mode Draf: Lebih fleksibel
+            if (!empty($indikatorId) && !empty($fokusDipilih)) {
+                // Filter hanya fokus milik indikator terpilih jika ada
+                $validAspeks = $this->aspekModel
+                    ->where('jenis_penilaian_id', $indikatorId)
+                    ->whereIn('id', $fokusDipilih)
+                    ->findAll();
+                $fokusDipilih = array_column($validAspeks, 'id');
+                if (count($fokusDipilih) > 3) {
+                    $fokusDipilih = array_slice($fokusDipilih, 0, 3);
+                }
+            }
+            $statusKesepakatan = 'draft_guru';
         }
 
         $dataSimpan = [
@@ -133,7 +187,6 @@ class PraObservasiController extends BaseController
             'status_kesepakatan'       => $statusKesepakatan,
         ];
 
-        $existing = $this->praModel->getByJadwal($jadwalId);
         if ($existing) {
             $dataSimpan['id'] = $existing['id'];
         }
@@ -157,5 +210,43 @@ class PraObservasiController extends BaseController
             : 'Draft Formulir A berhasil disimpan.';
 
         return redirect()->to(base_url('guru/pra-observasi/' . $jadwalId))->with('success', $msg);
+    }
+
+    /**
+     * Menarik kembali pengajuan Formulir A agar dapat diedit kembali oleh guru (sebelum disepakati supervisor)
+     */
+    public function tarik($jadwalId)
+    {
+        $userId = session()->get('id');
+        $guru   = $this->guruModel->where('user_id', $userId)->first();
+
+        if (!$guru) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        $jadwal = $this->jadwalModel->where('id', $jadwalId)->where('guru_id', $guru['id'])->first();
+        if (!$jadwal) {
+            return redirect()->back()->with('error', 'Jadwal supervisi tidak ditemukan.');
+        }
+
+        $praObservasi = $this->praModel->getByJadwal($jadwalId);
+        if (!$praObservasi) {
+            return redirect()->back()->with('error', 'Data Formulir A tidak ditemukan.');
+        }
+
+        if ($praObservasi['status_kesepakatan'] === 'disepakati') {
+            return redirect()->back()->with('error', 'Formulir A telah disepakati bersama supervisor dan tidak dapat ditarik kembali.');
+        }
+
+        if ($praObservasi['status_kesepakatan'] !== 'diajukan') {
+            return redirect()->back()->with('info', 'Formulir A saat ini tidak dalam status diajukan.');
+        }
+
+        $this->praModel->update($praObservasi['id'], [
+            'status_kesepakatan' => 'draft_guru',
+        ]);
+
+        return redirect()->to(base_url('guru/pra-observasi/' . $jadwalId))
+            ->with('success', 'Pengajuan Formulir A berhasil ditarik kembali. Anda dapat mengedit dan melengkapi draf kembali.');
     }
 }
