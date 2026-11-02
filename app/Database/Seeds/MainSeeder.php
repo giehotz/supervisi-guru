@@ -24,5 +24,6 @@ class MainSeeder extends Seeder
         $this->call('SystemSettingsSeeder');
         $this->call('NotifikasiSeeder');
         $this->call('UserPreferencesSeeder');
+        $this->call('KurikulumMerdekaInstrumenSeeder');
     }
 }
